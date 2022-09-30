@@ -4,7 +4,7 @@
 npm install
 ```
 
-Will install all neede packages
+Will install all needed packages
 
 ### Compile
 
