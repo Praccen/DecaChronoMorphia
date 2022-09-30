@@ -4,7 +4,6 @@ import Vec2 from "../Maths/Vec2.js";
 import Vec3 from "../Maths/Vec3.js";
 import ShaderProgram from "../ShaderPrograms/ShaderProgram.js";
 import Triangle from "../Physics/Shapes/Triangle.js";
-import OBB from "../Physics/Shapes/Obb.js";
 
 export default class Mesh extends GraphicsObject {
 	// Public
@@ -37,8 +36,8 @@ export default class Mesh extends GraphicsObject {
 
 	private parseObjContent(objContent: String) {
 		/*
-        https://webglfundamentals.org/webgl/lessons/webgl-load-obj.html
-        */
+		https://webglfundamentals.org/webgl/lessons/webgl-load-obj.html
+		*/
 		const lines = objContent.split("\n");
 		let vertexPositions = new Array<Vec3>();
 		let vertexTexCoords = new Array<Vec2>();
