@@ -3,11 +3,13 @@ import { Component, ComponentTypeEnum } from "./Components/Component.js";
 
 export default class Entity {
 	public readonly id: number;
+	public isActive: boolean;
 	private name: string;
 	private components: Array<Component>;
 
-	constructor(id: number) {
+	constructor(id: number, active = false) {
 		this.id = id;
+		this.isActive = active;
 		this.components = new Array<Component>();
 	}
 

@@ -101,6 +101,10 @@ export default class CollisionSystem extends System {
 				}
 			}
 
+			//TODO record collisions
+			// c.currentCollisionEntities.add(e2); // Save collision
+			// c2.currentCollisionEntities.add(e); // Add to other entity that it has been hit
+
 			let movComp = <MovementComponent>(
 				e1.getComponent(ComponentTypeEnum.MOVEMENT)
 			);

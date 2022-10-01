@@ -1,8 +1,4 @@
-import {
-	applicationStartTime,
-	input,
-	meshesRequestedVsLoaded,
-} from "../main.js";
+import { input } from "../main.js";
 import Rendering from "../Engine/Rendering.js";
 import ECSManager from "../Engine/ECS/ECSManager.js";
 import Entity from "../Engine/ECS/Entity.js";
@@ -13,12 +9,11 @@ import MovementComponent from "../Engine/ECS/Components/MovementComponent.js";
 import { ComponentTypeEnum } from "../Engine/ECS/Components/Component.js";
 import Checkbox from "../Engine/GUI/Checkbox.js";
 import TextObject3D from "../Engine/GUI/Text/TextObject3D.js";
-import Vec2 from "../Engine/Maths/Vec2.js";
 import Vec3 from "../Engine/Maths/Vec3.js";
 import PointLight from "../Engine/Lighting/PointLight.js";
 import CollisionComponent from "../Engine/ECS/Components/CollisionComponent.js";
 import BoundingBoxComponent from "../Engine/ECS/Components/BoundingBoxComponent.js";
-import MeshCollisionComponent from "../Engine/ECS/Components/MeshCollisionComponent.js";
+import AnimationComponent from "../Engine/ECS/Components/AnimationComponent.js";
 
 export default class Game {
 	private rendering: Rendering;
@@ -61,6 +56,8 @@ export default class Game {
 		rendering.loadTextureToStore(knightTexture);
 		let mouseFrontTexture = "Assets/textures/mouse_front.png";
 		rendering.loadTextureToStore(mouseFrontTexture);
+		let normy = "Assets/textures/normy.png";
+		rendering.loadTextureToStore(normy);
 
 		this.createFloorEntity(floorTexture);
 
@@ -157,25 +154,14 @@ export default class Game {
 		this.ecsManager.addComponent(this.boxEntity, new CollisionComponent());
 		// -------------
 
-		// ---- Knight ----
-		// let knightTexture = "Assets/textures/knight.png";
-		let mouseFrontTexture = "Assets/textures/mouse_front.png";
-		// let knightMesh = await this.rendering.getNewMesh(
-		// 	"Assets/objs/knight.obj",
-		// 	knightTexture,
-		// 	knightTexture
-		// );
+		// ---- Player ----
+		let mouseFrontTexture = "Assets/textures/normy.png";
 		this.playerEntity = this.ecsManager.createEntity();
-		// this.ecsManager.addComponent(
-		// 	this.knightEntity,
-		// 	new GraphicsComponent(knightMesh)
-		// );
 
 		let phongQuad = this.rendering.getNewPhongQuad(
 			mouseFrontTexture,
 			mouseFrontTexture
 		);
-		// phongQuad.textureMatrix.setScale(50.0, 50.0, 1.0);
 		this.ecsManager.addComponent(
 			this.playerEntity,
 			new GraphicsComponent(phongQuad)
@@ -186,10 +172,22 @@ export default class Game {
 		this.ecsManager.addComponent(this.playerEntity, playerMoveComp);
 
 		let playerPosComp = new PositionComponent();
-		// knightPosComp.position.setValues(2.0, 0.0, 0.0);
 		playerPosComp.rotation.setValues(-30.0, 0.0, 0.0);
-		// knightPosComp.scale.setValues(0.25, 0.25, 0.25);
 		this.ecsManager.addComponent(this.playerEntity, playerPosComp);
+
+		let playerAnimComp = new AnimationComponent();
+		playerAnimComp.spriteMap.setNrOfSprites(3, 2);
+		playerAnimComp.startingTile = { x: 0, y: 0 };
+		playerAnimComp.advanceBy = { x: 1.0, y: 0.0 };
+		playerAnimComp.modAdvancement = { x: 2.0, y: 1.0 };
+		playerAnimComp.updateInterval = 0.3;
+		this.ecsManager.addComponent(this.playerEntity, playerAnimComp);
+
+		// let playerBoundingBoxComp = new BoundingBoxComponent();
+		// playerBoundingBoxComp.setup(phongQuad);
+		// playerBoundingBoxComp.updateTransformMatrix(phongQuad.modelMatrix);
+		// this.ecsManager.addComponent(this.playerEntity, playerBoundingBoxComp);
+		// this.ecsManager.addComponent(this.playerEntity, new CollisionComponent());
 
 		// ----------------
 	}
@@ -293,13 +291,16 @@ export default class Game {
 	update(dt: number) {
 		let accVec: Vec3 = new Vec3({ x: 0.0, y: 0.0, z: 0.0 });
 		let move = false;
+		let playerDirection = 0;
 		if (input.keys["w"]) {
 			accVec.setValues(0.0, 0.0, -1.0);
+			playerDirection = 1;
 			move = true;
 		}
 
 		if (input.keys["s"]) {
 			accVec.setValues(0.0, 0.0, 1.0);
+			playerDirection = 0;
 			move = true;
 		}
 
@@ -321,13 +322,33 @@ export default class Game {
 			move = true;
 		}
 
-		let playerMove = <MovementComponent>(
+		let playerMoveComp = <MovementComponent>(
 			this.playerEntity.getComponent(ComponentTypeEnum.MOVEMENT)
 		);
-
 		// Set player acceleration
-		if (move && playerMove) {
-			playerMove.accelerationDirection = accVec;
+		if (move && playerMoveComp) {
+			playerMoveComp.accelerationDirection = accVec;
+		}
+
+		let playerAnimComp = <AnimationComponent>(
+			this.playerEntity.getComponent(ComponentTypeEnum.ANIMATION)
+		);
+		if (playerAnimComp && move) {
+			if (playerDirection == 0) {
+				playerAnimComp.startingTile = { x: 0, y: 0 };
+				playerAnimComp.advanceBy = { x: 1, y: 0 };
+			} else {
+				playerAnimComp.startingTile = { x: 0, y: 1 };
+				playerAnimComp.advanceBy = { x: 1, y: 0 };
+			}
+		} else if (playerAnimComp) {
+			if (playerDirection == 0) {
+				playerAnimComp.startingTile = { x: 2, y: 0 };
+				playerAnimComp.advanceBy = { x: 0, y: 0 };
+			} else {
+				playerAnimComp.startingTile = { x: 2, y: 0 };
+				playerAnimComp.advanceBy = { x: 0, y: 0 };
+			}
 		}
 
 		let playerPosComp = <PositionComponent>(

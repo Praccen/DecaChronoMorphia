@@ -2,6 +2,7 @@ import System from "./Systems/System.js";
 import CollisionSystem from "./Systems/CollisionSystem.js";
 import MovementSystem from "./Systems/MovementSystem.js";
 import GraphicsSystem from "./Systems/GraphicsSystem.js";
+import AnimationSystem from "./Systems/AnimationSystem.js";
 import ParticleSpawnerSystem from "./Systems/ParticleSpawnerSystem.js";
 import Rendering from "../Rendering.js";
 import Entity from "./Entity.js";
@@ -23,6 +24,9 @@ export default class ECSManager {
 		entity: Entity;
 		componentType: ComponentTypeEnum;
 	}>;
+	private activateEntitiesQueue: Array<number>;
+	private deactivateEntitiesQueue: Array<number>;
+
 	camera: Camera;
 	rendering: Rendering;
 
@@ -44,6 +48,8 @@ export default class ECSManager {
 			entity: Entity;
 			componentType: ComponentTypeEnum;
 		}>();
+		this.activateEntitiesQueue = new Array<number>();
+		this.deactivateEntitiesQueue = new Array<number>();
 
 		this.initializeSystems();
 	}
@@ -53,6 +59,7 @@ export default class ECSManager {
 		this.systems.set("MOVEMENT", new MovementSystem());
 		this.systems.set("GRAPHICS", new GraphicsSystem());
 		this.systems.set("PARTICLE", new ParticleSpawnerSystem());
+		this.systems.set("ANIMATION", new AnimationSystem());
 	}
 
 	update(dt: number) {
@@ -65,9 +72,12 @@ export default class ECSManager {
 		this.removeComponents();
 		this.removeEntitiesMarkedForDeletion();
 
+		this.updateEntityActivation();
+
 		this.systems.get("MOVEMENT").update(dt);
 		this.systems.get("GRAPHICS").update(dt);
 		this.systems.get("COLLISION").update(dt);
+		this.systems.get("ANIMATION").update(dt);
 	}
 
 	updateRenderingSystems(dt: number) {
@@ -104,6 +114,13 @@ export default class ECSManager {
 
 	getSystem(type: string): System {
 		return this.systems.get(type);
+	}
+
+	activateEntities(entityIds: number[]) {
+		this.activateEntitiesQueue = entityIds;
+	}
+	deactivateEntities(entityIds: number[]) {
+		this.deactivateEntitiesQueue = entityIds;
 	}
 
 	// Private
@@ -172,5 +189,23 @@ export default class ECSManager {
 
 		// Empty queue
 		this.componentRemovalQueue.length = 0;
+	}
+
+	private updateEntityActivation() {
+		this.entities.forEach((entity) => {
+			if (
+				this.activateEntitiesQueue.some(
+					(activateEntity) => entity.id === activateEntity
+				)
+			) {
+				entity.isActive = true;
+			} else if (
+				this.deactivateEntitiesQueue.some(
+					(deactivateEntity) => entity.id === deactivateEntity
+				)
+			) {
+				entity.isActive = false;
+			}
+		});
 	}
 }

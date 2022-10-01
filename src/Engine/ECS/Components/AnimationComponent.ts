@@ -1,5 +1,5 @@
-import SpriteMap from "../../Textures/SpriteMap";
-import { Component, ComponentTypeEnum } from "./Component";
+import SpriteMap from "../../Textures/SpriteMap.js";
+import { Component, ComponentTypeEnum } from "./Component.js";
 
 export default class AnimationComponent extends Component {
 	startingTile: { x: number; y: number };
