@@ -25,8 +25,10 @@ export default class DamageSystem extends System {
 				return;
 			}
 
-			const damagedEntity = collisionComp.currentCollisionEntities.values()[0];
-			console.log("damagedEntity hit!:>> ", damagedEntity);
+			const damagedEntity = collisionComp.currentCollisionEntities
+				.values()
+				.next();
+			this.ecsManager.removeComponent(e, ComponentTypeEnum.GRAPHICS);
 			this.ecsManager.removeEntity(e.id);
 		});
 	}

@@ -2,6 +2,7 @@ import Vec3 from "../../Maths/Vec3.js";
 import PhongQuad from "../../Objects/PhongQuad.js";
 import AnimationComponent from "../Components/AnimationComponent.js";
 import Rendering from "../../Rendering.js";
+import BoundingBoxComponent from "../Components/BoundingBoxComponent.js";
 import CollisionComponent from "../Components/CollisionComponent.js";
 import { ComponentTypeEnum } from "../Components/Component.js";
 import DamageComponent from "../Components/DamageComponent.js";
@@ -85,7 +86,6 @@ export default class EnemySystem extends System {
 			if (weaponComp.attackTimer <= 0) {
 				const normalizedDirection = new Vec3(directionToEnemy).normalize();
 				const dmgPosX = normalizedDirection.x * 1 + positionComp.position.x;
-				const dmgPosY = normalizedDirection.y * 1 + positionComp.position.y;
 				const dmgPosZ = normalizedDirection.z * 1 + positionComp.position.z;
 
 				//---- Damage projectile ---//
@@ -96,9 +96,7 @@ export default class EnemySystem extends System {
 				);
 				this.ecsManager.addComponent(
 					dmgEntity,
-					new PositionComponent(
-						new Vec3({ x: dmgPosX, y: dmgPosY, z: dmgPosZ })
-					)
+					new PositionComponent(new Vec3({ x: dmgPosX, y: 0.5, z: dmgPosZ }))
 				);
 				const dmgMoveComp = new MovementComponent();
 				dmgMoveComp.accelerationDirection = directionToEnemy;
@@ -113,6 +111,14 @@ export default class EnemySystem extends System {
 				this.ecsManager.addComponent(dmgEntity, dmgMoveComp);
 
 				this.ecsManager.addComponent(dmgEntity, new CollisionComponent());
+
+				let enemyBBComp = new BoundingBoxComponent();
+				enemyBBComp.boundingBox.setMinAndMaxVectors(
+					new Vec3({ x: -0.2, y: -0.5, z: -0.2 }),
+					new Vec3({ x: 0.2, y: 0.5, z: 0.2 })
+				);
+				enemyBBComp.updateBoundingBoxBasedOnPositionComp = true;
+				this.ecsManager.addComponent(dmgEntity, enemyBBComp);
 
 				let dmgTexture = "Assets/textures/mouse.png";
 				let phongQuad = this.rendering.getNewPhongQuad(dmgTexture, dmgTexture);
