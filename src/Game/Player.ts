@@ -10,6 +10,8 @@ import Vec3 from "../Engine/Maths/Vec3.js";
 import { ComponentTypeEnum } from "../Engine/ECS/Components/Component.js";
 import PhongQuad from "../Engine/Objects/PhongQuad.js";
 import Texture from "../Engine/Textures/Texture.js";
+import CollisionComponent from "../Engine/ECS/Components/CollisionComponent.js";
+import BoundingBoxComponent from "../Engine/ECS/Components/BoundingBoxComponent.js";
 
 export default class Player {
 	public playerEntity: Entity;
@@ -83,6 +85,12 @@ export default class Player {
 		playerAnimComp.modAdvancement = { x: 2.0, y: 1.0 };
 		playerAnimComp.updateInterval = 0.3;
 		this.ecsManager.addComponent(this.playerEntity, playerAnimComp);
+		
+		let playerBoundingBoxComp = new BoundingBoxComponent();
+		playerBoundingBoxComp.boundingBox.setMinAndMaxVectors(new Vec3({x: -0.2, y: -0.2, z: -0.2}), new Vec3({x: 0.2, y: 0.2, z: 0.2}));
+		playerBoundingBoxComp.updateTransformMatrix(this.playerQuad.modelMatrix);
+		this.ecsManager.addComponent(this.playerEntity, playerBoundingBoxComp);
+		this.ecsManager.addComponent(this.playerEntity, new CollisionComponent());
 	}
 
 	update(dt: number) {
