@@ -6,14 +6,14 @@ export default class AudioPlayer {
 	songs_dir: string;
 
 	constructor() {
-		this.sound_effects_dir = 'Assets/sounds/effects';
-		this.songs_dir = 'Assets/sounds/music';
+		this.sound_effects_dir = "Assets/sounds/effects";
+		this.songs_dir = "Assets/sounds/music";
 
-		this.sound_effects = {}
-		this.songs = {}
-		
+		this.sound_effects = {};
+		this.songs = {};
+
 		this.active = false;
-		
+
 		const sound_effect_files = [
 			"damage_1.wav",
 			"explosion_1.wav",
@@ -34,33 +34,36 @@ export default class AudioPlayer {
 			"spell_cast_3.wav",
 			"spell_cast_5.wav",
 			"sword_attack_2.mp3",
-			"sword_attack_4.mp3"
-		]
+			"sword_attack_4.mp3",
+		];
 		for (const file of sound_effect_files) {
-			this.sound_effects[file.split(".")[0]] = new Audio(this.sound_effects_dir + "/" + file)
+			this.sound_effects[file.split(".")[0]] = new Audio(
+				this.sound_effects_dir + "/" + file
+			);
 		}
 
 		const song_files = [
-			"boss_intro_1.mp3", 
-			"boss_theme_2.mp3", "boss_theme_4.mp3", 
-			"intro_1.mp3", 
-			"intro_2.wav", 
-			"main_theme_2.mp3", 
-			"main_theme_4.mp3", 
-			"main_theme_6.mp3", 
-			"shop_theme_2.mp3", 
-			"boss_theme_1.mp3", 
-			"boss_theme_3.mp3", 
-			"defeat_1.mp3", 
-			"intro_1.wav", 
-			"main_theme_1.mp3", 
-			"main_theme_3.mp3", 
-			"main_theme_5.mp3", 
-			"shop_theme_1.mp3", 
-			"victory_1.mp3"
-		]
+			"boss_intro_1.mp3",
+			"boss_theme_2.mp3",
+			"boss_theme_4.mp3",
+			"intro_1.mp3",
+			"intro_2.wav",
+			"main_theme_2.mp3",
+			"main_theme_4.mp3",
+			"main_theme_6.mp3",
+			"shop_theme_2.mp3",
+			"boss_theme_1.mp3",
+			"boss_theme_3.mp3",
+			"defeat_1.mp3",
+			"intro_1.wav",
+			"main_theme_1.mp3",
+			"main_theme_3.mp3",
+			"main_theme_5.mp3",
+			"shop_theme_1.mp3",
+			"victory_1.mp3",
+		];
 		for (const file of song_files) {
-			this.songs[file.split(".")[0]] = new Audio(this.songs_dir + "/" + file)
+			this.songs[file.split(".")[0]] = new Audio(this.songs_dir + "/" + file);
 		}
 
 		for (let sound in this.sound_effects) {

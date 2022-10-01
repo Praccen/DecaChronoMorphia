@@ -29,6 +29,8 @@ export default class Game {
 	private boxEntity: Entity;
 	private playerEntity: Entity;
 
+	private enemyEntities: Array<Entity>;
+
 	constructor(
 		gl: WebGL2RenderingContext,
 		rendering: Rendering,
