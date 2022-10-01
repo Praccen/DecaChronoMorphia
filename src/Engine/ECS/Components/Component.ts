@@ -8,6 +8,8 @@ export enum ComponentTypeEnum {
 	PARTICLESPAWNER,
 	POSITION,
 	MAPTILE,
+	PLAYER,
+	CONNECTION,
 }
 
 export class Component {
