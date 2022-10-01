@@ -1,6 +1,9 @@
 import Vec3 from "../../Maths/Vec3.js";
+import PhongQuad from "../../Objects/PhongQuad.js";
+import AnimationComponent from "../Components/AnimationComponent.js";
 import { ComponentTypeEnum } from "../Components/Component.js";
 import EnemyComponent from "../Components/EnemyComponent.js";
+import GraphicsComponent from "../Components/GraphicsComponent.js";
 import MovementComponent from "../Components/MovementComponent.js";
 import PositionComponent from "../Components/PositionComponent.js";
 import ECSManager from "../ECSManager.js";
@@ -46,6 +49,19 @@ export default class EnemySystem extends System {
 				z: targetPositionComp.position.z,
 			}).subtract(positionComp.position);
 
+			const graphComp = e.getComponent(
+				ComponentTypeEnum.GRAPHICS
+			) as GraphicsComponent;
+			const animComp = e.getComponent(
+				ComponentTypeEnum.ANIMATION
+			) as AnimationComponent;
+
+			if (graphComp && animComp) {
+				let quad = <PhongQuad>graphComp.object;
+				if (newAccelerationDirection.x < 0) {
+					quad.textureMatrix.scale(-1, 1, 1);
+				}
+			}
 			movementComp.accelerationDirection = newAccelerationDirection;
 		});
 	}

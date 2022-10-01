@@ -33,6 +33,7 @@ export default class SpriteDirectionSystem extends System {
 			if (movementComp.velocity.length2() <= 0.01) {
 				animationComp.startingTile = { x: 2, y: 0 };
 				animationComp.advanceBy = { x: 0, y: 0 };
+				positionComp.rotation.setValues(-30.0, 0.0, 0.0);
 				return;
 			}
 

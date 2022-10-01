@@ -159,7 +159,7 @@ export default class Game {
 		this.playerObject.init();
 
 		// ---- Enemy ----
-		let enemyTexture = "Assets/textures/mouse.png";
+		let enemyTexture = "Assets/textures/slime.png";
 		this.enemyEntity = this.ecsManager.createEntity();
 
 		let phongQuad = this.rendering.getNewPhongQuad(enemyTexture, enemyTexture);
