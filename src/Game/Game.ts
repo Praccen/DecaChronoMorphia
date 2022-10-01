@@ -16,6 +16,7 @@ import BoundingBoxComponent from "../Engine/ECS/Components/BoundingBoxComponent.
 import Player from "./Player.js";
 import AnimationComponent from "../Engine/ECS/Components/AnimationComponent.js";
 import EnemyComponent from "../Engine/ECS/Components/EnemyComponent.js";
+import { MapGenerator } from "./Map/MapGenerator.js";
 
 export default class Game {
 	private rendering: Rendering;
@@ -57,10 +58,6 @@ export default class Game {
 		let fireTexture = "Assets/textures/fire.png";
 		rendering.loadTextureToStore(fireTexture);
 
-		// Floor
-		this.createFloorEntity(floorTexture);
-
-		// Test
 		for (let i = 0; i < 5; i++) {
 			this.createTestEntity(
 				new Vec3({ x: -1.25 + i * 0.5, y: 0.0, z: -2.0 }),
@@ -124,6 +121,8 @@ export default class Game {
 		// testButton.textString = "Test button";
 		// testButton.center = true;
 		this.playerObject = new Player(this.rendering, this.ecsManager);
+
+		MapGenerator.GenerateMap(5, 5, ecsManager, rendering);
 	}
 
 	async init() {
@@ -190,26 +189,6 @@ export default class Game {
 			this.enemyEntity,
 			new EnemyComponent(this.playerObject.playerEntity.id)
 		);
-	}
-
-	createFloorEntity(texturePath: string) {
-		let entity = this.ecsManager.createEntity();
-		let phongQuad = this.rendering.getNewPhongQuad(texturePath, texturePath);
-		phongQuad.textureMatrix.setScale(50.0, 50.0, 1.0);
-		this.ecsManager.addComponent(entity, new GraphicsComponent(phongQuad));
-		let posComp = new PositionComponent(new Vec3({ x: 0.0, y: -0.5, z: 0.0 }));
-		posComp.rotation.setValues(-90.0, 0.0, 0.0);
-		posComp.scale.setValues(50.0, 50.0, 1.0);
-		this.ecsManager.addComponent(entity, posComp);
-
-		// Collision stuff
-		let boundingBoxComp = new BoundingBoxComponent();
-		boundingBoxComp.setup(phongQuad);
-		boundingBoxComp.updateTransformMatrix(phongQuad.modelMatrix);
-		this.ecsManager.addComponent(entity, boundingBoxComp);
-		let collisionComp = new CollisionComponent();
-		collisionComp.isStatic = true;
-		this.ecsManager.addComponent(entity, collisionComp);
 	}
 
 	createEnemyEntity(texturePath: string) {

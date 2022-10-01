@@ -1,4 +1,3 @@
-
 class DisjointSets {
     size: number;
     set: Array<number>;
@@ -56,54 +55,57 @@ class DisjointSets {
 }
 
 
-export default class LabyrinthGen {
-    private xSize;
-    private ySize;
-    
-    map: Array<Array<number>>;
-
-    constructor(xSize: number, ySize: number) {
+export module LabyrinthGenerator {
+    /**
+     * Generates a 2 dimensional number array with wall tiles (1 or 2) and "walkable" tiles (0)
+     * @param xSize Number of "rooms" in x direction of the grid.
+     * @param ySize Number of "rooms" in y direction of the grid.
+     * @returns The 2 dimensional array
+     */
+    export function getLabyrinth(xSize: number, ySize: number): Array<Array<number>> {
         //Decide sizes
-        this.xSize = xSize * 2 + 1;
-        this.ySize = ySize * 2 + 1;
+        xSize = xSize * 2 + 1;
+        ySize = ySize * 2 + 1;
 
         // Generate map
-        this.map = new Array<Array<number>>(this.xSize);
-        for (let i = 0; i < this.xSize; i++) {
-            this.map[i] = new Array<number>();
+        let map = new Array<Array<number>>(xSize);
+        for (let i = 0; i < xSize; i++) {
+            map[i] = new Array<number>();
         }
 
         //Generate walls
-        this.generateMap();
-        this.generateMaze();
-        this.printMap();
+        generateMap(map, xSize, ySize);
+        generateMaze(map, xSize, ySize);
+        printMap(map, xSize, ySize);
+
+        return map;
     }
 
-    private generateMap() {
+    function generateMap(map: Array<Array<number>>, xSize:number, ySize:number) {
         let counter = 3;
 
-        for (let j = 0; j < this.ySize; j++) {
-            for (let i = 0; i < this.xSize; i++) {
+        for (let j = 0; j < ySize; j++) {
+            for (let i = 0; i < xSize; i++) {
                 if (i % 2 == 0 || j % 2 == 0) {
                     if (i % 2 == 0 && j % 2 == 0) {
-                        this.map[i][j] = 2;
+                        map[i][j] = 2;
                     }
                     else {
-                        this.map[i][j] = 1;
+                        map[i][j] = 1;
                     }
 
                 }
                 else {
-                    this.map[i][j] = counter;
+                    map[i][j] = counter;
                     counter++;
                 }
             }
         }
     }
 
-    private generateMaze() {
-        let spaces = new DisjointSets(((this.xSize - 1) / 2)*((this.ySize - 1) / 2));
-        let nrOfWalls = ((this.xSize - 1) / 2)*((this.ySize - 1) / 2) * 2 - ((this.xSize - 1) / 2) - ((this.ySize - 1) / 2);
+    function generateMaze(map: Array<Array<number>>, xSize:number, ySize:number) {
+        let spaces = new DisjointSets(((xSize - 1) / 2)*((ySize - 1) / 2));
+        let nrOfWalls = ((xSize - 1) / 2)*((ySize - 1) / 2) * 2 - ((xSize - 1) / 2) - ((ySize - 1) / 2);
         let tested = new Array<number>(nrOfWalls);
         for (let i = 0; i < nrOfWalls; i++) {
             tested[i] = 0;
@@ -115,35 +117,35 @@ export default class LabyrinthGen {
         }
 
         while (spaces.numberOfTrees() > 1) {
-            this.removeRandomWall(spaces, walls, tested, nrOfWalls);
+            removeRandomWall(map, xSize, ySize, spaces, walls, tested, nrOfWalls);
         }
 
-        this.removeWalls(walls, nrOfWalls);
+        removeWalls(map,  xSize, ySize, walls);
     }
 
-    private removeWalls(walls: Array<number>, nrOfWalls: number) {
+    function removeWalls(map: Array<Array<number>>, xSize:number, ySize:number, walls: Array<number>) {
         let wallCounter = 0;
 
-        for (let j = 1; j < this.ySize - 1; j++) {
-            for (let k = 1; k < this.xSize - 1; k++) {
-                if (this.map[k][j] == 1) {
+        for (let j = 1; j < ySize - 1; j++) {
+            for (let k = 1; k < xSize - 1; k++) {
+                if (map[k][j] == 1) {
                     wallCounter++;
-                    this.map[k][j] = walls[wallCounter - 1];
+                    map[k][j] = walls[wallCounter - 1];
                 }
-                if (this.map[k][j] > 2) {
-                    this.map[k][j] = 0;
+                if (map[k][j] > 2) {
+                    map[k][j] = 0;
                 }
             }
         }
     }
     
-    private removeRandomWall(spaces: DisjointSets, walls: Array<number>, tested: Array<number>, nrOfWalls: number) {
-        let randWallSeed = Math.floor(Math.random() * (this.getUnTested(tested, nrOfWalls)));
-        let randWall = this.getIdxUnTested(tested, nrOfWalls, randWallSeed);
+    function removeRandomWall(map: Array<Array<number>>, xSize:number, ySize:number, spaces: DisjointSets, walls: Array<number>, tested: Array<number>, nrOfWalls: number) {
+        let randWallSeed = Math.floor(Math.random() * (getUnTested(tested, nrOfWalls)));
+        let randWall = getIdxUnTested(tested, nrOfWalls, randWallSeed);
 
         if (walls[randWall] != 0 && tested[randWall] != 1) {
             let elements = new Array<number>();
-            this.getElements(randWall, elements);
+            getElements(map, xSize, ySize, randWall, elements);
 
             if (spaces.findCompress(elements[0]) != spaces.findCompress(elements[1])) {
                 spaces.unionSetsRank(spaces.find(elements[0]), spaces.find(elements[1]));
@@ -154,30 +156,30 @@ export default class LabyrinthGen {
         tested[randWall] = 1;
     }
 
-    private getElements(randWall: number, elements: Array<number>) {
+    function getElements(map: Array<Array<number>>, xSize:number, ySize:number, randWall: number, elements: Array<number>) {
         let wallCounter = 0;
         let e1 = 0;
         let e2 = 0;
     
-        for (let j = 0; j < this.ySize - 1; j++) {
-            for (let k = 0; k < this.xSize - 1; k++) {
-                if (this.map[k][j] == 1 && k != 0 && j != 0) {
+        for (let j = 0; j < ySize - 1; j++) {
+            for (let k = 0; k < xSize - 1; k++) {
+                if (map[k][j] == 1 && k != 0 && j != 0) {
                     wallCounter++;
                 }
                 if (wallCounter == randWall + 1) {
                     if (j % 2 == 0) {
-                        e1 = this.map[k][j - 1] - 3;
-                        e2 = this.map[k][j + 1] - 3;
+                        e1 = map[k][j - 1] - 3;
+                        e2 = map[k][j + 1] - 3;
                     }
                     else {
-                        e1 = this.map[k - 1][j] - 3;
-                        e2 = this.map[k + 1][j] - 3;
+                        e1 = map[k - 1][j] - 3;
+                        e2 = map[k + 1][j] - 3;
                     }
     
     
     
-                    j = this.ySize - 1;
-                    k = this.xSize - 1;
+                    j = ySize - 1;
+                    k = xSize - 1;
                 }
             }
         }
@@ -187,7 +189,7 @@ export default class LabyrinthGen {
     
     }
 
-    private getUnTested(tested: Array<number>, nrOfWalls: number) {
+    function getUnTested(tested: Array<number>, nrOfWalls: number) {
         let returnValue = 0;
         for (let i = 0; i < nrOfWalls; i++) {
             if (tested[i] == 0) {
@@ -197,7 +199,7 @@ export default class LabyrinthGen {
         return returnValue;
     }
 
-    private getIdxUnTested(tested: Array<number>, nrOfWalls: number, nr: number) {
+    function getIdxUnTested(tested: Array<number>, nrOfWalls: number, nr: number) {
         let returnValue = 0;
         let counter = 0;
         for (let i = 0; i < nrOfWalls; i++) {
@@ -212,11 +214,11 @@ export default class LabyrinthGen {
         return returnValue;
     }
 
-    private printMap() {
+    function printMap(map: Array<Array<number>>, xSize:number, ySize:number) {
         let output = "";
-        for (let j = 0; j < this.ySize; j++) {
-            for (let i = 0; i < this.xSize; i++) {
-                output += this.map[i][j] + " ";
+        for (let j = 0; j < ySize; j++) {
+            for (let i = 0; i < xSize; i++) {
+                output += map[i][j] + " ";
             }
             output += "\n";
         }
