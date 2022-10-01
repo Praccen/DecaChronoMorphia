@@ -17,6 +17,7 @@ import Player from "./Player.js";
 import AnimationComponent from "../Engine/ECS/Components/AnimationComponent.js";
 import EnemyComponent from "../Engine/ECS/Components/EnemyComponent.js";
 import { MapGenerator } from "./Map/MapGenerator.js";
+import WeaponComponent from "../Engine/ECS/Components/WeaponComponent.js";
 
 export default class Game {
 	private rendering: Rendering;
@@ -188,10 +189,17 @@ export default class Game {
 			this.enemyEntity,
 			new EnemyComponent(this.playerObject.playerEntity.id)
 		);
+		this.ecsManager.addComponent(
+			this.enemyEntity,
+			new WeaponComponent(10, true, 4, 2)
+		);
 
 		// Collision for enemy
 		let enemyBBComp = new BoundingBoxComponent();
-		enemyBBComp.boundingBox.setMinAndMaxVectors(new Vec3({x: -0.2, y: -0.5, z: -0.2}), new Vec3({x: 0.2, y: 0.5, z: 0.2}));
+		enemyBBComp.boundingBox.setMinAndMaxVectors(
+			new Vec3({ x: -0.2, y: -0.5, z: -0.2 }),
+			new Vec3({ x: 0.2, y: 0.5, z: 0.2 })
+		);
 		enemyBBComp.updateBoundingBoxBasedOnPositionComp = true;
 		this.ecsManager.addComponent(this.enemyEntity, enemyBBComp);
 		this.ecsManager.addComponent(this.enemyEntity, new CollisionComponent());

@@ -12,6 +12,7 @@ import AudioPlayer from "../Audio/AudioPlayer.js";
 import EnemySystem from "./Systems/EnemySystem.js";
 import RoomSystem from "./Systems/RoomSystem.js";
 import SpriteDirectionSystem from "./Systems/SpriteDirectionSystem.js";
+import DamageSystem from "./Systems/DamageSystem.js";
 
 export default class ECSManager {
 	private systems: Map<String, System>;
@@ -63,9 +64,10 @@ export default class ECSManager {
 		this.systems.set("GRAPHICS", new GraphicsSystem());
 		this.systems.set("PARTICLE", new ParticleSpawnerSystem());
 		this.systems.set("ANIMATION", new AnimationSystem());
-		this.systems.set("ENEMY", new EnemySystem(this));
+		this.systems.set("ENEMY", new EnemySystem(this, this.rendering));
 		this.systems.set("ROOM", new RoomSystem(this));
 		this.systems.set("SPRITE_DIRECTION", new SpriteDirectionSystem());
+		this.systems.set("DAMAGE", new DamageSystem(this));
 	}
 
 	update(dt: number) {
@@ -87,6 +89,7 @@ export default class ECSManager {
 		this.systems.get("ANIMATION").update(dt);
 		this.systems.get("ENEMY").update(dt);
 		this.systems.get("ROOM").update(dt);
+		this.systems.get("DAMAGE").update(dt);
 	}
 
 	updateRenderingSystems(dt: number) {

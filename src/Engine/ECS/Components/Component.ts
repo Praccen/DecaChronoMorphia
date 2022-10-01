@@ -11,6 +11,8 @@ export enum ComponentTypeEnum {
 	PLAYER,
 	CONNECTION,
 	ENEMY,
+	WEAPON,
+	DAMAGE,
 }
 
 export class Component {
