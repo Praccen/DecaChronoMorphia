@@ -28,6 +28,7 @@ export default class Player {
 	private slimeTexSpec: Texture;
 	private nextForm: number;
 	private formCooldown: number = 50;
+	private boundingBoxModelMatrix: Matrix4;
 
 	constructor(rendering: Rendering, ecsManager: ECSManager) {
 		this.rendering = rendering;
@@ -56,6 +57,8 @@ export default class Player {
 		this.slimeTexSpec = this.rendering.getTextureFromStore(
 			"Assets/textures/skully.png"
 		);
+
+		this.boundingBoxModelMatrix = new Matrix4(null);
 	}
 
 	init() {
@@ -86,9 +89,11 @@ export default class Player {
 		playerAnimComp.updateInterval = 0.3;
 		this.ecsManager.addComponent(this.playerEntity, playerAnimComp);
 		
+		// Collision stuff
 		let playerBoundingBoxComp = new BoundingBoxComponent();
-		playerBoundingBoxComp.boundingBox.setMinAndMaxVectors(new Vec3({x: -0.2, y: -0.2, z: -0.2}), new Vec3({x: 0.2, y: 0.2, z: 0.2}));
-		playerBoundingBoxComp.updateTransformMatrix(this.playerQuad.modelMatrix);
+		playerBoundingBoxComp.boundingBox.setMinAndMaxVectors(new Vec3({x: -0.2, y: -0.5, z: -0.2}), new Vec3({x: 0.2, y: 0.5, z: 0.2}));
+		this.boundingBoxModelMatrix.setTranslate(playerPosComp.position.x, playerPosComp.position.y, playerPosComp.position.z);
+		playerBoundingBoxComp.updateTransformMatrix(this.boundingBoxModelMatrix);
 		this.ecsManager.addComponent(this.playerEntity, playerBoundingBoxComp);
 		this.ecsManager.addComponent(this.playerEntity, new CollisionComponent());
 	}
@@ -154,6 +159,11 @@ export default class Player {
 			let camPos = new Vec3(playerPosComp.position).add(camOffset);
 			this.rendering.camera.setPosition(camPos.x, camPos.y, camPos.z);
 			this.rendering.camera.setDir(-camOffset.x, -camOffset.y, -camOffset.z);
+
+			// Also update bounding box
+			this.boundingBoxModelMatrix.setTranslate(playerPosComp.position.x, playerPosComp.position.y, playerPosComp.position.z);
+			let bbComp = this.playerEntity.getComponent(ComponentTypeEnum.BOUNDINGBOX) as BoundingBoxComponent;
+			bbComp.boundingBox.setUpdateNeeded();
 		}
 	}
 }
