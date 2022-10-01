@@ -12,7 +12,7 @@ import PhongQuad from "../Engine/Objects/PhongQuad.js";
 import Texture from "../Engine/Textures/Texture.js";
 
 export default class Player {
-	private playerEntity: Entity;
+	public playerEntity: Entity;
 	private ecsManager: ECSManager;
 	private rendering: Rendering;
 	private playerQuad: PhongQuad;
