@@ -15,7 +15,7 @@ export default class DirectionalLight {
 		this.gl = gl;
 		this.shaderProgram = shaderProgram;
 
-		this.direction = new Vec3({ x: 0.0, y: -1.0, z: -0.5 });
+		this.direction = new Vec3({ x: 0.5, y: -1.0, z: -0.5 });
 		this.colour = new Vec3({ x: 0.2, y: 0.2, z: 0.2 });
 		this.ambientMultiplier = 0.1;
 		this.lightProjectionBoxSideLength = 50.0;

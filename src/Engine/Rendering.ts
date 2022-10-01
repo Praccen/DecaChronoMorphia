@@ -289,6 +289,10 @@ export default class Rendering {
 		this.textureStore.getTexture(texturePath);
 	}
 
+	getTextureFromStore(path: string) {
+		return this.textureStore.getTexture(path);
+	}
+
 	getNewQuad(texturePath: string): Quad {
 		const length = this.quads.push(
 			new Quad(
@@ -308,6 +312,13 @@ export default class Rendering {
 				this.textureStore.getTexture(diffusePath),
 				this.textureStore.getTexture(specularPath)
 			)
+		);
+		return this.phongQuads[length - 1];
+	}
+
+	getNewPhongQuadTex(diffusePath: Texture, specularPath: Texture): PhongQuad {
+		const length = this.phongQuads.push(
+			new PhongQuad(this.gl, this.geometryPass, diffusePath, specularPath)
 		);
 		return this.phongQuads[length - 1];
 	}
