@@ -96,27 +96,21 @@ export default class Player {
 	update(dt: number) {
 		let accVec: Vec3 = new Vec3({ x: 0.0, y: 0.0, z: 0.0 });
 		let move = false;
-		let upDownDir = 0;
-		let rightLeftDir = 0;
 		this.formCooldown++;
 		if (input.keys["w"]) {
 			accVec.add(new Vec3({ x: 0.0, y: 0.0, z: -1.0 }));
-			upDownDir = 1;
 			move = true;
 		}
 		if (input.keys["s"]) {
 			accVec.add(new Vec3({ x: 0.0, y: 0.0, z: 1.0 }));
-			upDownDir = 0;
 			move = true;
 		}
 		if (input.keys["a"]) {
 			accVec.add(new Vec3({ x: -1.0, y: 0.0, z: 0.0 }));
-			rightLeftDir = 1;
 			move = true;
 		}
 		if (input.keys["d"]) {
 			accVec.add(new Vec3({ x: 1.0, y: 0.0, z: 0.0 }));
-			rightLeftDir = 2;
 			move = true;
 		}
 		if (input.keys["f"]) {
@@ -160,21 +154,6 @@ export default class Player {
 			let camPos = new Vec3(playerPosComp.position).add(camOffset);
 			this.rendering.camera.setPosition(camPos.x, camPos.y, camPos.z);
 			this.rendering.camera.setDir(-camOffset.x, -camOffset.y, -camOffset.z);
-			if (rightLeftDir == 1) {
-				if (upDownDir == 0) {
-					playerPosComp.rotation.setValues(-40.0, -15.0, 5.0);
-				} else {
-					playerPosComp.rotation.setValues(-40.0, 15.0, -5.0);
-				}
-			} else if (rightLeftDir == 2) {
-				if (upDownDir == 1) {
-					playerPosComp.rotation.setValues(-40.0, -15.0, 5.0);
-				} else {
-					playerPosComp.rotation.setValues(-40.0, 15.0, -5.0);
-				}
-			} else {
-				playerPosComp.rotation.setValues(-30.0, 0.0, 0.0);
-			}
 		}
 	}
 }
