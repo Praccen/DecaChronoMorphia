@@ -14,6 +14,8 @@ import PointLight from "../Engine/Lighting/PointLight.js";
 import CollisionComponent from "../Engine/ECS/Components/CollisionComponent.js";
 import BoundingBoxComponent from "../Engine/ECS/Components/BoundingBoxComponent.js";
 import Player from "./Player.js";
+import AnimationComponent from "../Engine/ECS/Components/AnimationComponent.js";
+import EnemyComponent from "../Engine/ECS/Components/EnemyComponent.js";
 
 export default class Game {
 	private rendering: Rendering;
@@ -29,7 +31,7 @@ export default class Game {
 	private boxEntity: Entity;
 	private playerObject: Player;
 
-	private enemyEntities: Array<Entity>;
+	private enemyEntity: Entity;
 
 	constructor(
 		gl: WebGL2RenderingContext,
@@ -55,8 +57,10 @@ export default class Game {
 		let fireTexture = "Assets/textures/fire.png";
 		rendering.loadTextureToStore(fireTexture);
 
+		// Floor
 		this.createFloorEntity(floorTexture);
 
+		// Test
 		for (let i = 0; i < 5; i++) {
 			this.createTestEntity(
 				new Vec3({ x: -1.25 + i * 0.5, y: 0.0, z: -2.0 }),
@@ -64,6 +68,7 @@ export default class Game {
 			);
 		}
 
+		// Lighting
 		this.createPointLight(
 			new Vec3({ x: 0.0, y: 0.2, z: 0.0 }),
 			new Vec3({ x: 0.7, y: 0.0, z: 0.0 })
@@ -136,6 +141,7 @@ export default class Game {
 			this.boxEntity,
 			new GraphicsComponent(boxMesh)
 		);
+
 		let boxPosComp = new PositionComponent();
 		this.ecsManager.addComponent(this.boxEntity, new MovementComponent());
 		boxPosComp.position.setValues(-4.0, 0.0, 0.0);
@@ -152,9 +158,61 @@ export default class Game {
 		// -------------
 
 		this.playerObject.init();
+
+		// ---- Enemy ----
+		let enemyTexture = "Assets/textures/mouse.png";
+		this.enemyEntity = this.ecsManager.createEntity();
+
+		let phongQuad = this.rendering.getNewPhongQuad(enemyTexture, enemyTexture);
+		this.ecsManager.addComponent(
+			this.enemyEntity,
+			new GraphicsComponent(phongQuad)
+		);
+
+		let enemyMoveComp = new MovementComponent();
+		enemyMoveComp.constantAcceleration.y = 0.0;
+		this.ecsManager.addComponent(this.enemyEntity, enemyMoveComp);
+
+		let enemyPosComp = new PositionComponent();
+		enemyPosComp.rotation.setValues(-30.0, 0.0, 0.0);
+		enemyPosComp.position.setValues(10.0, 0.0, 0.0);
+		this.ecsManager.addComponent(this.enemyEntity, enemyPosComp);
+
+		let enemyAnimComp = new AnimationComponent();
+		enemyAnimComp.spriteMap.setNrOfSprites(3, 2);
+		enemyAnimComp.startingTile = { x: 0, y: 0 };
+		enemyAnimComp.advanceBy = { x: 1.0, y: 0.0 };
+		enemyAnimComp.modAdvancement = { x: 2.0, y: 1.0 };
+		enemyAnimComp.updateInterval = 0.3;
+		this.ecsManager.addComponent(this.enemyEntity, enemyAnimComp);
+
+		this.ecsManager.addComponent(
+			this.enemyEntity,
+			new EnemyComponent(this.playerObject.playerEntity.id)
+		);
 	}
 
 	createFloorEntity(texturePath: string) {
+		let entity = this.ecsManager.createEntity();
+		let phongQuad = this.rendering.getNewPhongQuad(texturePath, texturePath);
+		phongQuad.textureMatrix.setScale(50.0, 50.0, 1.0);
+		this.ecsManager.addComponent(entity, new GraphicsComponent(phongQuad));
+		let posComp = new PositionComponent(new Vec3({ x: 0.0, y: -2.0, z: 0.0 }));
+		posComp.rotation.setValues(-90.0, 0.0, 0.0);
+		posComp.scale.setValues(50.0, 50.0, 1.0);
+		this.ecsManager.addComponent(entity, posComp);
+
+		// Collision stuff
+		let boundingBoxComp = new BoundingBoxComponent();
+		boundingBoxComp.setup(phongQuad);
+		boundingBoxComp.updateTransformMatrix(phongQuad.modelMatrix);
+		this.ecsManager.addComponent(entity, boundingBoxComp);
+		let collisionComp = new CollisionComponent();
+		collisionComp.isStatic = true;
+		this.ecsManager.addComponent(entity, collisionComp);
+	}
+
+	createEnemyEntity(texturePath: string) {
 		let entity = this.ecsManager.createEntity();
 		let phongQuad = this.rendering.getNewPhongQuad(texturePath, texturePath);
 		phongQuad.textureMatrix.setScale(50.0, 50.0, 1.0);

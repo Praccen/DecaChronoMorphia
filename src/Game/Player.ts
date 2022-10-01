@@ -10,7 +10,7 @@ import Vec3 from "../Engine/Maths/Vec3.js";
 import { ComponentTypeEnum } from "../Engine/ECS/Components/Component.js";
 
 export default class Player {
-	private playerEntity: Entity;
+	public playerEntity: Entity;
 	private ecsManager: ECSManager;
 	private rendering: Rendering;
 

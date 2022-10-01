@@ -9,6 +9,8 @@ import Entity from "./Entity.js";
 import { Component, ComponentTypeEnum } from "./Components/Component.js";
 import Camera from "../Camera.js";
 import AudioPlayer from "../Audio/AudioPlayer.js";
+import EnemySystem from "./Systems/EnemySystem.js";
+import RoomSystem from "./Systems/RoomSystem.js";
 
 export default class ECSManager {
 	private systems: Map<String, System>;
@@ -60,6 +62,8 @@ export default class ECSManager {
 		this.systems.set("GRAPHICS", new GraphicsSystem());
 		this.systems.set("PARTICLE", new ParticleSpawnerSystem());
 		this.systems.set("ANIMATION", new AnimationSystem());
+		this.systems.set("ENEMY", new EnemySystem(this));
+		this.systems.set("ROOM", new RoomSystem(this));
 	}
 
 	update(dt: number) {
@@ -78,6 +82,8 @@ export default class ECSManager {
 		this.systems.get("GRAPHICS").update(dt);
 		this.systems.get("COLLISION").update(dt);
 		this.systems.get("ANIMATION").update(dt);
+		this.systems.get("ENEMY").update(dt);
+		this.systems.get("ROOM").update(dt);
 	}
 
 	updateRenderingSystems(dt: number) {

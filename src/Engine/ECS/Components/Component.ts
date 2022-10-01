@@ -10,6 +10,7 @@ export enum ComponentTypeEnum {
 	MAPTILE,
 	PLAYER,
 	CONNECTION,
+	ENEMY,
 }
 
 export class Component {
