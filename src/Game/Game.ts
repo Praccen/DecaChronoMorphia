@@ -32,7 +32,7 @@ export default class Game {
 	private particleSpawner: Entity;
 
 	private boxEntity: Entity;
-	private knightEntity: Entity;
+	private playerEntity: Entity;
 
 	constructor(
 		gl: WebGL2RenderingContext,
@@ -59,6 +59,8 @@ export default class Game {
 		rendering.loadTextureToStore(fireTexture);
 		let knightTexture = "Assets/textures/knight.png";
 		rendering.loadTextureToStore(knightTexture);
+		let mouseFrontTexture = "Assets/textures/mouse_front.png";
+		rendering.loadTextureToStore(mouseFrontTexture);
 
 		this.createFloorEntity(floorTexture);
 
@@ -156,35 +158,39 @@ export default class Game {
 		// -------------
 
 		// ---- Knight ----
-		let knightTexture = "Assets/textures/knight.png";
-		let knightMesh = await this.rendering.getNewMesh(
-			"Assets/objs/knight.obj",
-			knightTexture,
-			knightTexture
-		);
-		this.knightEntity = this.ecsManager.createEntity();
-		this.ecsManager.addComponent(
-			this.knightEntity,
-			new GraphicsComponent(knightMesh)
-		);
-		let knightPosComp = new PositionComponent();
-		knightPosComp.position.setValues(2.0, -2.0, 0.0);
-		knightPosComp.rotation.setValues(0.0, -45.0, 0.0);
-		knightPosComp.scale.setValues(0.25, 0.25, 0.25);
-		this.ecsManager.addComponent(this.knightEntity, knightPosComp);
+		// let knightTexture = "Assets/textures/knight.png";
+		let mouseFrontTexture = "Assets/textures/mouse_front.png";
+		// let knightMesh = await this.rendering.getNewMesh(
+		// 	"Assets/objs/knight.obj",
+		// 	knightTexture,
+		// 	knightTexture
+		// );
+		this.playerEntity = this.ecsManager.createEntity();
+		// this.ecsManager.addComponent(
+		// 	this.knightEntity,
+		// 	new GraphicsComponent(knightMesh)
+		// );
 
-		// Collision stuff
-		let knightBoundingBoxComp = new BoundingBoxComponent();
-		knightBoundingBoxComp.setup(knightMesh);
-		knightBoundingBoxComp.updateTransformMatrix(knightMesh.modelMatrix);
-		this.ecsManager.addComponent(this.knightEntity, knightBoundingBoxComp);
-		let knightColComp = new CollisionComponent();
-		knightColComp.isStatic = true;
-		this.ecsManager.addComponent(this.knightEntity, knightColComp);
-		let knightMeshCollisionComp = new MeshCollisionComponent();
-		knightMeshCollisionComp.setup(knightMesh);
-		knightMeshCollisionComp.updateTransformMatrix(knightMesh.modelMatrix);
-		this.ecsManager.addComponent(this.knightEntity, knightMeshCollisionComp);
+		let phongQuad = this.rendering.getNewPhongQuad(
+			mouseFrontTexture,
+			mouseFrontTexture
+		);
+		// phongQuad.textureMatrix.setScale(50.0, 50.0, 1.0);
+		this.ecsManager.addComponent(
+			this.playerEntity,
+			new GraphicsComponent(phongQuad)
+		);
+
+		let playerMoveComp = new MovementComponent();
+		playerMoveComp.constantAcceleration.y = 0.0;
+		this.ecsManager.addComponent(this.playerEntity, playerMoveComp);
+
+		let playerPosComp = new PositionComponent();
+		// knightPosComp.position.setValues(2.0, 0.0, 0.0);
+		playerPosComp.rotation.setValues(-30.0, 0.0, 0.0);
+		// knightPosComp.scale.setValues(0.25, 0.25, 0.25);
+		this.ecsManager.addComponent(this.playerEntity, playerPosComp);
+
 		// ----------------
 	}
 
@@ -285,89 +291,54 @@ export default class Game {
 	}
 
 	update(dt: number) {
-		let moveVec: Vec3 = new Vec3();
+		let accVec: Vec3 = new Vec3({ x: 0.0, y: 0.0, z: 0.0 });
 		let move = false;
 		if (input.keys["w"]) {
-			moveVec.add(this.rendering.camera.getDir());
+			accVec.setValues(0.0, 0.0, -1.0);
 			move = true;
 		}
 
 		if (input.keys["s"]) {
-			moveVec.subtract(this.rendering.camera.getDir());
+			accVec.setValues(0.0, 0.0, 1.0);
 			move = true;
 		}
 
 		if (input.keys["a"]) {
-			moveVec.subtract(this.rendering.camera.getRight());
+			accVec.setValues(-1.0, 0.0, 0.0);
 			move = true;
 		}
 
 		if (input.keys["d"]) {
-			moveVec.add(this.rendering.camera.getRight());
+			accVec.setValues(1.0, 0.0, 0.0);
 			move = true;
 		}
 
 		if (input.keys[" "]) {
-			moveVec.add(new Vec3({ x: 0.0, y: 1.0, z: 0.0 }));
 			move = true;
 		}
 
 		if (input.keys["Shift"]) {
-			moveVec.subtract(new Vec3({ x: 0.0, y: 1.0, z: 0.0 }));
 			move = true;
 		}
 
-		if (move) {
-			moveVec.normalize();
-			moveVec.multiply(5.0 * dt); // Speed
+		let playerMove = <MovementComponent>(
+			this.playerEntity.getComponent(ComponentTypeEnum.MOVEMENT)
+		);
 
-			this.rendering.camera.translate(moveVec.x, moveVec.y, moveVec.z);
+		// Set player acceleration
+		if (move && playerMove) {
+			playerMove.accelerationDirection = accVec;
 		}
 
-		let rotVec: Vec2 = new Vec2({ x: 0.0, y: 0.0 });
-		let rotate = false;
-		if (input.keys["ArrowUp"]) {
-			rotVec.x += 1.0;
-			rotate = true;
-		}
-
-		if (input.keys["ArrowDown"]) {
-			rotVec.x -= 1.0;
-			rotate = true;
-		}
-
-		if (input.keys["ArrowLeft"]) {
-			rotVec.y += 1.0;
-			rotate = true;
-		}
-
-		if (input.keys["ArrowRight"]) {
-			rotVec.y -= 1.0;
-			rotate = true;
-		}
-
-		if (rotate) {
-			let rotMatrix = new Matrix4(null);
-			let rotAmount: number = 90.0;
-			let rightVec: Vec3 = new Vec3(this.rendering.camera.getRight());
-			if (rotVec.y) {
-				rotMatrix.rotate(rotAmount * rotVec.y * dt, 0.0, 1.0, 0.0);
-			}
-			if (rotVec.x) {
-				rotMatrix.rotate(
-					rotAmount * rotVec.x * dt,
-					rightVec.x,
-					rightVec.y,
-					rightVec.z
-				);
-			}
-			let oldDir = this.rendering.camera.getDir().vector3();
-			let newDir = rotMatrix.multiplyVector3(oldDir);
-			this.rendering.camera.setDir(
-				newDir.elements[0],
-				newDir.elements[1],
-				newDir.elements[2]
-			);
+		let playerPosComp = <PositionComponent>(
+			this.playerEntity.getComponent(ComponentTypeEnum.POSITION)
+		);
+		// Update camera
+		if (playerPosComp) {
+			let camOffset = new Vec3({ x: 0.0, y: 3.0, z: 2.0 });
+			let camPos = new Vec3(playerPosComp.position).add(camOffset);
+			this.rendering.camera.setPosition(camPos.x, camPos.y, camPos.z);
+			this.rendering.camera.setDir(-camOffset.x, -camOffset.y, -camOffset.z);
 		}
 
 		this.rendering.useCrt = this.crtCheckbox.getChecked();

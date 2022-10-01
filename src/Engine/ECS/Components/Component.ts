@@ -1,4 +1,5 @@
 export enum ComponentTypeEnum {
+	ANIMATION,
 	BOUNDINGBOX,
 	COLLISION,
 	GRAPHICS,
@@ -6,6 +7,7 @@ export enum ComponentTypeEnum {
 	MOVEMENT,
 	PARTICLESPAWNER,
 	POSITION,
+	MAPTILE,
 }
 
 export class Component {
