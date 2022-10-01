@@ -74,7 +74,6 @@ export default class EnemySystem extends System {
 					quad.textureMatrix.scale(-1, 1, 1);
 				}
 			}
-			movementComp.accelerationDirection = directionToEnemy;
 			const distanceToEnemy = directionToEnemy.length();
 
 			if (distanceToEnemy > weaponComp.range) {
@@ -83,6 +82,7 @@ export default class EnemySystem extends System {
 				return;
 			}
 
+			//Attack if weapon is ready
 			if (weaponComp.attackTimer <= 0) {
 				const normalizedDirection = new Vec3(directionToEnemy).normalize();
 				const dmgPosX = normalizedDirection.x * 1 + positionComp.position.x;
