@@ -1,9 +1,9 @@
-import CollisionComponent from "../Components/CollisionComponent";
-import { Component, ComponentTypeEnum } from "../Components/Component";
-import ConnectionComponent from "../Components/ConnectionComponent";
-import PlayerComponent from "../Components/PlayerComponent";
-import ECSManager from "../ECSManager";
-import System from "./System";
+import CollisionComponent from "../Components/CollisionComponent.js";
+import { Component, ComponentTypeEnum } from "../Components/Component.js";
+import ConnectionComponent from "../Components/ConnectionComponent.js";
+import PlayerComponent from "../Components/PlayerComponent.js";
+import ECSManager from "../ECSManager.js";
+import System from "./System.js";
 
 interface Room {
 	roomId: number;

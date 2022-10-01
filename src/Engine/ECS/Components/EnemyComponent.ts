@@ -1,4 +1,4 @@
-import { Component, ComponentTypeEnum } from "./Component";
+import { Component, ComponentTypeEnum } from "./Component.js";
 
 export default class EnemyComponent extends Component {
 	targetEntityId?: number;

@@ -1,4 +1,4 @@
-import { Component } from "./Component";
+import { Component } from "./Component.js";
 
 export default class RoomComponent extends Component {
 	roomId: number;
