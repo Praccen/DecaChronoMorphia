@@ -1,10 +1,10 @@
-import { ComponentTypeEnum } from "../Components/Component";
-import GraphicsComponent from "../Components/GraphicsComponent";
-import AnimationComponent from "../Components/AnimationComponent";
-import System from "./System";
-import PhongQuad from "../../Objects/PhongQuad";
+import { ComponentTypeEnum } from "../Components/Component.js";
+import GraphicsComponent from "../Components/GraphicsComponent.js";
+import AnimationComponent from "../Components/AnimationComponent.js";
+import System from "./System.js";
+import PhongQuad from "../../Objects/PhongQuad.js";
 
-class AnimationSystem extends System {
+export default class AnimationSystem extends System {
 	constructor() {
 		super([ComponentTypeEnum.GRAPHICS, ComponentTypeEnum.ANIMATION]);
 	}

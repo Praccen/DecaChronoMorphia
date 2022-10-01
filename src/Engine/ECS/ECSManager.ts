@@ -2,6 +2,7 @@ import System from "./Systems/System.js";
 import CollisionSystem from "./Systems/CollisionSystem.js";
 import MovementSystem from "./Systems/MovementSystem.js";
 import GraphicsSystem from "./Systems/GraphicsSystem.js";
+import AnimationSystem from "./Systems/AnimationSystem.js";
 import ParticleSpawnerSystem from "./Systems/ParticleSpawnerSystem.js";
 import Rendering from "../Rendering.js";
 import Entity from "./Entity.js";
@@ -53,6 +54,7 @@ export default class ECSManager {
 		this.systems.set("MOVEMENT", new MovementSystem());
 		this.systems.set("GRAPHICS", new GraphicsSystem());
 		this.systems.set("PARTICLE", new ParticleSpawnerSystem());
+		this.systems.set("ANIMATION", new AnimationSystem());
 	}
 
 	update(dt: number) {
@@ -68,6 +70,7 @@ export default class ECSManager {
 		this.systems.get("MOVEMENT").update(dt);
 		this.systems.get("GRAPHICS").update(dt);
 		this.systems.get("COLLISION").update(dt);
+		this.systems.get("ANIMATION").update(dt);
 	}
 
 	updateRenderingSystems(dt: number) {
