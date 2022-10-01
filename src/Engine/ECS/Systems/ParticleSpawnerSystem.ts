@@ -10,6 +10,11 @@ export default class ParticleSpawnerSystem extends System {
 
 	update(dt: number) {
 		for (const e of this.entities) {
+			//entity is inactive, continue
+			if (!e.isActive) {
+				continue;
+			}
+
 			let particleComp = <ParticleSpawnerComponent>(
 				e.getComponent(ComponentTypeEnum.PARTICLESPAWNER)
 			);

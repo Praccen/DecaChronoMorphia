@@ -7,7 +7,7 @@ export default class Entity {
 	private name: string;
 	private components: Array<Component>;
 
-	constructor(id: number, active = false) {
+	constructor(id: number, active = true) {
 		this.id = id;
 		this.isActive = active;
 		this.components = new Array<Component>();

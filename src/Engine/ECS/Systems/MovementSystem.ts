@@ -11,6 +11,11 @@ export default class MovementSystem extends System {
 
 	update(dt: number) {
 		for (const e of this.entities) {
+			//entity is inactive, continue
+			if (!e.isActive) {
+				continue;
+			}
+
 			let posComp = <PositionComponent>(
 				e.getComponent(ComponentTypeEnum.POSITION)
 			);
