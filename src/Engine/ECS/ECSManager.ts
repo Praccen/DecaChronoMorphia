@@ -11,6 +11,7 @@ import Camera from "../Camera.js";
 import AudioPlayer from "../Audio/AudioPlayer.js";
 import EnemySystem from "./Systems/EnemySystem.js";
 import RoomSystem from "./Systems/RoomSystem.js";
+import SpriteDirectionSystem from "./Systems/SpriteDirectionSystem.js";
 
 export default class ECSManager {
 	private systems: Map<String, System>;
@@ -64,6 +65,7 @@ export default class ECSManager {
 		this.systems.set("ANIMATION", new AnimationSystem());
 		this.systems.set("ENEMY", new EnemySystem(this));
 		this.systems.set("ROOM", new RoomSystem(this));
+		this.systems.set("SPRITE_DIRECTION", new SpriteDirectionSystem());
 	}
 
 	update(dt: number) {
@@ -78,6 +80,7 @@ export default class ECSManager {
 
 		this.updateEntityActivation();
 
+		this.systems.get("SPRITE_DIRECTION").update(dt);
 		this.systems.get("MOVEMENT").update(dt);
 		this.systems.get("GRAPHICS").update(dt);
 		this.systems.get("COLLISION").update(dt);
