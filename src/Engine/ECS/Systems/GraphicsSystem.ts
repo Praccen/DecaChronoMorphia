@@ -11,6 +11,10 @@ export default class GraphicsSystem extends System {
 
 	update(dt: number) {
 		for (const e of this.entities) {
+			//entity is inactive, continue
+			if (!e.isActive) {
+				continue;
+			}
 			let graphComp = <GraphicsComponent>(
 				e.getComponent(ComponentTypeEnum.GRAPHICS)
 			);

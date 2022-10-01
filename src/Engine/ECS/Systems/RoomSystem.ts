@@ -39,7 +39,11 @@ export default class RoomSystem extends System {
 	}
 
 	update(dt: number) {
-		this.entities.some((e) => {
+		this.entities.forEach((e) => {
+			if (!e.isActive) {
+				//this entity is not active, return to skip to next iteration
+				return;
+			}
 			const connectionComp = e.getComponent(
 				ComponentTypeEnum.CONNECTION
 			) as ConnectionComponent;

@@ -25,6 +25,11 @@ export default class CollisionSystem extends System {
 		let information = new Array<IntersectionInformation>();
 
 		for (let e1 of this.entities) {
+			//entity is inactive, continue
+			if (!e1.isActive) {
+				continue;
+			}
+
 			let e1CollisionComp = <CollisionComponent>(
 				e1.getComponent(ComponentTypeEnum.COLLISION)
 			);
@@ -51,7 +56,7 @@ export default class CollisionSystem extends System {
 			}
 
 			for (let e2 of this.entities) {
-				if (e1.id == e2.id) {
+				if (e1.id == e2.id || !e2.isActive) {
 					// Don't collide with self
 					continue;
 				}
