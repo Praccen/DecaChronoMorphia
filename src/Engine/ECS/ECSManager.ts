@@ -24,8 +24,8 @@ export default class ECSManager {
 		entity: Entity;
 		componentType: ComponentTypeEnum;
 	}>;
-	private activateEntitiesQueue: number[];
-	private deactivateEntitiesQueue: number[];
+	private activateEntitiesQueue: Array<number>;
+	private deactivateEntitiesQueue: Array<number>;
 
 	camera: Camera;
 	rendering: Rendering;
@@ -48,6 +48,8 @@ export default class ECSManager {
 			entity: Entity;
 			componentType: ComponentTypeEnum;
 		}>();
+		this.activateEntitiesQueue = new Array<number>();
+		this.deactivateEntitiesQueue = new Array<number>();
 
 		this.initializeSystems();
 	}
