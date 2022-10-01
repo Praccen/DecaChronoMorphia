@@ -191,26 +191,6 @@ export default class Game {
 		);
 	}
 
-	createEnemyEntity(texturePath: string) {
-		let entity = this.ecsManager.createEntity();
-		let phongQuad = this.rendering.getNewPhongQuad(texturePath, texturePath);
-		phongQuad.textureMatrix.setScale(50.0, 50.0, 1.0);
-		this.ecsManager.addComponent(entity, new GraphicsComponent(phongQuad));
-		let posComp = new PositionComponent(new Vec3({ x: 0.0, y: -2.0, z: 0.0 }));
-		posComp.rotation.setValues(-90.0, 0.0, 0.0);
-		posComp.scale.setValues(50.0, 50.0, 1.0);
-		this.ecsManager.addComponent(entity, posComp);
-
-		// Collision stuff
-		let boundingBoxComp = new BoundingBoxComponent();
-		boundingBoxComp.setup(phongQuad);
-		boundingBoxComp.updateTransformMatrix(phongQuad.modelMatrix);
-		this.ecsManager.addComponent(entity, boundingBoxComp);
-		let collisionComp = new CollisionComponent();
-		collisionComp.isStatic = true;
-		this.ecsManager.addComponent(entity, collisionComp);
-	}
-
 	createTestEntity(pos: Vec3, rotX: number = 0.0) {
 		let entity = this.ecsManager.createEntity();
 		let smileyPath =
