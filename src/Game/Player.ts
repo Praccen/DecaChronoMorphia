@@ -12,12 +12,16 @@ import PhongQuad from "../Engine/Objects/PhongQuad.js";
 import Texture from "../Engine/Textures/Texture.js";
 import CollisionComponent from "../Engine/ECS/Components/CollisionComponent.js";
 import BoundingBoxComponent from "../Engine/ECS/Components/BoundingBoxComponent.js";
+import PolymorphComponent from "../Engine/ECS/Components/PolymorphComponent.js";
+import { PlayerShapeEnum } from "../Engine/ECS/Components/PlayerComponent.js";
 
 export default class Player {
 	public playerEntity: Entity;
 	private ecsManager: ECSManager;
 	private rendering: Rendering;
 	private playerQuad: PhongQuad;
+	private playerTextureMap: {[key in PlayerShapeEnum] : [Texture, Texture]}
+	private morphTextureTuple: [Texture, Texture]
 	private mouseTex: Texture;
 	private wizTex: Texture;
 	private normyTex: Texture;
@@ -58,6 +62,12 @@ export default class Player {
 			"Assets/textures/skully.png"
 		);
 
+		this.playerTextureMap[PlayerShapeEnum.NORMIE] = [this.normyTex, this.normySpecTex]
+		this.playerTextureMap[PlayerShapeEnum.TANKY] = [this.tankyTex, this.tankyTexSpec]
+		this.playerTextureMap[PlayerShapeEnum.WIZ] = [this.wizTex, this.wizTex]
+		this.playerTextureMap[PlayerShapeEnum.MOUSE] = [this.mouseTex, this.mouseTex]
+		this.morphTextureTuple = [this.slimeTex, this.slimeTexSpec]
+
 		this.boundingBoxModelMatrix = new Matrix4(null);
 	}
 
@@ -65,8 +75,8 @@ export default class Player {
 		this.playerEntity = this.ecsManager.createEntity();
 
 		this.playerQuad = this.rendering.getNewPhongQuadTex(
-			this.normyTex,
-			this.normySpecTex
+			this.playerTextureMap[PlayerShapeEnum.NORMIE][0],
+			this.playerTextureMap[PlayerShapeEnum.NORMIE][1]
 		);
 		this.ecsManager.addComponent(
 			this.playerEntity,
@@ -88,11 +98,21 @@ export default class Player {
 		playerAnimComp.modAdvancement = { x: 2.0, y: 1.0 };
 		playerAnimComp.updateInterval = 0.3;
 		this.ecsManager.addComponent(this.playerEntity, playerAnimComp);
-		
+
+		let playerPolymorphComp = new PolymorphComponent();
+		this.ecsManager.addComponent(this.playerEntity, playerPolymorphComp);
+
 		// Collision stuff
 		let playerBoundingBoxComp = new BoundingBoxComponent();
-		playerBoundingBoxComp.boundingBox.setMinAndMaxVectors(new Vec3({x: -0.2, y: -0.5, z: -0.2}), new Vec3({x: 0.2, y: 0.5, z: 0.2}));
-		this.boundingBoxModelMatrix.setTranslate(playerPosComp.position.x, playerPosComp.position.y, playerPosComp.position.z);
+		playerBoundingBoxComp.boundingBox.setMinAndMaxVectors(
+			new Vec3({ x: -0.2, y: -0.5, z: -0.2 }),
+			new Vec3({ x: 0.2, y: 0.5, z: 0.2 })
+		);
+		this.boundingBoxModelMatrix.setTranslate(
+			playerPosComp.position.x,
+			playerPosComp.position.y,
+			playerPosComp.position.z
+		);
 		playerBoundingBoxComp.updateTransformMatrix(this.boundingBoxModelMatrix);
 		this.ecsManager.addComponent(this.playerEntity, playerBoundingBoxComp);
 		this.ecsManager.addComponent(this.playerEntity, new CollisionComponent());
@@ -141,6 +161,11 @@ export default class Player {
 			}
 		}
 
+		let playerPolymorphComp = <PolymorphComponent>(
+			this.playerEntity.getComponent(ComponentTypeEnum.POLYMORPH)
+		);
+		if (playerPolymorphComp.isPolymorphing)
+
 		let playerMoveComp = <MovementComponent>(
 			this.playerEntity.getComponent(ComponentTypeEnum.MOVEMENT)
 		);
@@ -161,8 +186,14 @@ export default class Player {
 			this.rendering.camera.setDir(-camOffset.x, -camOffset.y, -camOffset.z);
 
 			// Also update bounding box
-			this.boundingBoxModelMatrix.setTranslate(playerPosComp.position.x, playerPosComp.position.y, playerPosComp.position.z);
-			let bbComp = this.playerEntity.getComponent(ComponentTypeEnum.BOUNDINGBOX) as BoundingBoxComponent;
+			this.boundingBoxModelMatrix.setTranslate(
+				playerPosComp.position.x,
+				playerPosComp.position.y,
+				playerPosComp.position.z
+			);
+			let bbComp = this.playerEntity.getComponent(
+				ComponentTypeEnum.BOUNDINGBOX
+			) as BoundingBoxComponent;
 			bbComp.boundingBox.setUpdateNeeded();
 		}
 	}
