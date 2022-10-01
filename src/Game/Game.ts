@@ -157,7 +157,7 @@ export default class Game {
 		let phongQuad = this.rendering.getNewPhongQuad(texturePath, texturePath);
 		phongQuad.textureMatrix.setScale(50.0, 50.0, 1.0);
 		this.ecsManager.addComponent(entity, new GraphicsComponent(phongQuad));
-		let posComp = new PositionComponent(new Vec3({ x: 0.0, y: -2.0, z: 0.0 }));
+		let posComp = new PositionComponent(new Vec3({ x: 0.0, y: -0.5, z: 0.0 }));
 		posComp.rotation.setValues(-90.0, 0.0, 0.0);
 		posComp.scale.setValues(50.0, 50.0, 1.0);
 		this.ecsManager.addComponent(entity, posComp);

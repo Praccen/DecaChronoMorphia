@@ -8,27 +8,64 @@ import MovementComponent from "../Engine/ECS/Components/MovementComponent.js";
 import AnimationComponent from "../Engine/ECS/Components/AnimationComponent.js";
 import Vec3 from "../Engine/Maths/Vec3.js";
 import { ComponentTypeEnum } from "../Engine/ECS/Components/Component.js";
+import PhongQuad from "../Engine/Objects/PhongQuad.js";
+import Texture from "../Engine/Textures/Texture.js";
 
 export default class Player {
 	private playerEntity: Entity;
 	private ecsManager: ECSManager;
 	private rendering: Rendering;
+	private playerQuad: PhongQuad;
+	private mouseTex: Texture;
+	private wizTex: Texture;
+	private normyTex: Texture;
+	private normySpecTex: Texture;
+	private tankyTex: Texture;
+	private tankyTexSpec: Texture;
+	private slimeTex: Texture;
+	private slimeTexSpec: Texture;
+	private nextForm: number;
+	private formCooldown: number = 50;
 
 	constructor(rendering: Rendering, ecsManager: ECSManager) {
 		this.rendering = rendering;
 		this.ecsManager = ecsManager;
-		rendering.loadTextureToStore("Assets/textures/normy.png");
-		rendering.loadTextureToStore("Assets/textures/mouse.png");
+		this.mouseTex = this.rendering.getTextureFromStore(
+			"Assets/textures/mouse.png"
+		);
+		this.normyTex = this.rendering.getTextureFromStore(
+			"Assets/textures/normy.png"
+		);
+		this.normySpecTex = this.rendering.getTextureFromStore(
+			"Assets/textures/normy_spec.png"
+		);
+		this.wizTex = this.rendering.getTextureFromStore(
+			"Assets/textures/wizard.png"
+		);
+		this.tankyTex = this.rendering.getTextureFromStore(
+			"Assets/textures/tanky.png"
+		);
+		this.tankyTexSpec = this.rendering.getTextureFromStore(
+			"Assets/textures/tanky_spec.png"
+		);
+		this.slimeTex = this.rendering.getTextureFromStore(
+			"Assets/textures/owo.png"
+		);
+		this.slimeTexSpec = this.rendering.getTextureFromStore(
+			"Assets/textures/owo.png"
+		);
 	}
 
 	init() {
-		let mouseTexture = "Assets/textures/mouse.png";
 		this.playerEntity = this.ecsManager.createEntity();
 
-		let phongQuad = this.rendering.getNewPhongQuad(mouseTexture, mouseTexture);
+		this.playerQuad = this.rendering.getNewPhongQuadTex(
+			this.normyTex,
+			this.normySpecTex
+		);
 		this.ecsManager.addComponent(
 			this.playerEntity,
-			new GraphicsComponent(phongQuad)
+			new GraphicsComponent(this.playerQuad)
 		);
 
 		let playerMoveComp = new MovementComponent();
@@ -52,6 +89,7 @@ export default class Player {
 		let accVec: Vec3 = new Vec3({ x: 0.0, y: 0.0, z: 0.0 });
 		let move = false;
 		let playerDirection = 0;
+		this.formCooldown++;
 		if (input.keys["w"]) {
 			accVec.setValues(0.0, 0.0, -1.0);
 			playerDirection = 1;
@@ -69,6 +107,28 @@ export default class Player {
 		if (input.keys["d"]) {
 			accVec.setValues(1.0, 0.0, 0.0);
 			move = true;
+		}
+		if (input.keys["f"]) {
+			if (this.formCooldown > 50) {
+				if (this.nextForm == 0) {
+					this.playerQuad.diffuse = this.normyTex;
+					this.playerQuad.specular = this.normySpecTex;
+					this.nextForm = 1;
+				} else if (this.nextForm == 1) {
+					this.playerQuad.diffuse = this.wizTex;
+					this.playerQuad.specular = this.wizTex;
+					this.nextForm = 2;
+				} else if (this.nextForm == 2) {
+					this.playerQuad.diffuse = this.mouseTex;
+					this.playerQuad.specular = this.mouseTex;
+					this.nextForm = 3;
+				} else {
+					this.playerQuad.diffuse = this.tankyTex;
+					this.playerQuad.specular = this.tankyTexSpec;
+					this.nextForm = 0;
+				}
+				this.formCooldown = 0;
+			}
 		}
 
 		let playerMoveComp = <MovementComponent>(
