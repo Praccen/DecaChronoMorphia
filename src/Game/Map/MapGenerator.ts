@@ -51,10 +51,10 @@ export module MapGenerator {
 		ecsManager.addComponent(entity, posComp);
 
         // Collision stuff
-        let boxBoundingBoxComp = new BoundingBoxComponent();
-        boxBoundingBoxComp.setup(phongQuad);
-        boxBoundingBoxComp.updateTransformMatrix(phongQuad.modelMatrix);
-        ecsManager.addComponent(entity, boxBoundingBoxComp);
+        let floorBoundingBoxComp = new BoundingBoxComponent();
+        floorBoundingBoxComp.updateBoundingBoxBasedOnPositionComp = true;
+        floorBoundingBoxComp.boundingBox.setMinAndMaxVectors(new Vec3({x: -4.0, y: -5.0, z: -4.0}), new Vec3({x: 4.0, y: 0.0, z: 4.0}));
+        ecsManager.addComponent(entity, floorBoundingBoxComp);
         let collComp = new CollisionComponent();
         collComp.isStatic = true;
         ecsManager.addComponent(entity, collComp);

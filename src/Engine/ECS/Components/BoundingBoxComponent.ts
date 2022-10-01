@@ -5,11 +5,13 @@ import { Component, ComponentTypeEnum } from "./Component.js";
 
 export default class BoundingBoxComponent extends Component {
 	boundingBox: OBB;
+	updateBoundingBoxBasedOnPositionComp: boolean;
 
 	constructor() {
 		super(ComponentTypeEnum.BOUNDINGBOX);
 
 		this.boundingBox = new OBB();
+		this.updateBoundingBoxBasedOnPositionComp = false;
 	}
 
 	/**

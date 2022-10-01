@@ -169,12 +169,11 @@ export default class Game {
 		);
 
 		let enemyMoveComp = new MovementComponent();
-		enemyMoveComp.constantAcceleration.y = 0.0;
 		this.ecsManager.addComponent(this.enemyEntity, enemyMoveComp);
 
 		let enemyPosComp = new PositionComponent();
 		enemyPosComp.rotation.setValues(-30.0, 0.0, 0.0);
-		enemyPosComp.position.setValues(10.0, 0.0, 0.0);
+		enemyPosComp.position.setValues(-2.0, 0.0, -2.0);
 		this.ecsManager.addComponent(this.enemyEntity, enemyPosComp);
 
 		let enemyAnimComp = new AnimationComponent();
@@ -189,6 +188,13 @@ export default class Game {
 			this.enemyEntity,
 			new EnemyComponent(this.playerObject.playerEntity.id)
 		);
+
+		// Collision for enemy
+		let enemyBBComp = new BoundingBoxComponent();
+		enemyBBComp.boundingBox.setMinAndMaxVectors(new Vec3({x: -0.2, y: -0.5, z: -0.2}), new Vec3({x: 0.2, y: 0.5, z: 0.2}));
+		enemyBBComp.updateBoundingBoxBasedOnPositionComp = true;
+		this.ecsManager.addComponent(this.enemyEntity, enemyBBComp);
+		this.ecsManager.addComponent(this.enemyEntity, new CollisionComponent());
 	}
 
 	createTestEntity(pos: Vec3, rotX: number = 0.0) {

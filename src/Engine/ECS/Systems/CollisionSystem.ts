@@ -41,7 +41,16 @@ export default class CollisionSystem extends System {
 			let e1BoundingBoxComp = <BoundingBoxComponent>(
 				e1.getComponent(ComponentTypeEnum.BOUNDINGBOX)
 			);
-			e1BoundingBoxComp.updateTransformMatrix();
+
+			if (e1BoundingBoxComp.updateBoundingBoxBasedOnPositionComp) {
+				let posComp = <PositionComponent>(
+					e1.getComponent(ComponentTypeEnum.POSITION)
+				);
+				e1BoundingBoxComp.updateTransformMatrix(new Matrix4(null).setTranslate(posComp.position.x, posComp.position.y, posComp.position.z));
+			} 
+			else {
+				e1BoundingBoxComp.updateTransformMatrix();
+			}
 
 			let e1ShapeArray: Array<Shape>;
 
@@ -64,7 +73,15 @@ export default class CollisionSystem extends System {
 				let e2BoundingBoxComp = <BoundingBoxComponent>(
 					e2.getComponent(ComponentTypeEnum.BOUNDINGBOX)
 				);
-				e2BoundingBoxComp.updateTransformMatrix();
+				if (e2BoundingBoxComp.updateBoundingBoxBasedOnPositionComp) {
+					let posComp = <PositionComponent>(
+						e2.getComponent(ComponentTypeEnum.POSITION)
+					);
+					e2BoundingBoxComp.updateTransformMatrix(new Matrix4(null).setTranslate(posComp.position.x, posComp.position.y, posComp.position.z));
+				} 
+				else {
+					e2BoundingBoxComp.updateTransformMatrix();
+				}
 
 				let e2MeshCollisionComp = <MeshCollisionComponent>(
 					e2.getComponent(ComponentTypeEnum.MESHCOLLISION)
