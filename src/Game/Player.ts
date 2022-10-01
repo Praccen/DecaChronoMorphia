@@ -88,16 +88,13 @@ export default class Player {
 	update(dt: number) {
 		let accVec: Vec3 = new Vec3({ x: 0.0, y: 0.0, z: 0.0 });
 		let move = false;
-		let playerDirection = 0;
 		this.formCooldown++;
 		if (input.keys["w"]) {
 			accVec.setValues(0.0, 0.0, -1.0);
-			playerDirection = 1;
 			move = true;
 		}
 		if (input.keys["s"]) {
 			accVec.setValues(0.0, 0.0, 1.0);
-			playerDirection = 0;
 			move = true;
 		}
 		if (input.keys["a"]) {
@@ -138,27 +135,6 @@ export default class Player {
 		// Set player acceleration
 		if (move && playerMoveComp) {
 			playerMoveComp.accelerationDirection = accVec;
-		}
-
-		let playerAnimComp = <AnimationComponent>(
-			this.playerEntity.getComponent(ComponentTypeEnum.ANIMATION)
-		);
-		if (playerAnimComp && move) {
-			if (playerDirection == 0) {
-				playerAnimComp.startingTile = { x: 0, y: 0 };
-				playerAnimComp.advanceBy = { x: 1, y: 0 };
-			} else {
-				playerAnimComp.startingTile = { x: 0, y: 1 };
-				playerAnimComp.advanceBy = { x: 1, y: 0 };
-			}
-		} else if (playerAnimComp) {
-			if (playerDirection == 0) {
-				playerAnimComp.startingTile = { x: 2, y: 0 };
-				playerAnimComp.advanceBy = { x: 0, y: 0 };
-			} else {
-				playerAnimComp.startingTile = { x: 2, y: 0 };
-				playerAnimComp.advanceBy = { x: 0, y: 0 };
-			}
 		}
 
 		let playerPosComp = <PositionComponent>(
