@@ -35,6 +35,7 @@ export default class WeaponSystem extends System {
 			weaponComp.attackTimer = Math.max(weaponComp.attackTimer - dt, 0);
 
 			if (weaponComp.attackRequested && weaponComp.attackTimer <= 0) {
+				weaponComp.attackRequested = false;
 				const dmgEntity = this.ecsManager.createEntity();
 				this.ecsManager.addComponent(
 					dmgEntity,
@@ -45,8 +46,8 @@ export default class WeaponSystem extends System {
 					new PositionComponent(
 						new Vec3({
 							x: weaponComp.position.x,
-							y: 0.5,
-							z: weaponComp.position.y,
+							y: weaponComp.position.y,
+							z: weaponComp.position.z,
 						})
 					)
 				);

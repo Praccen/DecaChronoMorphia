@@ -60,8 +60,6 @@ export default class EnemySystem extends System {
 				ComponentTypeEnum.ANIMATION
 			) as AnimationComponent;
 
-			weaponComp.attackTimer = Math.max(weaponComp.attackTimer - dt, 0);
-
 			const directionToEnemy = new Vec3({
 				x: targetPositionComp.position.x,
 				y: targetPositionComp.position.y,
@@ -82,16 +80,13 @@ export default class EnemySystem extends System {
 				return;
 			}
 
-			//Attack if weapon is ready
-			if (weaponComp.attackTimer <= 0) {
-				weaponComp.attackRequested = true;
-				weaponComp.direction = new Vec3(directionToEnemy).normalize();
-				weaponComp.position = new Vec3({
-					x: weaponComp.direction.x * 1 + positionComp.position.x,
-					y: weaponComp.direction.z * 1 + positionComp.position.z,
-					z: 0.0,
-				});
-			}
+			weaponComp.attackRequested = true;
+			weaponComp.direction = new Vec3(directionToEnemy).normalize();
+			weaponComp.position = new Vec3({
+				x: weaponComp.direction.x * 1 + positionComp.position.x,
+				y: 0.5,
+				z: weaponComp.direction.z * 1 + positionComp.position.z,
+			});
 		});
 	}
 }

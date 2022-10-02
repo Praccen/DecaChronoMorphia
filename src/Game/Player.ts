@@ -240,11 +240,31 @@ export default class Player {
 	update(dt: number) {
 		let accVec: Vec3 = new Vec3({ x: 0.0, y: 0.0, z: 0.0 });
 		let move = false;
+		let attacking = false;
+		let lookDir: Vec3 = new Vec3({ x: 0.0, y: 0.0, z: 0.0 });
 		this.formCooldown++;
 		let playerComp = <PlayerComponent>(
 			this.playerEntity.getComponent(ComponentTypeEnum.PLAYER)
 		);
-
+		let playerPosComp = <PositionComponent>(
+			this.playerEntity.getComponent(ComponentTypeEnum.POSITION)
+		);
+		if (input.keys["ArrowRight"]) {
+			lookDir.x = 1;
+			attacking = true;
+		}
+		if (input.keys["ArrowLeft"]) {
+			lookDir.x = -1;
+			attacking = true;
+		}
+		if (input.keys["ArrowDown"]) {
+			lookDir.z = 1;
+			attacking = true;
+		}
+		if (input.keys["ArrowUp"]) {
+			lookDir.z = -1;
+			attacking = true;
+		}
 		if (input.keys["w"]) {
 			accVec.add(new Vec3({ x: 0.0, y: 0.0, z: -1.0 }));
 			move = true;
@@ -261,79 +281,33 @@ export default class Player {
 			accVec.add(new Vec3({ x: 1.0, y: 0.0, z: 0.0 }));
 			move = true;
 		}
-		if (input.keys["f"]) {
-			if (this.formCooldown > 50) {
-				if (this.nextForm == 0) {
-					this.playerQuad.diffuse = this.normyTex;
-					this.playerQuad.specular = this.normySpecTex;
-					this.nextForm = 1;
-				} else if (this.nextForm == 1) {
-					this.playerQuad.diffuse = this.wizTex;
-					this.playerQuad.specular = this.wizTex;
-					this.nextForm = 2;
-				} else if (this.nextForm == 2) {
-					this.playerQuad.diffuse = this.mouseTex;
-					this.playerQuad.specular = this.mouseTex;
-					this.nextForm = 3;
-				} else {
-					this.playerQuad.diffuse = this.tankyTex;
-					this.playerQuad.specular = this.tankyTexSpec;
-					this.nextForm = 0;
-				}
-				this.formCooldown = 0;
-			}
-		}
+		// Debug switch forms
+		// if (input.keys["f"]) {
+		// 	if (this.formCooldown > 50) {
+		// 		if (this.nextForm == 0) {
+		// 			this.playerQuad.diffuse = this.normyTex;
+		// 			this.playerQuad.specular = this.normySpecTex;
+		// 			this.nextForm = 1;
+		// 		} else if (this.nextForm == 1) {
+		// 			this.playerQuad.diffuse = this.wizTex;
+		// 			this.playerQuad.specular = this.wizTex;
+		// 			this.nextForm = 2;
+		// 		} else if (this.nextForm == 2) {
+		// 			this.playerQuad.diffuse = this.mouseTex;
+		// 			this.playerQuad.specular = this.mouseTex;
+		// 			this.nextForm = 3;
+		// 		} else {
+		// 			this.playerQuad.diffuse = this.tankyTex;
+		// 			this.playerQuad.specular = this.tankyTexSpec;
+		// 			this.nextForm = 0;
+		// 		}
+		// 		this.formCooldown = 0;
+		// 	}
+		// }
 		if (input.keys[" "] && playerComp) {
 			playerComp.startDodge = true;
 		}
 		if (input.keys["e"]) {
-			const weaponComp = this.playerEntity.getComponent(
-				ComponentTypeEnum.WEAPON
-			) as WeaponComponent;
-			if (weaponComp) {
-				const dmgEntity = this.ecsManager.createEntity();
-				this.ecsManager.addComponent(
-					dmgEntity,
-					new DamageComponent(weaponComp.damage)
-				);
-				this.ecsManager.addComponent(
-					dmgEntity,
-					new PositionComponent(new Vec3({ x: 0.5, y: 0.5, z: 0.5 }))
-				);
-				const dmgMoveComp = new MovementComponent();
-				//if melee make damageEntity move super fast, otherwise more slow
-				dmgMoveComp.drag = 0.0;
-				dmgMoveComp.acceleration = 0.0;
-				dmgMoveComp.constantAcceleration.y = 0.0;
-				this.ecsManager.addComponent(dmgEntity, dmgMoveComp);
-
-				let collComp = new CollisionComponent();
-				collComp.hasForce = false;
-				this.ecsManager.addComponent(dmgEntity, collComp);
-
-				let enemyBBComp = new BoundingBoxComponent();
-				enemyBBComp.boundingBox.setMinAndMaxVectors(
-					new Vec3({ x: -0.2, y: -0.5, z: -0.2 }),
-					new Vec3({ x: 0.2, y: 0.5, z: 0.2 })
-				);
-				enemyBBComp.updateBoundingBoxBasedOnPositionComp = true;
-				this.ecsManager.addComponent(dmgEntity, enemyBBComp);
-
-				let dmgTexture = "Assets/textures/projectiles.png";
-				let phongQuad = this.rendering.getNewPhongQuad(dmgTexture, dmgTexture);
-				this.ecsManager.addComponent(
-					dmgEntity,
-					new GraphicsComponent(phongQuad)
-				);
-
-				let projectileAnimComp = new AnimationComponent();
-				projectileAnimComp.spriteMap.setNrOfSprites(3, 2);
-				projectileAnimComp.startingTile = { x: 0, y: 0 };
-				projectileAnimComp.advanceBy = { x: 0.0, y: 0.0 };
-				projectileAnimComp.modAdvancement = { x: 0.0, y: 0.0 };
-				projectileAnimComp.updateInterval = 0.0;
-				this.ecsManager.addComponent(dmgEntity, projectileAnimComp);
-			}
 		}
 
 		let playerPolymorphComp = <PolymorphComponent>(
@@ -362,15 +336,24 @@ export default class Player {
 		let playerMoveComp = <MovementComponent>(
 			this.playerEntity.getComponent(ComponentTypeEnum.MOVEMENT)
 		);
+		if (attacking) {
+			const weaponComp = this.playerEntity.getComponent(
+				ComponentTypeEnum.WEAPON
+			) as WeaponComponent;
+			weaponComp.attackRequested = true;
+			weaponComp.direction = new Vec3(lookDir).normalize();
+			weaponComp.position = new Vec3({
+				x: weaponComp.direction.x * 1 + playerPosComp.position.x,
+				y: 0.5,
+				z: weaponComp.direction.z * 1 + playerPosComp.position.z,
+			});
+		}
 
 		// Set player acceleration
 		if (move && playerMoveComp) {
 			playerMoveComp.accelerationDirection = accVec;
 		}
 
-		let playerPosComp = <PositionComponent>(
-			this.playerEntity.getComponent(ComponentTypeEnum.POSITION)
-		);
 		// Update camera
 		if (playerPosComp) {
 			let camOffset = new Vec3({ x: 0.0, y: 3.0, z: 2.0 });
