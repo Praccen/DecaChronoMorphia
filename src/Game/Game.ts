@@ -76,24 +76,24 @@ export default class Game {
 			new Vec3({ x: 0.7, y: 0.0, z: 1.0 })
 		);
 
-		// let particleSpawnerPos = new Vec3({ x: -2.0, y: 1.0, z: 0.0 });
-		// this.particleSpawner = this.createParticleSpawner(
-		// 	particleSpawnerPos,
-		// 	10000,
-		// 	1.3,
-		// 	fireTexture
-		// );
+		let particleSpawnerPos = new Vec3({ x: -2.0, y: 1.0, z: 0.0 });
+		this.particleSpawner = this.createParticleSpawner(
+			particleSpawnerPos,
+			10000,
+			1.3,
+			fireTexture
+		);
 
 		this.rendering.camera.setPosition(0.0, 0.0, 5.5);
 
 		rendering.getNewQuad(smileyTexture);
 
-		// this.particleText = this.rendering.getNew3DText();
-		// this.particleText.textString = "This is a fire fountain";
-		// this.particleText.getElement().style.color = "lime";
-		// this.particleText.size = 100;
-		// this.particleText.position = particleSpawnerPos;
-		// this.particleText.center = true;
+		this.particleText = this.rendering.getNew3DText();
+		this.particleText.textString = "This is a fire fountain";
+		this.particleText.getElement().style.color = "lime";
+		this.particleText.size = 100;
+		this.particleText.position = particleSpawnerPos;
+		this.particleText.center = true;
 
 		this.crtCheckbox = this.rendering.getNewCheckbox();
 		this.crtCheckbox.position.x = 0.8;
