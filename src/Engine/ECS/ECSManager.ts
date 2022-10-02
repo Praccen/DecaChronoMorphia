@@ -200,7 +200,14 @@ export default class ECSManager {
 	private removeComponents() {
 		for (const compEntityPair of this.componentRemovalQueue) {
 			// Remove component from entity
-			compEntityPair.entity.removeComponent(compEntityPair.componentType);
+			const removedComponent = compEntityPair.entity.removeComponent(
+				compEntityPair.componentType
+			);
+			if (removedComponent && removedComponent instanceof GraphicsComponent) {
+				this.rendering.deleteGraphicsObject(
+					(removedComponent as GraphicsComponent).object
+				);
+			}
 
 			// Remove entity from system if it no longer lives up to the requirements of being in the system
 			for (let system of this.systems) {

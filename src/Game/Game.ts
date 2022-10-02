@@ -116,11 +116,11 @@ export default class Game {
 		this.shadowCheckbox.getElement().style.color = "cyan";
 		this.shadowCheckbox.getInputElement().style.accentColor = "red";
 
-		// let testButton = this.rendering.getNewButton();
-		// testButton.position.x = 0.5;
-		// testButton.position.y = 0.5;
-		// testButton.textString = "Test button";
-		// testButton.center = true;
+		let testButton = this.rendering.getNewButton();
+		testButton.position.x = 0.5;
+		testButton.position.y = 0.5;
+		testButton.textString = "Test button";
+		testButton.center = true;
 		this.playerObject = new Player(this.rendering, this.ecsManager);
 	}
 
@@ -182,13 +182,13 @@ export default class Game {
 		posComp.rotation.setValues(rotX, 0.0, 0.0);
 		this.ecsManager.addComponent(entity, posComp);
 
-		// let ac = new AnimationComponent();
-		// ac.spriteMap.setNrOfSprites(2, 1);
-		// ac.startingTile = {x: 0, y: 0};
-		// ac.advanceBy = {x: 1.0, y: 0.0};
-		// ac.modAdvancement = {x: 2.0, y: 1.0};
-		// ac.updateInterval = 0.5;
-		// this.ecsManager.addComponent(entity, ac);
+		let ac = new AnimationComponent();
+		ac.spriteMap.setNrOfSprites(2, 1);
+		ac.startingTile = {x: 0, y: 0};
+		ac.advanceBy = {x: 1.0, y: 0.0};
+		ac.modAdvancement = {x: 2.0, y: 1.0};
+		ac.updateInterval = 0.5;
+		this.ecsManager.addComponent(entity, ac);
 
 		return entity;
 	}
@@ -257,20 +257,20 @@ export default class Game {
 			this.rendering.getDirectionalLight().lightProjectionBoxSideLength = 50.0;
 		}
 
-		// let particleMovComp = <MovementComponent>(
-		// 	this.particleSpawner.getComponent(ComponentTypeEnum.MOVEMENT)
-		// );
-		// const particlePosComp = <PositionComponent>(
-		// 	this.particleSpawner.getComponent(ComponentTypeEnum.POSITION)
-		// );
-		// if (particleMovComp && particlePosComp) {
-		// 	particleMovComp.accelerationDirection.deepAssign(
-		// 		particlePosComp.position
-		// 	);
-		// 	particleMovComp.accelerationDirection.y = 0.0;
-		// 	particleMovComp.accelerationDirection.multiply(-1.0);
-		// 	this.particleText.position = particlePosComp.position;
-		// }
+		let particleMovComp = <MovementComponent>(
+			this.particleSpawner.getComponent(ComponentTypeEnum.MOVEMENT)
+		);
+		const particlePosComp = <PositionComponent>(
+			this.particleSpawner.getComponent(ComponentTypeEnum.POSITION)
+		);
+		if (particleMovComp && particlePosComp) {
+			particleMovComp.accelerationDirection.deepAssign(
+				particlePosComp.position
+			);
+			particleMovComp.accelerationDirection.y = 0.0;
+			particleMovComp.accelerationDirection.multiply(-1.0);
+			this.particleText.position = particlePosComp.position;
+		}
 
 		if (input.keys["e"]) {
 			let boxPosComp = <PositionComponent>(
