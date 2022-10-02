@@ -19,6 +19,7 @@ import PlayerSystem from "./Systems/PlayerSystem.js";
 import HealthSystem from "./Systems/HealthSystem.js";
 import { MapInformation } from "../../Game/Map/MapGenerator.js";
 import WeaponSystem from "./Systems/WeaponSystem.js";
+import AudioSystem from "./Systems/AudioSystem.js";
 
 export default class ECSManager {
 	private systems: Map<String, System>;
@@ -40,7 +41,7 @@ export default class ECSManager {
 	camera: Camera;
 	rendering: Rendering;
 
-	constructor(rendering: Rendering, audio: AudioPlayer) {
+	constructor(rendering: Rendering) {
 		this.camera = rendering.camera;
 		this.rendering = rendering;
 
@@ -62,7 +63,7 @@ export default class ECSManager {
 		this.deactivateEntitiesQueue = [];
 	}
 
-	initializeSystems(mapInformation: MapInformation) {
+	initializeSystems(mapInformation: MapInformation, audio: AudioPlayer) {
 		this.systems.set("COLLISION", new CollisionSystem());
 		this.systems.set("MOVEMENT", new MovementSystem());
 		this.systems.set("GRAPHICS", new GraphicsSystem());
@@ -76,6 +77,7 @@ export default class ECSManager {
 		this.systems.set("PLAYER", new PlayerSystem());
 		this.systems.set("HEALTH", new HealthSystem(this));
 		this.systems.set("WEAPON", new WeaponSystem(this, this.rendering));
+		this.systems.set("AUDIO", new AudioSystem(audio));
 	}
 
 	update(dt: number) {
@@ -102,6 +104,7 @@ export default class ECSManager {
 		this.systems.get("PLAYER").update(dt);
 		this.systems.get("HEALTH").update(dt);
 		this.systems.get("WEAPON").update(dt);
+		this.systems.get("AUDIO").update(dt);
 	}
 
 	updateRenderingSystems(dt: number) {
@@ -148,7 +151,6 @@ export default class ECSManager {
 			}
 		}
 		// this.activateEntitiesQueue = entityIds;
-		
 	}
 	deactivateEntities(entityIds: number[]) {
 		for (const entityId of entityIds) {
@@ -243,14 +245,13 @@ export default class ECSManager {
 				)
 			) {
 				entity.isActive = false;
-			}
-			else if (
+			} else if (
 				this.activateEntitiesQueue.some(
 					(activateEntity) => entity.id === activateEntity
 				)
 			) {
 				entity.isActive = true;
-			} 
+			}
 		});
 
 		//empty queue

@@ -3,7 +3,6 @@ import ECSManager from "../Engine/ECS/ECSManager.js";
 import Vec3 from "../Engine/Maths/Vec3.js";
 import PointLight from "../Engine/Lighting/PointLight.js";
 import Player from "./Player.js";
-import { MapGenerator } from "./Map/MapGenerator.js";
 
 export default class Game {
 	private rendering: Rendering;
@@ -11,10 +10,7 @@ export default class Game {
 
 	private playerObject: Player;
 
-	constructor(
-		rendering: Rendering,
-		ecsManager: ECSManager
-	) {
+	constructor(rendering: Rendering, ecsManager: ECSManager) {
 		this.rendering = rendering;
 		this.ecsManager = ecsManager;
 
@@ -34,18 +30,6 @@ export default class Game {
 			new Vec3({ x: 0.7, y: 0.0, z: 1.0 })
 		);
 		// ----------------
-
-		// ---- Map ----
-		const mapInformation = await MapGenerator.GenerateMap(
-			5,
-			5,
-			this.ecsManager,
-			this.rendering
-		);
-		this.ecsManager.initializeSystems(mapInformation);
-		console.log("mapInformation :>> ", mapInformation);
-		// -------------
-		
 
 		this.playerObject.init();
 	}

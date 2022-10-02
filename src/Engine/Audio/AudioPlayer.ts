@@ -73,24 +73,54 @@ export default class AudioPlayer {
 			this.songs[sound].preload = "auto";
 		}
 
-		// this.setVolume("bell", 0.3);
+		this.setMusicVolume(0.1);
+		this.setSoundEffectVolume(0.1);
 	}
 
-	playSound(key, loop) {
-		this.sound_effects[key].loop = loop;
-		this.active && this.sound_effects[key].play();
+	playAudio(key, loop) {
+		if (this.sound_effects[key]) {
+			this.sound_effects[key].loop = loop;
+			this.active && this.sound_effects[key].play();
+		} else if (this.songs[key]) {
+			this.songs[key].loop = loop;
+			this.active && this.songs[key].play();
+		}
 	}
 
-	setVolume(key, volume) {
-		this.sound_effects[key].volume = volume;
+	setAudioVolume(key, volume) {
+		if (this.sound_effects[key]) {
+			this.sound_effects[key].volume = volume;
+		} else if (this.songs[key]) {
+			this.songs[key].volume = volume;
+		}
 	}
 
-	setTime(key, time) {
-		this.sound_effects[key].currentTime = time;
+	setMusicVolume(volume: number) {
+		Object.values(this.songs).forEach((song) => {
+			song.volume = volume;
+		});
 	}
 
-	pauseSound(key) {
-		this.sound_effects[key].pause();
+	setSoundEffectVolume(volume: number) {
+		Object.values(this.sound_effects).forEach((soundEffect) => {
+			soundEffect.volume = volume;
+		});
+	}
+
+	setAudioTime(key, time) {
+		if (this.sound_effects[key]) {
+			this.sound_effects[key].currentTime = time;
+		} else if (this.songs[key]) {
+			this.songs[key].currentTime = time;
+		}
+	}
+
+	pauseAudio(key) {
+		if (this.sound_effects[key]) {
+			this.sound_effects[key].pause();
+		} else if (this.songs[key]) {
+			this.songs[key].pause();
+		}
 	}
 
 	stopAll() {

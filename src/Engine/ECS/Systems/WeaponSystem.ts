@@ -1,6 +1,7 @@
 import Vec3 from "../../Maths/Vec3.js";
 import Rendering from "../../Rendering.js";
 import AnimationComponent from "../Components/AnimationComponent.js";
+import AudioComponent, { AudioTypeEnum } from "../Components/AudioComponent.js";
 import BoundingBoxComponent from "../Components/BoundingBoxComponent.js";
 import CollisionComponent from "../Components/CollisionComponent.js";
 import { ComponentTypeEnum } from "../Components/Component.js";
@@ -35,6 +36,13 @@ export default class WeaponSystem extends System {
 			weaponComp.attackTimer = Math.max(weaponComp.attackTimer - dt, 0);
 
 			if (weaponComp.attackRequested && weaponComp.attackTimer <= 0) {
+				const audioComp = e.getComponent(
+					ComponentTypeEnum.AUDIO
+				) as AudioComponent;
+				if (audioComp) {
+					audioComp.sounds[AudioTypeEnum.SHOOT].requestPlay = true;
+				}
+
 				weaponComp.attackRequested = false;
 				const dmgEntity = this.ecsManager.createEntity();
 				this.ecsManager.addComponent(

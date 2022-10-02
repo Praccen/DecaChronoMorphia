@@ -1,4 +1,7 @@
 import AnimationComponent from "../../Engine/ECS/Components/AnimationComponent.js";
+import AudioComponent, {
+	AudioTypeEnum,
+} from "../../Engine/ECS/Components/AudioComponent.js";
 import BoundingBoxComponent from "../../Engine/ECS/Components/BoundingBoxComponent.js";
 import CollisionComponent from "../../Engine/ECS/Components/CollisionComponent.js";
 import EnemyComponent from "../../Engine/ECS/Components/EnemyComponent.js";
@@ -82,10 +85,10 @@ export module MapGenerator {
 			ecsManager,
 			rendering
 		);
-		
+
 		let enemyId = -1;
 		if (!isStartingRoom) {
-			 enemyId = createEnemyEntity(
+			enemyId = createEnemyEntity(
 				new Vec3(roomCenter),
 				false,
 				"Assets/textures/slime.png",
@@ -93,7 +96,7 @@ export module MapGenerator {
 				rendering
 			);
 		}
-		
+
 		createDoorEntity(new Vec3(roomCenter), ecsManager, rendering, wallsTowards);
 
 		await createWallEntities(
@@ -153,6 +156,13 @@ export module MapGenerator {
 		enemyBBComp.updateBoundingBoxBasedOnPositionComp = true;
 		ecsManager.addComponent(enemyEntity, enemyBBComp);
 		ecsManager.addComponent(enemyEntity, new CollisionComponent());
+
+		ecsManager.addComponent(
+			enemyEntity,
+			new AudioComponent([
+				{ key: AudioTypeEnum.SHOOT, audioKey: "spell_cast_3", playTime: 1.5 },
+			])
+		);
 
 		return enemyEntity.id;
 	}

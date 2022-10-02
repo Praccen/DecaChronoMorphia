@@ -20,6 +20,9 @@ import PlayerComponent from "../Engine/ECS/Components/PlayerComponent.js";
 import HealthComponent from "../Engine/ECS/Components/HealthComponent.js";
 import WeaponComponent from "../Engine/ECS/Components/WeaponComponent.js";
 import Vec2 from "../Engine/Maths/Vec2.js";
+import AudioComponent, {
+	AudioTypeEnum,
+} from "../Engine/ECS/Components/AudioComponent.js";
 
 export default class Player {
 	public playerEntity: Entity;
@@ -229,6 +232,19 @@ export default class Player {
 			this.playerEntity,
 			new WeaponComponent(10, true, 4, 2)
 		);
+
+		this.ecsManager.addComponent(
+			this.playerEntity,
+			new AudioComponent([
+				{ key: AudioTypeEnum.SHOOT, audioKey: "spell_cast_3", playTime: 1.5 },
+				{ key: AudioTypeEnum.DAMAGE, audioKey: "damage_1", playTime: 2 },
+				{
+					key: AudioTypeEnum.POLYMORPH,
+					audioKey: "spell_cast_5",
+					playTime: 1,
+				},
+			])
+		);
 	}
 
 	updateInput(): [Vec3, boolean, boolean, Vec3] {
@@ -285,6 +301,9 @@ export default class Player {
 		let playerPolymorphComp = <PolymorphComponent>(
 			this.playerEntity.getComponent(ComponentTypeEnum.POLYMORPH)
 		);
+		const audioComp = this.playerEntity.getComponent(
+			ComponentTypeEnum.AUDIO
+		) as AudioComponent;
 		if (playerPolymorphComp) {
 			this.updateFormAttributes();
 			if (
@@ -297,6 +316,7 @@ export default class Player {
 
 			if (this.playerIsPolymorphing != playerPolymorphComp.isPolymorphing) {
 				if (playerPolymorphComp.isPolymorphing) {
+					audioComp.sounds[AudioTypeEnum.POLYMORPH].requestPlay = true;
 					this.turnOnPolymorphParticleSpawner();
 				} else {
 					this.turnOffPolymorphParticleSpawner();

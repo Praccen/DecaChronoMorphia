@@ -4,7 +4,7 @@ import ShaderProgram from "../ShaderPrograms/ShaderProgram.js";
 
 export default class Quad extends GraphicsObject {
 	// Public
-	modelMatrix: Matrix4;
+	declare modelMatrix: Matrix4;
 	textureMatrix: Matrix4;
 	texture: Texture;
 

@@ -1,3 +1,4 @@
+import AudioComponent, { AudioTypeEnum } from "../Components/AudioComponent.js";
 import CollisionComponent from "../Components/CollisionComponent.js";
 import { ComponentTypeEnum } from "../Components/Component.js";
 import DamageComponent from "../Components/DamageComponent.js";
@@ -40,6 +41,12 @@ export default class DamageSystem extends System {
 			if (playerComp) {
 				if (playerComp.dodgeing) {
 					return;
+				}
+				const audioComp = damagedEntity.value.getComponent(
+					ComponentTypeEnum.AUDIO
+				) as AudioComponent;
+				if (audioComp) {
+					audioComp.sounds[AudioTypeEnum.DAMAGE].requestPlay = true;
 				}
 			}
 
