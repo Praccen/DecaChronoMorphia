@@ -12,7 +12,7 @@ export default class GuiObject {
 	private divContainerElement: HTMLElement;
 	protected div: HTMLDivElement;
 
-	constructor() {
+	constructor(cssClass: string) {
 		this.removed = false;
 		this.position2D = new Vec2();
 		this.fontSize = 42;
@@ -29,7 +29,7 @@ export default class GuiObject {
 		this.div = document.createElement("div");
 
 		// assign it a CSS class
-		this.div.className = "floating-div";
+		this.div.className = cssClass;
 
 		// add it to the divcontainer
 		this.divContainerElement.appendChild(this.div);

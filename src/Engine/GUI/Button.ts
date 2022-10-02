@@ -3,16 +3,19 @@ import GuiObject from "./GuiObject.js";
 
 export default class Button extends GuiObject {
 	position: Vec2;
+	textSize: number; 
 
 	private inputNode: HTMLInputElement;
 
 	constructor() {
-		super();
+		super("floating-div");
 		this.position = new Vec2();
+		this.textSize = 42;
 
 		// make an input node and a label node
 		this.inputNode = document.createElement("input");
 		this.inputNode.type = "button";
+		this.inputNode.className = "button";
 
 		this.div.appendChild(this.inputNode);
 	}
@@ -32,6 +35,7 @@ export default class Button extends GuiObject {
 	draw() {
 		this.position2D = this.position;
 		this.inputNode.value = this.textString;
+		this.fontSize = this.textSize;
 
 		this.drawObject();
 	}

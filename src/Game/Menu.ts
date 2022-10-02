@@ -35,11 +35,11 @@ export default class Menu {
 		this.startButton = this.rendering.getNewButton();
 		this.startButton.position.x = 0.5;
 		this.startButton.position.y = 0.4;
-		this.startButton;
-		this.startButton.center = true;
+		this.startButton.textSize = 20;
+		this.startButton.getInputElement().style.backgroundColor = "cyan";
+		this.startButton.getInputElement().style.padding = "10px 10px";
 		this.startButton.textString = "Start game";
-		this.startButton.getElement().style.color = "cyan";
-		this.startButton.getInputElement().style.accentColor = "red";
+		this.startButton.center = true;
 
 		let self = this;
 		this.startButton.onClick(function() {
