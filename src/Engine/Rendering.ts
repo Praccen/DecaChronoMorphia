@@ -612,8 +612,7 @@ export default class Rendering {
 		for (let i = 0; i < this.textObjects3D.length; i++) {
 			if (!this.textObjects3D[i].removed) {
 				this.textObjects3D[i].draw(this.camera.getViewProjMatrix());
-			}
-			else {
+			} else {
 				this.textObjects3D.splice(i, 1);
 				i--;
 			}
@@ -622,8 +621,7 @@ export default class Rendering {
 		for (let i = 0; i < this.textObjects2D.length; i++) {
 			if (!this.textObjects2D[i].removed) {
 				this.textObjects2D[i].draw();
-			}
-			else {
+			} else {
 				this.textObjects2D.splice(i, 1);
 				i--;
 			}
@@ -632,8 +630,7 @@ export default class Rendering {
 		for (let i = 0; i < this.checkboxes.length; i++) {
 			if (!this.checkboxes[i].removed) {
 				this.checkboxes[i].draw();
-			}
-			else {
+			} else {
 				this.checkboxes.splice(i, 1);
 				i--;
 			}
@@ -642,8 +639,7 @@ export default class Rendering {
 		for (let i = 0; i < this.buttons.length; i++) {
 			if (!this.buttons[i].removed) {
 				this.buttons[i].draw();
-			}
-			else {
+			} else {
 				this.buttons.splice(i, 1);
 				i--;
 			}
