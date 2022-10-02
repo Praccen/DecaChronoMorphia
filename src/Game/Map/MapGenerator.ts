@@ -87,7 +87,7 @@ export module MapGenerator {
 		if (!isStartingRoom) {
 			 enemyId = createEnemyEntity(
 				new Vec3(roomCenter),
-				isStartingRoom,
+				false,
 				"Assets/textures/slime.png",
 				ecsManager,
 				rendering
@@ -123,6 +123,7 @@ export module MapGenerator {
 		enemyEntity.isActive = isActive;
 
 		let phongQuad = rendering.getNewPhongQuad(enemyTexture, enemyTexture);
+		phongQuad.modelMatrix.setTranslate(0.0, -10.0, 0.0);
 		ecsManager.addComponent(enemyEntity, new GraphicsComponent(phongQuad));
 
 		let enemyMoveComp = new MovementComponent();
