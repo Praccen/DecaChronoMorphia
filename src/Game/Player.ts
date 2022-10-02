@@ -12,6 +12,7 @@ import PhongQuad from "../Engine/Objects/PhongQuad.js";
 import Texture from "../Engine/Textures/Texture.js";
 import CollisionComponent from "../Engine/ECS/Components/CollisionComponent.js";
 import BoundingBoxComponent from "../Engine/ECS/Components/BoundingBoxComponent.js";
+import PlayerComponent from "../Engine/ECS/Components/PlayerComponent.js";
 
 export default class Player {
 	public playerEntity: Entity;
@@ -78,25 +79,34 @@ export default class Player {
 		this.ecsManager.addComponent(this.playerEntity, playerPosComp);
 
 		let playerAnimComp = new AnimationComponent();
-		playerAnimComp.spriteMap.setNrOfSprites(3, 2);
-		playerAnimComp.startingTile = { x: 0, y: 0 };
-		playerAnimComp.advanceBy = { x: 1.0, y: 0.0 };
-		playerAnimComp.modAdvancement = { x: 2.0, y: 1.0 };
+		playerAnimComp.spriteMap.setNrOfSprites(6, 6);
+		playerAnimComp.startingTile = { x: 0, y: 1 };
+		playerAnimComp.advanceBy = { x: 0.0, y: 0.0 };
+		playerAnimComp.modAdvancement = { x: 2.0, y: 0.0 };
 		playerAnimComp.updateInterval = 0.3;
 		this.ecsManager.addComponent(this.playerEntity, playerAnimComp);
-		
+
 		// Collision stuff
 		let playerBoundingBoxComp = new BoundingBoxComponent();
-		playerBoundingBoxComp.boundingBox.setMinAndMaxVectors(new Vec3({x: -0.2, y: -0.5, z: -0.2}), new Vec3({x: 0.2, y: 0.5, z: 0.2}));
+		playerBoundingBoxComp.boundingBox.setMinAndMaxVectors(
+			new Vec3({ x: -0.2, y: -0.5, z: -0.2 }),
+			new Vec3({ x: 0.2, y: 0.5, z: 0.2 })
+		);
 		playerBoundingBoxComp.updateBoundingBoxBasedOnPositionComp = true;
 		this.ecsManager.addComponent(this.playerEntity, playerBoundingBoxComp);
 		this.ecsManager.addComponent(this.playerEntity, new CollisionComponent());
+		let playerComp = new PlayerComponent();
+		this.ecsManager.addComponent(this.playerEntity, playerComp);
 	}
 
 	update(dt: number) {
 		let accVec: Vec3 = new Vec3({ x: 0.0, y: 0.0, z: 0.0 });
 		let move = false;
 		this.formCooldown++;
+		let playerComp = <PlayerComponent>(
+			this.playerEntity.getComponent(ComponentTypeEnum.PLAYER)
+		);
+
 		if (input.keys["w"]) {
 			accVec.add(new Vec3({ x: 0.0, y: 0.0, z: -1.0 }));
 			move = true;
@@ -134,6 +144,9 @@ export default class Player {
 				}
 				this.formCooldown = 0;
 			}
+		}
+		if (input.keys[" "] && playerComp) {
+			playerComp.startDodge = true;
 		}
 
 		let playerMoveComp = <MovementComponent>(

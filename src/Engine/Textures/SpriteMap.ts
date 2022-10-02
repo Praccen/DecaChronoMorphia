@@ -10,7 +10,7 @@ export default class SpriteMap {
 	updateTextureMatrix(matrix: Matrix4) {
 		matrix.setIdentity();
 		let spriteSizeX = 1.0 / Math.max(this.nrOfSprites.x, 0.000001);
-		let spriteSizeY = 1.0 / Math.max(this.nrOfSprites.y, 0.000001);
+		let spriteSizeY = -1.0 / Math.max(this.nrOfSprites.y, 0.000001);
 		matrix.translate(
 			this.currentSprite.x * spriteSizeX,
 			this.currentSprite.y * spriteSizeY,
