@@ -4,6 +4,7 @@ import Game from "./Game/Game.js";
 import ECSManager from "./Engine/ECS/ECSManager.js";
 import AudioPlayer from "./Engine/Audio/AudioPlayer.js";
 import { SAT } from "./Engine/Maths/SAT.js";
+import Menu from "./Game/Menu.js";
 
 SAT.runUnitTests();
 
@@ -93,7 +94,8 @@ window.onload = async () => {
 	let rendering = new Rendering(gl);
 	let audio = new AudioPlayer();
 	let ecsManager = new ECSManager(rendering, audio);
-	let game = new Game(gl, rendering, ecsManager);
+	let menu = new Menu(rendering);
+	let game: Game;
 
 	let lastTick = null;
 
@@ -104,6 +106,7 @@ window.onload = async () => {
 
 	let fpsUpdateTimer = 0.0;
 	let frameCounter = 0;
+	let dt = 0.0;
 
 	let fpsDisplay = rendering.getNew2DText();
 	fpsDisplay.position.x = 0.01;
@@ -112,10 +115,9 @@ window.onload = async () => {
 	fpsDisplay.scaleWithWindow = false;
 	fpsDisplay.getElement().style.color = "lime";
 
-	/* Gameloop */
-	function gameLoop() {
+	function updateFrameTimers() {
 		let now = Date.now();
-		let dt = (now - (lastTick || now)) * 0.001;
+		dt = (now - (lastTick || now)) * 0.001;
 		lastTick = now;
 
 		frameCounter++;
@@ -131,6 +133,11 @@ window.onload = async () => {
 		// Constant update rate
 		updateTimer += dt;
 		updatesSinceRender = 0;
+	}
+
+	/* Gameloop */
+	function gameLoop() {
+		updateFrameTimers();
 
 		//Only update if update timer goes over update rate
 		while (updateTimer >= minUpdateRate) {
@@ -198,6 +205,18 @@ window.onload = async () => {
 	resize(gl, rendering);
 	//requestAnimationFrame(waitForTextureLoading);
 	//requestAnimationFrame(waitForMeshLoading);
-	await game.init();
-	requestAnimationFrame(gameLoop);
+
+	async function menuLoop() {
+		updateFrameTimers();
+		if (!menu.update(dt)) {
+			rendering.draw();
+			requestAnimationFrame(menuLoop);
+		}
+		else {
+			game = new Game(gl, rendering, ecsManager);
+			await game.init();
+			requestAnimationFrame(gameLoop);
+		}
+	}
+	requestAnimationFrame(menuLoop);
 };
