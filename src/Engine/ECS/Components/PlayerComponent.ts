@@ -1,6 +1,13 @@
 import { Component, ComponentTypeEnum } from "./Component.js";
 import Vec2 from "../../Maths/Vec2.js";
 
+export enum PlayerShapeEnum {
+	NORMIE,
+	TANKY,
+	WIZ,
+	MOUSE,
+}
+
 export default class PlayerComponent extends Component {
 	inRoom: Vec2;
 	dodgeing: boolean;
