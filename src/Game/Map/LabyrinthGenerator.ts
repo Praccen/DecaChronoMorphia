@@ -76,7 +76,7 @@ export module LabyrinthGenerator {
         //Generate walls
         generateMap(map, xSize, ySize);
         generateMaze(map, xSize, ySize);
-        printMap(map, xSize, ySize);
+        // printMap(map, xSize, ySize);
 
         return map;
     }

@@ -103,7 +103,7 @@ export default class Mesh extends GraphicsObject {
 				// A comment, ignore
 			} else if (line.length > 0) {
 				// Unhandled keywords
-				console.warn("OBJ loader: Unhandled keyword " + line.split(/\s+/)[0]);
+				//console.warn("OBJ loader: Unhandled keyword " + line.split(/\s+/)[0]);
 			}
 		}
 
