@@ -10,9 +10,7 @@ export default class Menu {
 	private crtCheckbox: Checkbox;
 	private bloomCheckbox: Checkbox;
 
-	constructor(
-		rendering: Rendering
-	) {
+	constructor(rendering: Rendering) {
 		this.rendering = rendering;
 		this.startGame = false;
 
@@ -42,7 +40,7 @@ export default class Menu {
 		this.startButton.center = true;
 
 		let self = this;
-		this.startButton.onClick(function() {
+		this.startButton.onClick(function () {
 			self.startGame = true;
 		});
 
@@ -75,6 +73,6 @@ export default class Menu {
 			this.startButton.remove();
 			return true;
 		}
-		return false; 
+		return false;
 	}
 }

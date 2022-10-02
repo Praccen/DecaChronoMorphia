@@ -3,7 +3,7 @@ import GuiObject from "./GuiObject.js";
 
 export default class Button extends GuiObject {
 	position: Vec2;
-	textSize: number; 
+	textSize: number;
 
 	private inputNode: HTMLInputElement;
 
