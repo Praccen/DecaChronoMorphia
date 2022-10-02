@@ -1,10 +1,6 @@
-import {
-	MapInformation,
-	RoomInformation,
-} from "../../../Game/Map/MapGenerator.js";
+import { MapInformation } from "../../../Game/Map/MapGenerator.js";
 import CollisionComponent from "../Components/CollisionComponent.js";
-import { Component, ComponentTypeEnum } from "../Components/Component.js";
-import ConnectionComponent from "../Components/ConnectionComponent.js";
+import { ComponentTypeEnum } from "../Components/Component.js";
 import PlayerComponent from "../Components/PlayerComponent.js";
 import ECSManager from "../ECSManager.js";
 import System from "./System.js";
@@ -42,7 +38,6 @@ export default class RoomSystem extends System {
 
 				//if player is not in room but room is active, deactivate
 				if (!playerIsInRoom && room.active) {
-					console.log("room", room);
 					this.ecsManager.deactivateEntities(room.entityIds.slice());
 					room.active = false;
 					return;

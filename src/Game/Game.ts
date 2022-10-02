@@ -166,51 +166,6 @@ export default class Game {
 		// -------------
 
 		this.playerObject.init();
-
-		// ---- Enemy ----
-		let enemyTexture = "Assets/textures/slime.png";
-		this.enemyEntity = this.ecsManager.createEntity();
-
-		let phongQuad = this.rendering.getNewPhongQuad(enemyTexture, enemyTexture);
-		this.ecsManager.addComponent(
-			this.enemyEntity,
-			new GraphicsComponent(phongQuad)
-		);
-
-		let enemyMoveComp = new MovementComponent();
-		this.ecsManager.addComponent(this.enemyEntity, enemyMoveComp);
-
-		let enemyPosComp = new PositionComponent();
-		enemyPosComp.rotation.setValues(-30.0, 0.0, 0.0);
-		enemyPosComp.position.setValues(-2.0, 0.0, -2.0);
-		this.ecsManager.addComponent(this.enemyEntity, enemyPosComp);
-
-		let enemyAnimComp = new AnimationComponent();
-		enemyAnimComp.spriteMap.setNrOfSprites(3, 2);
-		enemyAnimComp.startingTile = { x: 0, y: 0 };
-		enemyAnimComp.advanceBy = { x: 1.0, y: 0.0 };
-		enemyAnimComp.modAdvancement = { x: 2.0, y: 1.0 };
-		enemyAnimComp.updateInterval = 0.3;
-		this.ecsManager.addComponent(this.enemyEntity, enemyAnimComp);
-
-		this.ecsManager.addComponent(
-			this.enemyEntity,
-			new EnemyComponent(this.playerObject.playerEntity.id)
-		);
-		this.ecsManager.addComponent(
-			this.enemyEntity,
-			new WeaponComponent(10, true, 4, 2)
-		);
-
-		// Collision for enemy
-		let enemyBBComp = new BoundingBoxComponent();
-		enemyBBComp.boundingBox.setMinAndMaxVectors(
-			new Vec3({ x: -0.2, y: -0.5, z: -0.2 }),
-			new Vec3({ x: 0.2, y: 0.5, z: 0.2 })
-		);
-		enemyBBComp.updateBoundingBoxBasedOnPositionComp = true;
-		this.ecsManager.addComponent(this.enemyEntity, enemyBBComp);
-		this.ecsManager.addComponent(this.enemyEntity, new CollisionComponent());
 	}
 
 	createTestEntity(pos: Vec3, rotX: number = 0.0) {

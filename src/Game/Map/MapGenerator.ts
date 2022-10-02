@@ -1,7 +1,6 @@
 import AnimationComponent from "../../Engine/ECS/Components/AnimationComponent.js";
 import BoundingBoxComponent from "../../Engine/ECS/Components/BoundingBoxComponent.js";
 import CollisionComponent from "../../Engine/ECS/Components/CollisionComponent.js";
-import ConnectionComponent from "../../Engine/ECS/Components/ConnectionComponent.js";
 import EnemyComponent from "../../Engine/ECS/Components/EnemyComponent.js";
 import GraphicsComponent from "../../Engine/ECS/Components/GraphicsComponent.js";
 import MeshCollisionComponent from "../../Engine/ECS/Components/MeshCollisionComponent.js";
@@ -92,13 +91,7 @@ export module MapGenerator {
 			rendering
 		);
 
-		createDoorEntity(
-			new Vec3(roomCenter),
-			ecsManager,
-			rendering,
-			wallsTowards,
-			new Vec2({ x: roomTileX, y: roomTileY })
-		);
+		createDoorEntity(new Vec3(roomCenter), ecsManager, rendering, wallsTowards);
 
 		await createWallEntities(
 			new Vec3(roomCenter),
@@ -112,7 +105,6 @@ export module MapGenerator {
 			entityIds: [enemyId],
 			floorId: floorId,
 		};
-		isStartingRoom && roomInformation.entityIds.push(206);
 		return roomInformation;
 	}
 
@@ -197,8 +189,7 @@ export module MapGenerator {
 		position: Vec3,
 		ecsManager: ECSManager,
 		rendering: Rendering,
-		wallsTowards: boolean[],
-		currentRoom: Vec2
+		wallsTowards: boolean[]
 	) {
 		for (let i = 0; i < wallsTowards.length; i++) {
 			if (wallsTowards[i]) {
@@ -219,21 +210,16 @@ export module MapGenerator {
 				new Vec3(position).subtract(new Vec3({ x: 0.0, y: 0.5, z: 0.0 }))
 			);
 
-			const nextRoom = new Vec2(currentRoom);
 			if (i == 0) {
 				posComp.position.add(new Vec3({ x: 0.0, y: 0.0, z: -4.0 }));
-				nextRoom.y -= 2;
 			} else if (i == 1) {
 				posComp.position.add(new Vec3({ x: 0.0, y: 0.0, z: 4.0 }));
-				nextRoom.y += 2;
 			} else if (i == 2) {
 				posComp.position.add(new Vec3({ x: -4.0, y: 0.0, z: 0.0 }));
 				posComp.rotation.setValues(0.0, 90.0);
-				nextRoom.x -= 2;
 			} else if (i == 3) {
 				posComp.position.add(new Vec3({ x: 4.0, y: 0.0, z: 0.0 }));
 				posComp.rotation.setValues(0.0, -90.0);
-				nextRoom.x += 2;
 			}
 
 			posComp.scale.setValues(0.7, 1.0, 0.07);
@@ -252,11 +238,6 @@ export module MapGenerator {
 			meshCollComp.setup(doorMesh);
 			meshCollComp.updateTransformMatrix(doorMesh.modelMatrix);
 			ecsManager.addComponent(doorEntity, meshCollComp);
-
-			ecsManager.addComponent(
-				doorEntity,
-				new ConnectionComponent(currentRoom, nextRoom)
-			);
 		}
 	}
 
