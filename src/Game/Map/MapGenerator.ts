@@ -18,6 +18,7 @@ export interface RoomInformation {
 	roomPosition: Vec2;
 	active: boolean;
 	entityIds: number[];
+	floorId: number;
 }
 export interface MapInformation {
 	rooms: RoomInformation[];
@@ -59,11 +60,6 @@ export module MapGenerator {
 	) {
 		const roomPosition = new Vec2({ x: roomTileX, y: roomTileY });
 		const isStartingRoom = roomTileX === 1 && roomTileY === 1;
-		const roomInformation: RoomInformation = {
-			roomPosition: roomPosition,
-			active: isStartingRoom,
-			entityIds: [],
-		};
 
 		// Find out how the room should look
 		let wallsTowards = [
@@ -81,7 +77,7 @@ export module MapGenerator {
 			z: (roomTileY - 1) * 0.5,
 		}).multiply(8.0);
 
-		createFloorEntity(
+		const floorId = createFloorEntity(
 			new Vec3(roomCenter),
 			floorTexturePath,
 			ecsManager,
@@ -110,8 +106,13 @@ export module MapGenerator {
 			rendering,
 			wallsTowards
 		);
-
-		roomInformation.entityIds.push(enemyId);
+		const roomInformation: RoomInformation = {
+			roomPosition: roomPosition,
+			active: isStartingRoom,
+			entityIds: [enemyId],
+			floorId: floorId,
+		};
+		isStartingRoom && roomInformation.entityIds.push(206);
 		return roomInformation;
 	}
 
@@ -144,7 +145,7 @@ export module MapGenerator {
 		enemyAnimComp.updateInterval = 0.3;
 		ecsManager.addComponent(enemyEntity, enemyAnimComp);
 
-		ecsManager.addComponent(enemyEntity, new EnemyComponent());
+		ecsManager.addComponent(enemyEntity, new EnemyComponent(205));
 		ecsManager.addComponent(enemyEntity, new WeaponComponent(10, true, 4, 2));
 
 		// Collision for enemy
@@ -166,16 +167,16 @@ export module MapGenerator {
 		ecsManager: ECSManager,
 		rendering: Rendering
 	) {
-		let entity = ecsManager.createEntity();
+		let floorEntity = ecsManager.createEntity();
 		let phongQuad = rendering.getNewPhongQuad(texturePath, texturePath);
 		phongQuad.textureMatrix.setScale(8.0, 8.0, 1.0);
-		ecsManager.addComponent(entity, new GraphicsComponent(phongQuad));
+		ecsManager.addComponent(floorEntity, new GraphicsComponent(phongQuad));
 		let posComp = new PositionComponent(
 			position.subtract(new Vec3({ x: 0.0, y: 0.5, z: 0.0 }))
 		);
 		posComp.rotation.setValues(-90.0, 0.0, 0.0);
 		posComp.scale.setValues(8.0, 8.0, 1.0);
-		ecsManager.addComponent(entity, posComp);
+		ecsManager.addComponent(floorEntity, posComp);
 
 		// Collision stuff
 		let floorBoundingBoxComp = new BoundingBoxComponent();
@@ -184,10 +185,12 @@ export module MapGenerator {
 			new Vec3({ x: -4.0, y: -5.0, z: -4.0 }),
 			new Vec3({ x: 4.0, y: 0.0, z: 4.0 })
 		);
-		ecsManager.addComponent(entity, floorBoundingBoxComp);
+		ecsManager.addComponent(floorEntity, floorBoundingBoxComp);
 		let collComp = new CollisionComponent();
 		collComp.isStatic = true;
-		ecsManager.addComponent(entity, collComp);
+		ecsManager.addComponent(floorEntity, collComp);
+
+		return floorEntity.id;
 	}
 
 	async function createDoorEntity(
@@ -241,9 +244,9 @@ export module MapGenerator {
 			boxBoundingBoxComp.setup(doorMesh);
 			boxBoundingBoxComp.updateTransformMatrix(doorMesh.modelMatrix);
 			ecsManager.addComponent(doorEntity, boxBoundingBoxComp);
-			let collComp = new CollisionComponent();
-			collComp.isStatic = true;
-			ecsManager.addComponent(doorEntity, collComp);
+			// let collComp = new CollisionComponent();
+			// collComp.isStatic = true;
+			// ecsManager.addComponent(doorEntity, collComp);
 
 			let meshCollComp = new MeshCollisionComponent();
 			meshCollComp.setup(doorMesh);

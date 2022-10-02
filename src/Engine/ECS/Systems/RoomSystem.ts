@@ -13,68 +13,41 @@ export default class RoomSystem extends System {
 	mapInformation: MapInformation;
 
 	constructor(manager: ECSManager, mapInformation: MapInformation) {
-		super([ComponentTypeEnum.CONNECTION]);
+		super([ComponentTypeEnum.PLAYER]);
 		this.ecsManager = manager;
 		this.mapInformation = { ...mapInformation };
 	}
 
 	update(dt: number) {
 		this.entities.forEach((e) => {
-			if (!e.isActive) {
-				//this entity is not active, return to skip to next iteration
-				return;
-			}
-			const connectionComp = e.getComponent(
-				ComponentTypeEnum.CONNECTION
-			) as ConnectionComponent;
 			const collisionComp = e.getComponent(
 				ComponentTypeEnum.COLLISION
 			) as CollisionComponent;
-			const playerEntity = Array.from(
-				collisionComp.currentCollisionEntities
-			).find((collisionEntity) => {
-				if (collisionEntity.hasComponent(ComponentTypeEnum.PLAYER)) {
-					return collisionEntity;
+			const playerComponent = e.getComponent(
+				ComponentTypeEnum.PLAYER
+			) as PlayerComponent;
+
+			this.mapInformation.rooms.forEach((room) => {
+				const playerIsInRoom = Array.from(
+					collisionComp.currentCollisionEntities
+				).some((collisionEntity) => collisionEntity.id === room.floorId);
+
+				//if player is in room and room is inactive, activate
+				if (playerIsInRoom && !room.active) {
+					this.ecsManager.activateEntities(room.entityIds.slice());
+					room.active = true;
+					playerComponent.inRoom = room.roomPosition;
+					return;
+				}
+
+				//if player is not in room but room is active, deactivate
+				if (!playerIsInRoom && room.active) {
+					console.log("room", room);
+					this.ecsManager.deactivateEntities(room.entityIds.slice());
+					room.active = false;
+					return;
 				}
 			});
-			//Player has entered connection
-			if (playerEntity) {
-				const playerComponent = playerEntity.getComponent(
-					ComponentTypeEnum.PLAYER
-				) as PlayerComponent;
-				let roomToDeactivate: RoomInformation;
-				let roomToActivate: RoomInformation;
-				let roomOne: RoomInformation;
-				let roomTwo: RoomInformation;
-
-				this.mapInformation.rooms.forEach((room) => {
-					if (room.roomPosition.compare(connectionComp.roomOne)) {
-						roomOne = room;
-						return;
-					}
-					if (room.roomPosition.compare(connectionComp.roomTwo)) {
-						roomTwo = room;
-						return;
-					}
-				});
-
-				//deactivate room player already is in
-				if (playerComponent.inRoom.compare(roomOne.roomPosition)) {
-					roomToDeactivate = roomOne;
-					roomToActivate = roomTwo;
-				} else {
-					roomToDeactivate = roomTwo;
-					roomToActivate = roomOne;
-				}
-
-				playerComponent.inRoom = roomToActivate.roomPosition;
-				//activate entities of room
-				!roomToActivate.active &&
-					this.ecsManager.activateEntities(roomToActivate.entityIds);
-				//deactivate entities of room
-				roomToDeactivate.active &&
-					this.ecsManager.deactivateEntities(roomToDeactivate.entityIds);
-			}
 		});
 	}
 }
