@@ -1,4 +1,4 @@
-import { Component, ComponentTypeEnum } from "./Component";
+import { Component, ComponentTypeEnum } from "./Component.js";
 
 export enum PlayerShapeEnum {
 	NORMIE,

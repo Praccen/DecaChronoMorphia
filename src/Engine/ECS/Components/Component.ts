@@ -11,7 +11,7 @@ export enum ComponentTypeEnum {
 	PLAYER,
 	CONNECTION,
 	ENEMY,
-	POLYMORPH
+	POLYMORPH,
 }
 
 export class Component {

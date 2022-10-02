@@ -14,15 +14,18 @@ import CollisionComponent from "../Engine/ECS/Components/CollisionComponent.js";
 import BoundingBoxComponent from "../Engine/ECS/Components/BoundingBoxComponent.js";
 import PolymorphComponent from "../Engine/ECS/Components/PolymorphComponent.js";
 import { PlayerShapeEnum } from "../Engine/ECS/Components/PlayerComponent.js";
+import ParticleSpawnerComponent from "../Engine/ECS/Components/ParticleSpawnerComponent.js";
+import ParticleSpawner from "../Engine/Objects/ParticleSpawner.js";
 
 export default class Player {
 	public playerEntity: Entity;
 	private ecsManager: ECSManager;
 	private rendering: Rendering;
 	private playerQuad: PhongQuad;
-	private playerTextureMap: {[key in PlayerShapeEnum] : [Texture, Texture]}
-	private playerBoundingBoxMap: { [key in PlayerShapeEnum]: [Vec3, Vec3] }
-	private currentPlayerShape: PlayerShapeEnum
+	private playerParticleSpawner: ParticleSpawner;
+	private playerTextureMap: { [key in PlayerShapeEnum]: [Texture, Texture] };
+	private playerBoundingBoxMap: { [key in PlayerShapeEnum]: [Vec3, Vec3] };
+	private currentPlayerShape: PlayerShapeEnum;
 	private mouseTex: Texture;
 	private wizTex: Texture;
 	private normyTex: Texture;
@@ -31,6 +34,10 @@ export default class Player {
 	private tankyTexSpec: Texture;
 	private slimeTex: Texture;
 	private slimeTexSpec: Texture;
+	private polymorphTexPath: string;
+	private polymorphNumParticles: number = 200;
+	private playerParticleSpawnerLifeTime: number = 0.2;
+	private playerIsPolymorphing: boolean = false;
 	private nextForm: number;
 	private formCooldown: number = 50;
 	private boundingBoxModelMatrix: Matrix4;
@@ -62,31 +69,27 @@ export default class Player {
 		this.slimeTexSpec = this.rendering.getTextureFromStore(
 			"Assets/textures/skully.png"
 		);
+		this.polymorphTexPath = "Assets/textures/skully.png";
 
-		this.playerTextureMap[PlayerShapeEnum.NORMIE] = [this.normyTex, this.normySpecTex]
-		this.playerTextureMap[PlayerShapeEnum.TANKY] = [this.tankyTex, this.tankyTexSpec]
-		this.playerTextureMap[PlayerShapeEnum.WIZ] = [this.wizTex, this.wizTex]
-		this.playerTextureMap[PlayerShapeEnum.MOUSE] = [this.mouseTex, this.mouseTex]
+		this.playerTextureMap = {
+			[PlayerShapeEnum.NORMIE]: [this.normyTex, this.normySpecTex],
+			[PlayerShapeEnum.TANKY]: [this.tankyTex, this.tankyTexSpec],
+			[PlayerShapeEnum.WIZ]: [this.wizTex, this.wizTex],
+			[PlayerShapeEnum.MOUSE]: [this.mouseTex, this.mouseTex],
+		};
 
-		this.currentPlayerShape = PlayerShapeEnum.NORMIE
+		this.currentPlayerShape = PlayerShapeEnum.NORMIE;
 
 		this.boundingBoxModelMatrix = new Matrix4(null);
 	}
-	
-	updateGraphicsComponent() {
-		const playerGraphicsComponent = this.playerEntity.getComponent(
-			ComponentTypeEnum.GRAPHICS
-		) as GraphicsComponent;
 
-		this.playerQuad = this.rendering.getNewPhongQuadTex(
-			this.playerTextureMap[this.currentPlayerShape][0],
-			this.playerTextureMap[this.currentPlayerShape][1]
-		);
-
-		playerGraphicsComponent.object = this.playerQuad
+	updatePlayerQuad() {
+		this.playerQuad.diffuse = this.playerTextureMap[this.currentPlayerShape][0];
+		this.playerQuad.specular =
+			this.playerTextureMap[this.currentPlayerShape][1];
 	}
 
-	updateBoundingBox(){
+	updateBoundingBox() {
 		const playerBoundingBoxComp = this.playerEntity.getComponent(
 			ComponentTypeEnum.BOUNDINGBOX
 		) as BoundingBoxComponent;
@@ -95,6 +98,45 @@ export default class Player {
 			this.playerBoundingBoxMap[this.currentPlayerShape][0],
 			this.playerBoundingBoxMap[this.currentPlayerShape][1]
 		);
+	}
+
+	turnOnPolymorphParticleSpawner() {
+		const playerPosComp = this.playerEntity.getComponent(
+			ComponentTypeEnum.POSITION
+		) as PositionComponent;
+
+		this.playerParticleSpawner.setNumParticles(this.polymorphNumParticles);
+
+		for (
+			let i = 0;
+			i < this.playerParticleSpawner.getNumberOfParticles();
+			i++
+		) {
+			let rand = Math.random() * 2.0 * Math.PI;
+
+			let pos = new Vec3();
+			if (playerPosComp) {
+				pos.deepAssign(playerPosComp.position);
+			}
+
+			this.playerParticleSpawner.setParticleData(
+				i,
+				pos,
+				1.8,
+				new Vec3({
+					x: Math.cos(rand) * 200,
+					y: 5.0 + Math.random() * 2000.0,
+					z: Math.sin(rand) * 200,
+				})
+					.normalize()
+					.multiply(8.0 + Math.random() * 3.0),
+				new Vec3({ x: Math.random() * 10.0, y: -4.0, z: Math.random() * 10.0 })
+			);
+		}
+	}
+
+	turnOffPolymorphParticleSpawner() {
+		this.playerParticleSpawner.setNumParticles(0);
 	}
 
 	init() {
@@ -125,22 +167,51 @@ export default class Player {
 		playerAnimComp.updateInterval = 0.3;
 		this.ecsManager.addComponent(this.playerEntity, playerAnimComp);
 
+		// Polymorph stuff
 		let playerPolymorphComp = new PolymorphComponent();
 		this.ecsManager.addComponent(this.playerEntity, playerPolymorphComp);
 
-		this.playerBoundingBoxMap[PlayerShapeEnum.NORMIE] = [new Vec3({ x: -0.2, y: -0.5, z: -0.2 }), 
-			new Vec3({ x: 0.2, y: 0.5, z: 0.2 })]
-		this.playerBoundingBoxMap[PlayerShapeEnum.TANKY] = [new Vec3({ x: -0.2, y: -0.5, z: -0.2 }),
-		new Vec3({ x: 0.2, y: 0.5, z: 0.2 })]
-		this.playerBoundingBoxMap[PlayerShapeEnum.WIZ] = [new Vec3({ x: -0.2, y: -0.5, z: -0.2 }),
-		new Vec3({ x: 0.2, y: 0.5, z: 0.2 })]
-		this.playerBoundingBoxMap[PlayerShapeEnum.MOUSE] = [new Vec3({ x: -0.2, y: -0.5, z: -0.2 }),
-		new Vec3({ x: 0.2, y: 0.5, z: 0.2 })]
+		this.playerParticleSpawner = this.rendering.getNewParticleSpawner(
+			this.polymorphTexPath,
+			0
+		);
+
+		this.playerParticleSpawner.fadePerSecond = 1.0;
+
+		let particleSpawnerComp = new ParticleSpawnerComponent(
+			this.playerParticleSpawner
+		);
+		particleSpawnerComp.lifeTime = this.playerParticleSpawnerLifeTime;
+
+		this.ecsManager.addComponent(this.playerEntity, particleSpawnerComp);
+
+		this.playerBoundingBoxMap = {
+			[PlayerShapeEnum.NORMIE]: [
+				new Vec3({ x: -0.2, y: -0.5, z: -0.2 }),
+				new Vec3({ x: 0.2, y: 0.5, z: 0.2 }),
+			],
+			[PlayerShapeEnum.TANKY]: [
+				new Vec3({ x: -0.2, y: -0.5, z: -0.2 }),
+				new Vec3({ x: 0.2, y: 0.5, z: 0.2 }),
+			],
+			[PlayerShapeEnum.WIZ]: [
+				new Vec3({ x: -0.2, y: -0.5, z: -0.2 }),
+				new Vec3({ x: 0.2, y: 0.5, z: 0.2 }),
+			],
+			[PlayerShapeEnum.MOUSE]: [
+				new Vec3({ x: -0.2, y: -0.5, z: -0.2 }),
+				new Vec3({ x: 0.2, y: 0.5, z: 0.2 }),
+			],
+		};
 
 		// Collision stuff
 		let playerBoundingBoxComp = new BoundingBoxComponent();
+		playerBoundingBoxComp.boundingBox.setMinAndMaxVectors(
+			this.playerBoundingBoxMap[this.currentPlayerShape][0],
+			this.playerBoundingBoxMap[this.currentPlayerShape][1]
+		);
 		this.ecsManager.addComponent(this.playerEntity, playerBoundingBoxComp);
-		this.updateBoundingBox()
+
 		this.boundingBoxModelMatrix.setTranslate(
 			playerPosComp.position.x,
 			playerPosComp.position.y,
@@ -196,13 +267,24 @@ export default class Player {
 		let playerPolymorphComp = <PolymorphComponent>(
 			this.playerEntity.getComponent(ComponentTypeEnum.POLYMORPH)
 		);
-		// if (playerPolymorphComp.isPolymorphing){
-		// 	// EMIT MORPH PARTICLE EFFECT
-		// }
-		if (playerPolymorphComp.currentPolymorphShape != this.currentPlayerShape){
-			this.currentPlayerShape = playerPolymorphComp.currentPolymorphShape
-			this.updateGraphicsComponent()
-			this.updateBoundingBox()
+
+		if (playerPolymorphComp) {
+			if (
+				playerPolymorphComp.currentPolymorphShape != this.currentPlayerShape
+			) {
+				this.currentPlayerShape = playerPolymorphComp.currentPolymorphShape;
+				this.updatePlayerQuad();
+				this.updateBoundingBox();
+			}
+
+			if (this.playerIsPolymorphing != playerPolymorphComp.isPolymorphing) {
+				if (playerPolymorphComp.isPolymorphing) {
+					this.turnOnPolymorphParticleSpawner();
+				} else {
+					this.turnOffPolymorphParticleSpawner();
+				}
+				this.playerIsPolymorphing = playerPolymorphComp.isPolymorphing;
+			}
 		}
 
 		let playerMoveComp = <MovementComponent>(

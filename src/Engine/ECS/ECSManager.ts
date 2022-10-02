@@ -12,6 +12,7 @@ import AudioPlayer from "../Audio/AudioPlayer.js";
 import EnemySystem from "./Systems/EnemySystem.js";
 import RoomSystem from "./Systems/RoomSystem.js";
 import SpriteDirectionSystem from "./Systems/SpriteDirectionSystem.js";
+import PolymorphSystem from "./Systems/PolymorphSystem.js";
 
 export default class ECSManager {
 	private systems: Map<String, System>;
@@ -66,6 +67,7 @@ export default class ECSManager {
 		this.systems.set("ENEMY", new EnemySystem(this));
 		this.systems.set("ROOM", new RoomSystem(this));
 		this.systems.set("SPRITE_DIRECTION", new SpriteDirectionSystem());
+		this.systems.set("POLYMORPHISM", new PolymorphSystem());
 	}
 
 	update(dt: number) {
@@ -80,6 +82,7 @@ export default class ECSManager {
 
 		this.updateEntityActivation();
 
+		this.systems.get("POLYMORPHISM").update(dt);
 		this.systems.get("SPRITE_DIRECTION").update(dt);
 		this.systems.get("MOVEMENT").update(dt);
 		this.systems.get("GRAPHICS").update(dt);

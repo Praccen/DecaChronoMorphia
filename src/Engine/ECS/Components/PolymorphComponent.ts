@@ -1,20 +1,23 @@
 import { Component, ComponentTypeEnum } from "./Component.js";
 import { PlayerShapeEnum } from "./PlayerComponent.js";
 
-
 export default class PolymorphComponent extends Component {
-	currentPolymorphShape?: PlayerShapeEnum;
-	nextPolymorphShape?: PlayerShapeEnum;
-	isPolymorphing?: boolean;
+	currentPolymorphShape: PlayerShapeEnum;
+	nextPolymorphShape: PlayerShapeEnum;
+	isPolymorphing: boolean;
 
-	constructor(currentPolymorphShape?: PlayerShapeEnum, nextPolymorph?: PlayerShapeEnum, isPolymorphing?: boolean) {
+	constructor(
+		currentPolymorphShape?: PlayerShapeEnum,
+		nextPolymorph?: PlayerShapeEnum,
+		isPolymorphing?: boolean
+	) {
 		super(ComponentTypeEnum.POLYMORPH);
-		if (nextPolymorph === undefined) {
+		if (currentPolymorphShape === undefined) {
 			this.currentPolymorphShape = PlayerShapeEnum.NORMIE;
 		} else {
 			this.currentPolymorphShape = currentPolymorphShape;
 		}
-		if (nextPolymorph === undefined){
+		if (nextPolymorph === undefined) {
 			this.nextPolymorphShape = PlayerShapeEnum.TANKY;
 		} else {
 			this.nextPolymorphShape = nextPolymorph;
