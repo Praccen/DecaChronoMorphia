@@ -37,7 +37,7 @@ export default class SpriteDirectionSystem extends System {
 				return;
 			}
 
-			if (movementComp.accelerationDirection.z >= 0) {
+			if (movementComp.accelerationDirection.z > 0) {
 				animationComp.startingTile = { x: 0, y: 0 };
 				animationComp.advanceBy = { x: 1, y: 0 };
 				if (movementComp.accelerationDirection.x < 0) {
