@@ -24,6 +24,13 @@ export default class AnimationSystem extends System {
 			);
 
 			if (graphComp && animComp) {
+				if (
+					animComp.stopAtLast &&
+					animComp.spriteMap.currentSprite.x ==
+						animComp.spriteMap.nrOfSprites.x - 1
+				) {
+					return;
+				}
 				animComp.updateTimer += dt;
 
 				animComp.advancements += Math.floor(

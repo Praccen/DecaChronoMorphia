@@ -19,6 +19,7 @@ import ParticleSpawner from "../Engine/Objects/ParticleSpawner.js";
 import PlayerComponent from "../Engine/ECS/Components/PlayerComponent.js";
 import HealthComponent from "../Engine/ECS/Components/HealthComponent.js";
 import WeaponComponent from "../Engine/ECS/Components/WeaponComponent.js";
+import Vec2 from "../Engine/Maths/Vec2.js";
 
 export default class Player {
 	public playerEntity: Entity;
@@ -157,6 +158,7 @@ export default class Player {
 		playerAnimComp.advanceBy = { x: 1.0, y: 0.0 };
 		playerAnimComp.modAdvancement = { x: 2.0, y: 0.0 };
 		playerAnimComp.updateInterval = 0.3;
+
 		this.ecsManager.addComponent(this.playerEntity, playerAnimComp);
 
 		// Polymorph stuff
@@ -215,6 +217,9 @@ export default class Player {
 		this.ecsManager.addComponent(this.playerEntity, new CollisionComponent());
 
 		let playerComp = new PlayerComponent();
+		playerComp.dodgeStartingTile = new Vec2({ x: 0, y: 2 });
+		playerComp.dodgeModAdvancement = new Vec2({ x: 6, y: 0 });
+		playerComp.dodgeUpdateInterval = 0.3;
 		this.ecsManager.addComponent(this.playerEntity, playerComp);
 
 		let healthComp = new HealthComponent(20);
@@ -229,7 +234,7 @@ export default class Player {
 	updateInput(): [Vec3, boolean, boolean, Vec3] {
 		let accVec: Vec3 = new Vec3({ x: 0.0, y: 0.0, z: 0.0 });
 		let move = false;
-		let attacking = false;
+		let ability = false;
 		let lookDir: Vec3 = new Vec3({ x: 0.0, y: 0.0, z: 0.0 });
 
 		let playerComp = <PlayerComponent>(
@@ -237,19 +242,19 @@ export default class Player {
 		);
 		if (input.keys["ArrowRight"]) {
 			lookDir.x = 1;
-			attacking = true;
+			ability = true;
 		}
 		if (input.keys["ArrowLeft"]) {
 			lookDir.x = -1;
-			attacking = true;
+			ability = true;
 		}
 		if (input.keys["ArrowDown"]) {
 			lookDir.z = 1;
-			attacking = true;
+			ability = true;
 		}
 		if (input.keys["ArrowUp"]) {
 			lookDir.z = -1;
-			attacking = true;
+			ability = true;
 		}
 		if (input.keys["w"]) {
 			accVec.add(new Vec3({ x: 0.0, y: 0.0, z: -1.0 }));
@@ -273,20 +278,15 @@ export default class Player {
 		if (input.keys["e"]) {
 		}
 
-		return [accVec, move, attacking, lookDir];
+		return [accVec, move, ability, lookDir];
 	}
 
-	update(dt: number) {
-		let accVec: Vec3;
-		let move: boolean;
-		let attacking: boolean;
-		let lookDir: Vec3;
-		[accVec, move, attacking, lookDir] = this.updateInput();
-
+	updatePolymorph() {
 		let playerPolymorphComp = <PolymorphComponent>(
 			this.playerEntity.getComponent(ComponentTypeEnum.POLYMORPH)
 		);
 		if (playerPolymorphComp) {
+			this.updateFormAttributes();
 			if (
 				playerPolymorphComp.currentPolymorphShape != this.currentPlayerShape
 			) {
@@ -304,15 +304,37 @@ export default class Player {
 				this.playerIsPolymorphing = playerPolymorphComp.isPolymorphing;
 			}
 		}
+	}
 
-		let playerMoveComp = <MovementComponent>(
-			this.playerEntity.getComponent(ComponentTypeEnum.MOVEMENT)
-		);
+	updateFormAttributes() {
+		const playerComp = this.playerEntity.getComponent(
+			ComponentTypeEnum.PLAYER
+		) as PlayerComponent;
 
-		let playerPosComp = <PositionComponent>(
-			this.playerEntity.getComponent(ComponentTypeEnum.POSITION)
-		);
-		if (attacking) {
+		if (this.currentPlayerShape == PlayerShapeEnum.NORMIE) {
+			playerComp.dodgeStartingTile = new Vec2({ x: 0, y: 2 });
+			playerComp.dodgeModAdvancement = new Vec2({ x: 6, y: 0 });
+			playerComp.dodgeUpdateInterval = 0.3;
+		} else if (this.currentPlayerShape == PlayerShapeEnum.WIZ) {
+			playerComp.dodgeStartingTile = new Vec2({ x: 0, y: 2 });
+			playerComp.dodgeModAdvancement = new Vec2({ x: 6, y: 0 });
+			playerComp.dodgeUpdateInterval = 0.3;
+		} else if (this.currentPlayerShape == PlayerShapeEnum.TANKY) {
+			playerComp.dodgeStartingTile = new Vec2({ x: 0, y: 2 });
+			playerComp.dodgeModAdvancement = new Vec2({ x: 6, y: 0 });
+			playerComp.dodgeUpdateInterval = 0.1;
+		} else if (this.currentPlayerShape == PlayerShapeEnum.MOUSE) {
+			playerComp.dodgeStartingTile = new Vec2({ x: 0, y: 2 });
+			playerComp.dodgeModAdvancement = new Vec2({ x: 6, y: 0 });
+			playerComp.dodgeUpdateInterval = 0.3;
+		}
+	}
+
+	doAbility(lookDir: Vec3) {
+		if (this.currentPlayerShape == PlayerShapeEnum.NORMIE) {
+			let playerPosComp = <PositionComponent>(
+				this.playerEntity.getComponent(ComponentTypeEnum.POSITION)
+			);
 			const weaponComp = this.playerEntity.getComponent(
 				ComponentTypeEnum.WEAPON
 			) as WeaponComponent;
@@ -323,6 +345,72 @@ export default class Player {
 				y: 0.5,
 				z: weaponComp.direction.z * 1 + playerPosComp.position.z,
 			});
+		} else if (this.currentPlayerShape == PlayerShapeEnum.WIZ) {
+		} else if (this.currentPlayerShape == PlayerShapeEnum.TANKY) {
+		} else if (this.currentPlayerShape == PlayerShapeEnum.MOUSE) {
+		}
+	}
+
+	doDodge() {
+		const animCorp = this.playerEntity.getComponent(
+			ComponentTypeEnum.ANIMATION
+		) as AnimationComponent;
+
+		if (this.currentPlayerShape == PlayerShapeEnum.NORMIE) {
+		} else if (this.currentPlayerShape == PlayerShapeEnum.WIZ) {
+		} else if (this.currentPlayerShape == PlayerShapeEnum.TANKY) {
+			if (animCorp) {
+				animCorp.stopAtLast = true;
+			}
+		} else if (this.currentPlayerShape == PlayerShapeEnum.MOUSE) {
+		}
+	}
+
+	// Restore values that are not active after dodge
+	noDodge() {
+		const animComp = this.playerEntity.getComponent(
+			ComponentTypeEnum.ANIMATION
+		) as AnimationComponent;
+
+		if (animComp) {
+			animComp.stopAtLast = false;
+		}
+
+		if (this.currentPlayerShape == PlayerShapeEnum.NORMIE) {
+		} else if (this.currentPlayerShape == PlayerShapeEnum.WIZ) {
+		} else if (this.currentPlayerShape == PlayerShapeEnum.TANKY) {
+		} else if (this.currentPlayerShape == PlayerShapeEnum.MOUSE) {
+		}
+	}
+
+	update(dt: number) {
+		let accVec: Vec3;
+		let move: boolean;
+		let ability: boolean;
+		let lookDir: Vec3;
+		[accVec, move, ability, lookDir] = this.updateInput();
+		this.updatePolymorph();
+
+		let playerMoveComp = <MovementComponent>(
+			this.playerEntity.getComponent(ComponentTypeEnum.MOVEMENT)
+		);
+
+		let playerPosComp = <PositionComponent>(
+			this.playerEntity.getComponent(ComponentTypeEnum.POSITION)
+		);
+
+		const playerComp = this.playerEntity.getComponent(
+			ComponentTypeEnum.PLAYER
+		) as PlayerComponent;
+
+		if (ability) {
+			this.doAbility(lookDir);
+		}
+
+		if (playerComp && playerComp.dodgeing) {
+			this.doDodge();
+		} else {
+			this.noDodge();
 		}
 
 		// Set player acceleration

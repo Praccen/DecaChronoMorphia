@@ -14,6 +14,9 @@ export default class PlayerComponent extends Component {
 	startDodge: boolean;
 	dodgeCooldown: number;
 	dodgeLength: number;
+	dodgeStartingTile: Vec2;
+	dodgeModAdvancement: Vec2;
+	dodgeUpdateInterval: number;
 	resetAnim: boolean;
 
 	constructor() {
@@ -24,5 +27,8 @@ export default class PlayerComponent extends Component {
 		this.dodgeLength = 1.6;
 		this.inRoom = new Vec2({ x: 1, y: 1 });
 		this.resetAnim = false;
+		this.dodgeStartingTile = new Vec2({ x: 0, y: 0 });
+		this.dodgeModAdvancement = new Vec2({ x: 0, y: 0 });
+		this.dodgeUpdateInterval = 0.0;
 	}
 }

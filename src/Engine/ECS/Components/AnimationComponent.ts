@@ -8,6 +8,7 @@ export default class AnimationComponent extends Component {
 	updateInterval: number;
 	updateTimer: number;
 	advancements: number;
+	stopAtLast: boolean;
 
 	spriteMap: SpriteMap;
 
@@ -19,6 +20,7 @@ export default class AnimationComponent extends Component {
 		this.updateInterval = 1.0;
 		this.updateTimer = 0.0;
 		this.advancements = 0;
+		this.stopAtLast = false;
 
 		this.spriteMap = new SpriteMap();
 	}

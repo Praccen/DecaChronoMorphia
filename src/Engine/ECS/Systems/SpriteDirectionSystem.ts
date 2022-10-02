@@ -47,6 +47,7 @@ export default class SpriteDirectionSystem extends System {
 
 			positionComp.rotation.setValues(-30.0, 0.0, 0.0);
 			animationComp.modAdvancement = { x: 2, y: 0 };
+			animationComp.updateInterval = 0.3;
 			if (movementComp.velocity.length2() <= 0.07) {
 				if (!playerDodge) {
 					animationComp.startingTile = { x: 0, y: 3 };
@@ -75,8 +76,15 @@ export default class SpriteDirectionSystem extends System {
 					animationComp.updateTimer = 0;
 					playerComp.resetAnim = false;
 				}
-				animationComp.startingTile = { x: 0, y: 2 };
-				animationComp.modAdvancement = { x: 6, y: 0 };
+				animationComp.startingTile = {
+					x: playerComp.dodgeStartingTile.x,
+					y: playerComp.dodgeStartingTile.y,
+				};
+				animationComp.modAdvancement = {
+					x: playerComp.dodgeModAdvancement.x,
+					y: playerComp.dodgeModAdvancement.y,
+				};
+				animationComp.updateInterval = playerComp.dodgeUpdateInterval;
 			}
 		});
 	}
