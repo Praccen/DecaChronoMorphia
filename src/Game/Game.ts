@@ -122,11 +122,19 @@ export default class Game {
 		// testButton.textString = "Test button";
 		// testButton.center = true;
 		this.playerObject = new Player(this.rendering, this.ecsManager);
-
-		MapGenerator.GenerateMap(5, 5, ecsManager, rendering);
 	}
 
 	async init() {
+		// ---- Map ---
+		const mapInformation = await MapGenerator.GenerateMap(
+			5,
+			5,
+			this.ecsManager,
+			this.rendering
+		);
+		this.ecsManager.initializeSystems(mapInformation);
+		console.log("mapInformation :>> ", mapInformation);
+
 		// ---- Box ----
 		let boxTexture =
 			"https://as2.ftcdn.net/v2/jpg/01/99/14/99/1000_F_199149981_RG8gciij11WKAQ5nKi35Xx0ovesLCRaU.jpg";

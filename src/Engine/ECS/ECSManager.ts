@@ -16,6 +16,7 @@ import DamageSystem from "./Systems/DamageSystem.js";
 import GraphicsComponent from "./Components/GraphicsComponent.js";
 import PlayerSystem from "./Systems/PlayerSystem.js";
 import HealthSystem from "./Systems/HealthSystem.js";
+import { MapInformation } from "../../Game/Map/MapGenerator.js";
 
 export default class ECSManager {
 	private systems: Map<String, System>;
@@ -31,8 +32,8 @@ export default class ECSManager {
 		entity: Entity;
 		componentType: ComponentTypeEnum;
 	}>;
-	private activateEntitiesQueue: Array<number>;
-	private deactivateEntitiesQueue: Array<number>;
+	private activateEntitiesQueue: number[];
+	private deactivateEntitiesQueue: number[];
 
 	camera: Camera;
 	rendering: Rendering;
@@ -55,20 +56,18 @@ export default class ECSManager {
 			entity: Entity;
 			componentType: ComponentTypeEnum;
 		}>();
-		this.activateEntitiesQueue = new Array<number>();
-		this.deactivateEntitiesQueue = new Array<number>();
-
-		this.initializeSystems();
+		this.activateEntitiesQueue = [];
+		this.deactivateEntitiesQueue = [];
 	}
 
-	initializeSystems() {
+	initializeSystems(mapInformation: MapInformation) {
 		this.systems.set("COLLISION", new CollisionSystem());
 		this.systems.set("MOVEMENT", new MovementSystem());
 		this.systems.set("GRAPHICS", new GraphicsSystem());
 		this.systems.set("PARTICLE", new ParticleSpawnerSystem());
 		this.systems.set("ANIMATION", new AnimationSystem());
 		this.systems.set("ENEMY", new EnemySystem(this, this.rendering));
-		this.systems.set("ROOM", new RoomSystem(this));
+		this.systems.set("ROOM", new RoomSystem(this, mapInformation));
 		this.systems.set("SPRITE_DIRECTION", new SpriteDirectionSystem());
 		this.systems.set("DAMAGE", new DamageSystem(this));
 		this.systems.set("PLAYER", new PlayerSystem());
@@ -233,5 +232,9 @@ export default class ECSManager {
 				entity.isActive = false;
 			}
 		});
+
+		//empty queue
+		this.activateEntitiesQueue.length = 0;
+		this.deactivateEntitiesQueue.length = 0;
 	}
 }

@@ -1,7 +1,8 @@
 import { Component, ComponentTypeEnum } from "./Component.js";
+import Vec2 from "../../Maths/Vec2.js";
 
 export default class PlayerComponent extends Component {
-	inRoomId?: number;
+	inRoom: Vec2;
 	dodgeing: boolean;
 	startDodge: boolean;
 	dodgeCooldown: number;
@@ -13,5 +14,6 @@ export default class PlayerComponent extends Component {
 		this.dodgeing = false;
 		this.dodgeCooldown = 2;
 		this.dodgeLength = 1.5;
+		this.inRoom = new Vec2({ x: 1, y: 1 });
 	}
 }
