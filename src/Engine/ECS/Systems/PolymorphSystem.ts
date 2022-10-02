@@ -43,10 +43,6 @@ export default class PolymorphSystem extends System {
 		
 	}
 
-	polymorph(polymorphShape: PlayerShapeEnum, graphicsComp: GraphicsComponent, animationComp: AnimationComponent) {
-		
-	}
-
 	update(dt: number) {
 		this.polymorphSystemUpdateCount++;
 		if (this.polymorphSystemUpdateCount >= this.polymorphSystemUpdateCountLimit){
@@ -72,37 +68,14 @@ export default class PolymorphSystem extends System {
 				ComponentTypeEnum.GRAPHICS
 			) as GraphicsComponent;
 
-			if (this.polymorphClockSecondCount < 10){
+			if (polymorphComp.isPolymorphing){
 				if (this.polymorphSystemUpdateCount > this.polymorphSystemUpdateCountLimit/2){
 					polymorphComp.isPolymorphing = false
-					this.polymorph(polymorphComp.nextPolymorphShape, graphicsComp, animationComp)
-					polymorphComp.nextPolymorphShape = this.getNextPolymorph() as PlayerShapeEnum;
-				}
-			}
-
-			if (movementComp.velocity.length2() <= 0.01) {
-				animationComp.startingTile = { x: 2, y: 0 };
-				animationComp.advanceBy = { x: 0, y: 0 };
-				return;
-			}
-
-			positionComp.rotation.setValues(-30.0, 0.0, 0.0);
-			if (movementComp.accelerationDirection.z > 0) {
-				animationComp.startingTile = { x: 0, y: 0 };
-				animationComp.advanceBy = { x: 1, y: 0 };
-				if (movementComp.accelerationDirection.x < 0) {
-					positionComp.rotation.setValues(-40.0, -15.0, 5.0);
-				} else {
-					positionComp.rotation.setValues(-40.0, 15.0, -5.0);
 				}
 			} else {
-				animationComp.startingTile = { x: 0, y: 1 };
-				animationComp.advanceBy = { x: 1, y: 0 };
-				if (movementComp.accelerationDirection.x > 0) {
-					positionComp.rotation.setValues(-40.0, -15.0, 5.0);
-				} else {
-					positionComp.rotation.setValues(-40.0, 15.0, -5.0);
-				}
+				polymorphComp.isPolymorphing = true
+				polymorphComp.currentPolymorphShape = polymorphComp.nextPolymorphShape
+				polymorphComp.nextPolymorphShape = this.getNextPolymorph() as PlayerShapeEnum
 			}
 		});
 		if (this.polymorphClockSecondCount >= 10) {

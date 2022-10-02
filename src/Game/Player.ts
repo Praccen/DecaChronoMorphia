@@ -21,7 +21,8 @@ export default class Player {
 	private rendering: Rendering;
 	private playerQuad: PhongQuad;
 	private playerTextureMap: {[key in PlayerShapeEnum] : [Texture, Texture]}
-	private morphTextureTuple: [Texture, Texture]
+	private playerBoundingBoxMap: { [key in PlayerShapeEnum]: [Vec3, Vec3] }
+	private currentPlayerShape: PlayerShapeEnum
 	private mouseTex: Texture;
 	private wizTex: Texture;
 	private normyTex: Texture;
@@ -66,17 +67,42 @@ export default class Player {
 		this.playerTextureMap[PlayerShapeEnum.TANKY] = [this.tankyTex, this.tankyTexSpec]
 		this.playerTextureMap[PlayerShapeEnum.WIZ] = [this.wizTex, this.wizTex]
 		this.playerTextureMap[PlayerShapeEnum.MOUSE] = [this.mouseTex, this.mouseTex]
-		this.morphTextureTuple = [this.slimeTex, this.slimeTexSpec]
+
+		this.currentPlayerShape = PlayerShapeEnum.NORMIE
 
 		this.boundingBoxModelMatrix = new Matrix4(null);
+	}
+	
+	updateGraphicsComponent() {
+		const playerGraphicsComponent = this.playerEntity.getComponent(
+			ComponentTypeEnum.GRAPHICS
+		) as GraphicsComponent;
+
+		this.playerQuad = this.rendering.getNewPhongQuadTex(
+			this.playerTextureMap[this.currentPlayerShape][0],
+			this.playerTextureMap[this.currentPlayerShape][1]
+		);
+
+		playerGraphicsComponent.object = this.playerQuad
+	}
+
+	updateBoundingBox(){
+		const playerBoundingBoxComp = this.playerEntity.getComponent(
+			ComponentTypeEnum.BOUNDINGBOX
+		) as BoundingBoxComponent;
+
+		playerBoundingBoxComp.boundingBox.setMinAndMaxVectors(
+			this.playerBoundingBoxMap[this.currentPlayerShape][0],
+			this.playerBoundingBoxMap[this.currentPlayerShape][1]
+		);
 	}
 
 	init() {
 		this.playerEntity = this.ecsManager.createEntity();
 
 		this.playerQuad = this.rendering.getNewPhongQuadTex(
-			this.playerTextureMap[PlayerShapeEnum.NORMIE][0],
-			this.playerTextureMap[PlayerShapeEnum.NORMIE][1]
+			this.playerTextureMap[this.currentPlayerShape][0],
+			this.playerTextureMap[this.currentPlayerShape][1]
 		);
 		this.ecsManager.addComponent(
 			this.playerEntity,
@@ -102,19 +128,25 @@ export default class Player {
 		let playerPolymorphComp = new PolymorphComponent();
 		this.ecsManager.addComponent(this.playerEntity, playerPolymorphComp);
 
+		this.playerBoundingBoxMap[PlayerShapeEnum.NORMIE] = [new Vec3({ x: -0.2, y: -0.5, z: -0.2 }), 
+			new Vec3({ x: 0.2, y: 0.5, z: 0.2 })]
+		this.playerBoundingBoxMap[PlayerShapeEnum.TANKY] = [new Vec3({ x: -0.2, y: -0.5, z: -0.2 }),
+		new Vec3({ x: 0.2, y: 0.5, z: 0.2 })]
+		this.playerBoundingBoxMap[PlayerShapeEnum.WIZ] = [new Vec3({ x: -0.2, y: -0.5, z: -0.2 }),
+		new Vec3({ x: 0.2, y: 0.5, z: 0.2 })]
+		this.playerBoundingBoxMap[PlayerShapeEnum.MOUSE] = [new Vec3({ x: -0.2, y: -0.5, z: -0.2 }),
+		new Vec3({ x: 0.2, y: 0.5, z: 0.2 })]
+
 		// Collision stuff
 		let playerBoundingBoxComp = new BoundingBoxComponent();
-		playerBoundingBoxComp.boundingBox.setMinAndMaxVectors(
-			new Vec3({ x: -0.2, y: -0.5, z: -0.2 }),
-			new Vec3({ x: 0.2, y: 0.5, z: 0.2 })
-		);
+		this.ecsManager.addComponent(this.playerEntity, playerBoundingBoxComp);
+		this.updateBoundingBox()
 		this.boundingBoxModelMatrix.setTranslate(
 			playerPosComp.position.x,
 			playerPosComp.position.y,
 			playerPosComp.position.z
 		);
 		playerBoundingBoxComp.updateTransformMatrix(this.boundingBoxModelMatrix);
-		this.ecsManager.addComponent(this.playerEntity, playerBoundingBoxComp);
 		this.ecsManager.addComponent(this.playerEntity, new CollisionComponent());
 	}
 
@@ -164,7 +196,14 @@ export default class Player {
 		let playerPolymorphComp = <PolymorphComponent>(
 			this.playerEntity.getComponent(ComponentTypeEnum.POLYMORPH)
 		);
-		if (playerPolymorphComp.isPolymorphing)
+		// if (playerPolymorphComp.isPolymorphing){
+		// 	// EMIT MORPH PARTICLE EFFECT
+		// }
+		if (playerPolymorphComp.currentPolymorphShape != this.currentPlayerShape){
+			this.currentPlayerShape = playerPolymorphComp.currentPolymorphShape
+			this.updateGraphicsComponent()
+			this.updateBoundingBox()
+		}
 
 		let playerMoveComp = <MovementComponent>(
 			this.playerEntity.getComponent(ComponentTypeEnum.MOVEMENT)
