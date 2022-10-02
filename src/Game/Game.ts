@@ -116,12 +116,12 @@ export default class Game {
 		this.shadowCheckbox.getElement().style.color = "cyan";
 		this.shadowCheckbox.getInputElement().style.accentColor = "red";
 
-		let testButton = this.rendering.getNewButton();
-		testButton.position.x = 0.5;
-		testButton.position.y = 0.5;
-		testButton.textString = "Test button";
-		testButton.center = true;
-		this.playerObject = new Player(this.rendering, this.ecsManager);
+		// let testButton = this.rendering.getNewButton();
+		// testButton.position.x = 0.5;
+		// testButton.position.y = 0.5;
+		// testButton.textString = "Test button";
+		// testButton.center = true;
+		// this.playerObject = new Player(this.rendering, this.ecsManager);
 	}
 
 	async init() {
