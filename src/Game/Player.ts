@@ -43,6 +43,8 @@ export default class Player {
 	private nextForm: number;
 	private formCooldown: number = 50;
 	private boundingBoxModelMatrix: Matrix4;
+	private resetTimer: boolean = false;
+	private resetAnim: boolean = false;
 
 	constructor(rendering: Rendering, ecsManager: ECSManager) {
 		this.rendering = rendering;

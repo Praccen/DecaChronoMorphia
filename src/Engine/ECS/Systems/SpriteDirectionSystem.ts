@@ -42,6 +42,10 @@ export default class SpriteDirectionSystem extends System {
 				playerDodge = playerComp.dodgeing;
 			}
 
+			if (!playerDodge) {
+				playerComp.resetAnim = true;
+			}
+
 			positionComp.rotation.setValues(-30.0, 0.0, 0.0);
 			animationComp.modAdvancement = { x: 2, y: 0 };
 			if (movementComp.velocity.length2() <= 0.07) {
@@ -53,7 +57,6 @@ export default class SpriteDirectionSystem extends System {
 
 			if (movementComp.accelerationDirection.z >= 0) {
 				animationComp.startingTile = { x: 0, y: 1 };
-
 				if (movementComp.accelerationDirection.x < 0) {
 					positionComp.rotation.setValues(-40.0, -15.0, 5.0);
 				} else if (movementComp.accelerationDirection.x > 0) {
@@ -68,6 +71,11 @@ export default class SpriteDirectionSystem extends System {
 				}
 			}
 			if (playerDodge) {
+				if (playerComp.resetAnim) {
+					animationComp.advancements = 0;
+					animationComp.updateTimer = 0;
+					playerComp.resetAnim = false;
+				}
 				animationComp.startingTile = { x: 0, y: 2 };
 				animationComp.modAdvancement = { x: 6, y: 0 };
 			}
