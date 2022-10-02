@@ -121,7 +121,7 @@ export default class Game {
 		// testButton.position.y = 0.5;
 		// testButton.textString = "Test button";
 		// testButton.center = true;
-		// this.playerObject = new Player(this.rendering, this.ecsManager);
+		this.playerObject = new Player(this.rendering, this.ecsManager);
 	}
 
 	async init() {
@@ -182,13 +182,13 @@ export default class Game {
 		posComp.rotation.setValues(rotX, 0.0, 0.0);
 		this.ecsManager.addComponent(entity, posComp);
 
-		let ac = new AnimationComponent();
-		ac.spriteMap.setNrOfSprites(2, 1);
-		ac.startingTile = {x: 0, y: 0};
-		ac.advanceBy = {x: 1.0, y: 0.0};
-		ac.modAdvancement = {x: 2.0, y: 1.0};
-		ac.updateInterval = 0.5;
-		this.ecsManager.addComponent(entity, ac);
+		// let ac = new AnimationComponent();
+		// ac.spriteMap.setNrOfSprites(2, 1);
+		// ac.startingTile = {x: 0, y: 0};
+		// ac.advanceBy = {x: 1.0, y: 0.0};
+		// ac.modAdvancement = {x: 2.0, y: 1.0};
+		// ac.updateInterval = 0.5;
+		// this.ecsManager.addComponent(entity, ac);
 
 		return entity;
 	}
