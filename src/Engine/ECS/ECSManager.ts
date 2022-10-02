@@ -18,6 +18,7 @@ import GraphicsComponent from "./Components/GraphicsComponent.js";
 import PlayerSystem from "./Systems/PlayerSystem.js";
 import HealthSystem from "./Systems/HealthSystem.js";
 import { MapInformation } from "../../Game/Map/MapGenerator.js";
+import WeaponSystem from "./Systems/WeaponSystem.js";
 
 export default class ECSManager {
 	private systems: Map<String, System>;
@@ -74,6 +75,7 @@ export default class ECSManager {
 		this.systems.set("DAMAGE", new DamageSystem(this));
 		this.systems.set("PLAYER", new PlayerSystem());
 		this.systems.set("HEALTH", new HealthSystem(this));
+		this.systems.set("WEAPON", new WeaponSystem(this, this.rendering));
 	}
 
 	update(dt: number) {
@@ -99,6 +101,7 @@ export default class ECSManager {
 		this.systems.get("DAMAGE").update(dt);
 		this.systems.get("PLAYER").update(dt);
 		this.systems.get("HEALTH").update(dt);
+		this.systems.get("WEAPON").update(dt);
 	}
 
 	updateRenderingSystems(dt: number) {

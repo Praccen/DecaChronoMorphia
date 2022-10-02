@@ -1,3 +1,4 @@
+import Vec3 from "../../Maths/Vec3.js";
 import { Component, ComponentTypeEnum } from "./Component.js";
 
 export default class WeaponComponent extends Component {
@@ -5,6 +6,8 @@ export default class WeaponComponent extends Component {
 	shoots: boolean; //if this weapon shoots a projectile
 	range: number; //how long the attack reaches
 
+	direction: Vec3;
+	position: Vec3;
 	attackRequested: boolean;
 	//attack speed
 	attackCooldown: number;
