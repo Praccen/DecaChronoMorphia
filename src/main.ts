@@ -214,7 +214,7 @@ window.onload = async () => {
 			rendering.draw();
 			requestAnimationFrame(menuLoop);
 		} else {
-			game = new Game(gl, rendering, ecsManager);
+			game = new Game(rendering, ecsManager);
 			await game.init();
 			requestAnimationFrame(gameLoop);
 		}

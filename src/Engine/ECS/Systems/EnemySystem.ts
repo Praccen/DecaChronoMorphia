@@ -18,7 +18,7 @@ export default class EnemySystem extends System {
 	ecsManager: ECSManager;
 	rendering: Rendering;
 
-	constructor(manager, rendering) {
+	constructor(manager: ECSManager, rendering: Rendering) {
 		super([
 			ComponentTypeEnum.ENEMY,
 			ComponentTypeEnum.POSITION,
@@ -41,6 +41,9 @@ export default class EnemySystem extends System {
 				return;
 			}
 			const targetEntity = this.ecsManager.getEntity(enemyComp.targetEntityId);
+			if (!targetEntity) {
+				return;
+			}
 			const targetPositionComp = targetEntity.getComponent(
 				ComponentTypeEnum.POSITION
 			) as PositionComponent;

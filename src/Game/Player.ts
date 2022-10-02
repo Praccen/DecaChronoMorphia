@@ -36,8 +36,6 @@ export default class Player {
 	private normySpecTex: Texture;
 	private tankyTex: Texture;
 	private tankyTexSpec: Texture;
-	private slimeTex: Texture;
-	private slimeTexSpec: Texture;
 	private polymorphTexPath: string;
 	private polymorphNumParticles: number = 200;
 	private playerParticleSpawnerLifeTime: number = 0.2;
@@ -66,12 +64,6 @@ export default class Player {
 		);
 		this.tankyTexSpec = this.rendering.getTextureFromStore(
 			"Assets/textures/tanky_spec.png"
-		);
-		this.slimeTex = this.rendering.getTextureFromStore(
-			"Assets/textures/skully.png"
-		);
-		this.slimeTexSpec = this.rendering.getTextureFromStore(
-			"Assets/textures/skully.png"
 		);
 		this.polymorphTexPath = "Assets/textures/skully.png";
 

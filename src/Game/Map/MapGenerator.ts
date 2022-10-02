@@ -82,15 +82,18 @@ export module MapGenerator {
 			ecsManager,
 			rendering
 		);
-
-		const enemyId = createEnemyEntity(
-			new Vec3(roomCenter),
-			isStartingRoom,
-			"Assets/textures/slime.png",
-			ecsManager,
-			rendering
-		);
-
+		
+		let enemyId = -1;
+		if (!isStartingRoom) {
+			 enemyId = createEnemyEntity(
+				new Vec3(roomCenter),
+				isStartingRoom,
+				"Assets/textures/slime.png",
+				ecsManager,
+				rendering
+			);
+		}
+		
 		createDoorEntity(new Vec3(roomCenter), ecsManager, rendering, wallsTowards);
 
 		await createWallEntities(
@@ -101,7 +104,7 @@ export module MapGenerator {
 		);
 		const roomInformation: RoomInformation = {
 			roomPosition: roomPosition,
-			active: isStartingRoom,
+			active: false,
 			entityIds: [enemyId],
 			floorId: floorId,
 		};
@@ -137,7 +140,7 @@ export module MapGenerator {
 		enemyAnimComp.updateInterval = 0.3;
 		ecsManager.addComponent(enemyEntity, enemyAnimComp);
 
-		ecsManager.addComponent(enemyEntity, new EnemyComponent(205));
+		ecsManager.addComponent(enemyEntity, new EnemyComponent());
 		ecsManager.addComponent(enemyEntity, new WeaponComponent(10, true, 4, 2));
 
 		// Collision for enemy
