@@ -33,6 +33,8 @@ export default class CollisionSystem extends System {
 			let e1CollisionComp = <CollisionComponent>(
 				e1.getComponent(ComponentTypeEnum.COLLISION)
 			);
+			e1CollisionComp.currentCollisionEntities.clear();
+
 			if (e1CollisionComp.isStatic) {
 				continue;
 			}
@@ -41,7 +43,21 @@ export default class CollisionSystem extends System {
 			let e1BoundingBoxComp = <BoundingBoxComponent>(
 				e1.getComponent(ComponentTypeEnum.BOUNDINGBOX)
 			);
-			e1BoundingBoxComp.updateTransformMatrix();
+
+			if (e1BoundingBoxComp.updateBoundingBoxBasedOnPositionComp) {
+				let posComp = <PositionComponent>(
+					e1.getComponent(ComponentTypeEnum.POSITION)
+				);
+				e1BoundingBoxComp.updateTransformMatrix(
+					new Matrix4(null).setTranslate(
+						posComp.position.x,
+						posComp.position.y,
+						posComp.position.z
+					)
+				);
+			} else {
+				e1BoundingBoxComp.updateTransformMatrix();
+			}
 
 			let e1ShapeArray: Array<Shape>;
 
@@ -61,14 +77,32 @@ export default class CollisionSystem extends System {
 					continue;
 				}
 
+				const e2CollisionComp = <CollisionComponent>(
+					e2.getComponent(ComponentTypeEnum.COLLISION)
+				);
+
 				let e2BoundingBoxComp = <BoundingBoxComponent>(
 					e2.getComponent(ComponentTypeEnum.BOUNDINGBOX)
 				);
-				e2BoundingBoxComp.updateTransformMatrix();
+				if (e2BoundingBoxComp.updateBoundingBoxBasedOnPositionComp) {
+					let posComp = <PositionComponent>(
+						e2.getComponent(ComponentTypeEnum.POSITION)
+					);
+					e2BoundingBoxComp.updateTransformMatrix(
+						new Matrix4(null).setTranslate(
+							posComp.position.x,
+							posComp.position.y,
+							posComp.position.z
+						)
+					);
+				} else {
+					e2BoundingBoxComp.updateTransformMatrix();
+				}
 
 				let e2MeshCollisionComp = <MeshCollisionComponent>(
 					e2.getComponent(ComponentTypeEnum.MESHCOLLISION)
 				);
+				let collisionOccured = false;
 				if (e1MeshCollisionComp || e2MeshCollisionComp) {
 					// At least one of the entities have mesh collision
 					// Start by checking bounding boxes, but don't save information
@@ -82,33 +116,39 @@ export default class CollisionSystem extends System {
 						if (e2MeshCollisionComp) {
 							// Entity 2 has mesh collision, use the mesh for intersection testing
 							e2MeshCollisionComp.updateTransformMatrix(); // First update transform matrix
-							IntersectionTester.identifyIntersectionInformation(
-								e1ShapeArray,
-								e2MeshCollisionComp.triangles,
-								information
-							);
+							collisionOccured =
+								IntersectionTester.identifyIntersectionInformation(
+									e1ShapeArray,
+									e2MeshCollisionComp.triangles,
+									information,
+									e2CollisionComp.hasForce && e1CollisionComp.hasForce
+								);
 						} else {
 							// Entity 2 does not have mesh collision, use the bounding box for intersection testing
-							IntersectionTester.identifyIntersectionInformation(
-								e1ShapeArray,
-								[e2BoundingBoxComp.boundingBox],
-								information
-							);
+							collisionOccured =
+								IntersectionTester.identifyIntersectionInformation(
+									e1ShapeArray,
+									[e2BoundingBoxComp.boundingBox],
+									information,
+									e2CollisionComp.hasForce && e1CollisionComp.hasForce
+								);
 						}
 					}
 				} else {
 					// None of the entities have mesh collision, do collision with bounding boxes, and save information
-					IntersectionTester.identifyIntersectionInformation(
+					collisionOccured = IntersectionTester.identifyIntersectionInformation(
 						[e1BoundingBoxComp.boundingBox],
 						[e2BoundingBoxComp.boundingBox],
-						information
+						information,
+						e2CollisionComp.hasForce && e1CollisionComp.hasForce
 					);
 				}
+				if (collisionOccured) {
+					//save collision
+					e1CollisionComp.currentCollisionEntities.add(e2);
+					e2CollisionComp.currentCollisionEntities.add(e1);
+				}
 			}
-
-			//TODO record collisions
-			// c.currentCollisionEntities.add(e2); // Save collision
-			// c2.currentCollisionEntities.add(e); // Add to other entity that it has been hit
 
 			let movComp = <MovementComponent>(
 				e1.getComponent(ComponentTypeEnum.MOVEMENT)
@@ -120,9 +160,11 @@ export default class CollisionSystem extends System {
 			// Update velocities
 			if (movComp) {
 				for (let inf of information) {
-					let dotProd = movComp.velocity.dot(inf.axis);
-					if (dotProd < 0.0) {
-						movComp.velocity.subtract(new Vec3(inf.axis).multiply(dotProd));
+					if (inf.affectMove) {
+						let dotProd = movComp.velocity.dot(inf.axis);
+						if (dotProd < 0.0) {
+							movComp.velocity.subtract(new Vec3(inf.axis).multiply(dotProd));
+						}
 					}
 				}
 			}

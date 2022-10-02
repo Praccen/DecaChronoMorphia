@@ -16,6 +16,8 @@ import PolymorphComponent from "../Engine/ECS/Components/PolymorphComponent.js";
 import { PlayerShapeEnum } from "../Engine/ECS/Components/PlayerComponent.js";
 import ParticleSpawnerComponent from "../Engine/ECS/Components/ParticleSpawnerComponent.js";
 import ParticleSpawner from "../Engine/Objects/ParticleSpawner.js";
+import PlayerComponent from "../Engine/ECS/Components/PlayerComponent.js";
+import HealthComponent from "../Engine/ECS/Components/HealthComponent.js";
 
 export default class Player {
 	public playerEntity: Entity;
@@ -152,7 +154,6 @@ export default class Player {
 		);
 
 		let playerMoveComp = new MovementComponent();
-		playerMoveComp.constantAcceleration.y = 0.0;
 		this.ecsManager.addComponent(this.playerEntity, playerMoveComp);
 
 		let playerPosComp = new PositionComponent();
@@ -160,10 +161,10 @@ export default class Player {
 		this.ecsManager.addComponent(this.playerEntity, playerPosComp);
 
 		let playerAnimComp = new AnimationComponent();
-		playerAnimComp.spriteMap.setNrOfSprites(3, 2);
-		playerAnimComp.startingTile = { x: 0, y: 0 };
+		playerAnimComp.spriteMap.setNrOfSprites(6, 6);
+		playerAnimComp.startingTile = { x: 0, y: 1 };
 		playerAnimComp.advanceBy = { x: 1.0, y: 0.0 };
-		playerAnimComp.modAdvancement = { x: 2.0, y: 1.0 };
+		playerAnimComp.modAdvancement = { x: 2.0, y: 0.0 };
 		playerAnimComp.updateInterval = 0.3;
 		this.ecsManager.addComponent(this.playerEntity, playerAnimComp);
 
@@ -210,6 +211,8 @@ export default class Player {
 			this.playerBoundingBoxMap[this.currentPlayerShape][0],
 			this.playerBoundingBoxMap[this.currentPlayerShape][1]
 		);
+
+		playerBoundingBoxComp.updateBoundingBoxBasedOnPositionComp = true;
 		this.ecsManager.addComponent(this.playerEntity, playerBoundingBoxComp);
 
 		this.boundingBoxModelMatrix.setTranslate(
@@ -219,12 +222,22 @@ export default class Player {
 		);
 		playerBoundingBoxComp.updateTransformMatrix(this.boundingBoxModelMatrix);
 		this.ecsManager.addComponent(this.playerEntity, new CollisionComponent());
+
+		let playerComp = new PlayerComponent();
+		this.ecsManager.addComponent(this.playerEntity, playerComp);
+
+		let healthComp = new HealthComponent(20);
+		this.ecsManager.addComponent(this.playerEntity, healthComp);
 	}
 
 	update(dt: number) {
 		let accVec: Vec3 = new Vec3({ x: 0.0, y: 0.0, z: 0.0 });
 		let move = false;
 		this.formCooldown++;
+		let playerComp = <PlayerComponent>(
+			this.playerEntity.getComponent(ComponentTypeEnum.PLAYER)
+		);
+
 		if (input.keys["w"]) {
 			accVec.add(new Vec3({ x: 0.0, y: 0.0, z: -1.0 }));
 			move = true;
@@ -262,6 +275,9 @@ export default class Player {
 				}
 				this.formCooldown = 0;
 			}
+		}
+		if (input.keys[" "] && playerComp) {
+			playerComp.startDodge = true;
 		}
 
 		let playerPolymorphComp = <PolymorphComponent>(

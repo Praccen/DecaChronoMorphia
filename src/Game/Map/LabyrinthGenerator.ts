@@ -71,10 +71,10 @@ export module LabyrinthGenerator {
 			map[i] = new Array<number>();
 		}
 
-		//Generate walls
-		generateMap(map, xSize, ySize);
-		generateMaze(map, xSize, ySize);
-		printMap(map, xSize, ySize);
+        //Generate walls
+        generateMap(map, xSize, ySize);
+        generateMaze(map, xSize, ySize);
+        // printMap(map, xSize, ySize);
 
 		return map;
 	}

@@ -25,6 +25,7 @@ import LightingPass from "./ShaderPrograms/DeferredRendering/LightingPass.js";
 import BloomExtraction from "./ShaderPrograms/PostProcessing/BloomExtraction.js";
 import BloomBlending from "./ShaderPrograms/PostProcessing/BloomBlending.js";
 import GaussianBlur from "./ShaderPrograms/PostProcessing/GaussianBlur.js";
+import GraphicsObject from "./Objects/GraphicsObject.js";
 
 export default class Rendering {
 	// public
@@ -85,8 +86,7 @@ export default class Rendering {
 
 	// ---- Graphics objects ----
 	private quads: Array<Quad>;
-	private phongQuads: Array<PhongQuad>;
-	private meshes: Array<Mesh>;
+	private graphicObjects: Array<GraphicsObject>;
 	// --------------------------
 
 	// ---- Lights ----
@@ -227,8 +227,7 @@ export default class Rendering {
 
 		// ---- Graphics objects ----
 		this.quads = new Array<Quad>();
-		this.phongQuads = new Array<PhongQuad>();
-		this.meshes = new Array<Mesh>();
+		this.graphicObjects = new Array<GraphicsObject>();
 		// --------------------------
 
 		// ---- Lights ----
@@ -305,7 +304,7 @@ export default class Rendering {
 	}
 
 	getNewPhongQuad(diffusePath: string, specularPath: string): PhongQuad {
-		const length = this.phongQuads.push(
+		const length = this.graphicObjects.push(
 			new PhongQuad(
 				this.gl,
 				this.geometryPass,
@@ -313,14 +312,14 @@ export default class Rendering {
 				this.textureStore.getTexture(specularPath)
 			)
 		);
-		return this.phongQuads[length - 1];
+		return this.graphicObjects[length - 1] as PhongQuad;
 	}
 
 	getNewPhongQuadTex(diffusePath: Texture, specularPath: Texture): PhongQuad {
-		const length = this.phongQuads.push(
+		const length = this.graphicObjects.push(
 			new PhongQuad(this.gl, this.geometryPass, diffusePath, specularPath)
 		);
-		return this.phongQuads[length - 1];
+		return this.graphicObjects[length - 1] as PhongQuad;
 	}
 
 	async getNewMesh(
@@ -331,7 +330,7 @@ export default class Rendering {
 		const response = await fetch(meshPath);
 		const objContent = await response.text();
 
-		const length = this.meshes.push(
+		const length = this.graphicObjects.push(
 			new Mesh(
 				this.gl,
 				this.geometryPass,
@@ -340,7 +339,8 @@ export default class Rendering {
 				this.textureStore.getTexture(specularPath)
 			)
 		);
-		return this.meshes[length - 1];
+
+		return this.graphicObjects[length - 1];
 	}
 
 	getNewPointLight(): PointLight {
@@ -396,11 +396,8 @@ export default class Rendering {
 		}
 	}
 
-	deletePhongQuad(quad: PhongQuad) {
-		let index = this.phongQuads.findIndex((q) => q == quad);
-		if (index != -1) {
-			this.phongQuads.splice(index, 1);
-		}
+	deleteGraphicsObject(object: GraphicsObject) {
+		this.graphicObjects = this.graphicObjects.filter((o) => object !== o);
 	}
 
 	draw() {
@@ -421,14 +418,13 @@ export default class Rendering {
 		);
 
 		//Render shadow pass
-		for (let phongQuad of this.phongQuads.values()) {
-			phongQuad.changeShaderProgram(this.shadowPass);
-			phongQuad.draw(false);
-		}
-
-		for (let mesh of this.meshes.values()) {
-			mesh.changeShaderProgram(this.shadowPass);
-			mesh.draw(false);
+		for (let obj of this.graphicObjects.values()) {
+			obj.changeShaderProgram(this.shadowPass);
+			if (obj instanceof PhongQuad) {
+				(obj as PhongQuad).draw(false);
+			} else if (obj instanceof Mesh) {
+				(obj as Mesh).draw(false);
+			}
 		}
 
 		this.gl.viewport(0.0, 0.0, this.resolutionWidth, this.resolutionHeight);
@@ -449,14 +445,9 @@ export default class Rendering {
 			this.geometryPass.getUniformLocation("viewProjMatrix")[0]
 		);
 
-		for (let phongQuad of this.phongQuads.values()) {
-			phongQuad.changeShaderProgram(this.geometryPass);
-			phongQuad.draw();
-		}
-
-		for (let mesh of this.meshes.values()) {
-			mesh.changeShaderProgram(this.geometryPass);
-			mesh.draw();
+		for (let obj of this.graphicObjects.values()) {
+			obj.changeShaderProgram(this.geometryPass);
+			obj.draw();
 		}
 		// -----------------------
 

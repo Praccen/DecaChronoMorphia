@@ -44,7 +44,8 @@ export module IntersectionTester {
 	export function identifyIntersectionInformation(
 		shapeArrayA: Array<Shape>,
 		shapeArrayB: Array<Shape>,
-		intersectionInformation: Array<IntersectionInformation>
+		intersectionInformation: Array<IntersectionInformation>,
+		affectMove: boolean
 	): boolean {
 		let intersecting = false;
 		let tempIntersectionAxis = new Vec3();
@@ -67,7 +68,8 @@ export module IntersectionTester {
 						new IntersectionInformation(
 							tempIntersectionAxis,
 							tempIntersectionDepth.depth,
-							SAT.getIntersectionPoint(shapeA, shapeB, tempIntersectionAxis)
+							SAT.getIntersectionPoint(shapeA, shapeB, tempIntersectionAxis),
+							affectMove
 						)
 					);
 				}

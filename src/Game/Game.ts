@@ -17,6 +17,7 @@ import Player from "./Player.js";
 import AnimationComponent from "../Engine/ECS/Components/AnimationComponent.js";
 import EnemyComponent from "../Engine/ECS/Components/EnemyComponent.js";
 import { MapGenerator } from "./Map/MapGenerator.js";
+import WeaponComponent from "../Engine/ECS/Components/WeaponComponent.js";
 
 export default class Game {
 	private rendering: Rendering;
@@ -121,11 +122,19 @@ export default class Game {
 		// testButton.textString = "Test button";
 		// testButton.center = true;
 		this.playerObject = new Player(this.rendering, this.ecsManager);
-
-		MapGenerator.GenerateMap(5, 5, ecsManager, rendering);
 	}
 
 	async init() {
+		// ---- Map ---
+		const mapInformation = await MapGenerator.GenerateMap(
+			5,
+			5,
+			this.ecsManager,
+			this.rendering
+		);
+		this.ecsManager.initializeSystems(mapInformation);
+		console.log("mapInformation :>> ", mapInformation);
+
 		// ---- Box ----
 		let boxTexture =
 			"https://as2.ftcdn.net/v2/jpg/01/99/14/99/1000_F_199149981_RG8gciij11WKAQ5nKi35Xx0ovesLCRaU.jpg";
@@ -157,58 +166,6 @@ export default class Game {
 		// -------------
 
 		this.playerObject.init();
-
-		// ---- Enemy ----
-		let enemyTexture = "Assets/textures/mouse.png";
-		this.enemyEntity = this.ecsManager.createEntity();
-
-		let phongQuad = this.rendering.getNewPhongQuad(enemyTexture, enemyTexture);
-		this.ecsManager.addComponent(
-			this.enemyEntity,
-			new GraphicsComponent(phongQuad)
-		);
-
-		let enemyMoveComp = new MovementComponent();
-		enemyMoveComp.constantAcceleration.y = 0.0;
-		this.ecsManager.addComponent(this.enemyEntity, enemyMoveComp);
-
-		let enemyPosComp = new PositionComponent();
-		enemyPosComp.rotation.setValues(-30.0, 0.0, 0.0);
-		enemyPosComp.position.setValues(10.0, 0.0, 0.0);
-		this.ecsManager.addComponent(this.enemyEntity, enemyPosComp);
-
-		let enemyAnimComp = new AnimationComponent();
-		enemyAnimComp.spriteMap.setNrOfSprites(3, 2);
-		enemyAnimComp.startingTile = { x: 0, y: 0 };
-		enemyAnimComp.advanceBy = { x: 1.0, y: 0.0 };
-		enemyAnimComp.modAdvancement = { x: 2.0, y: 1.0 };
-		enemyAnimComp.updateInterval = 0.3;
-		this.ecsManager.addComponent(this.enemyEntity, enemyAnimComp);
-
-		this.ecsManager.addComponent(
-			this.enemyEntity,
-			new EnemyComponent(this.playerObject.playerEntity.id)
-		);
-	}
-
-	createEnemyEntity(texturePath: string) {
-		let entity = this.ecsManager.createEntity();
-		let phongQuad = this.rendering.getNewPhongQuad(texturePath, texturePath);
-		phongQuad.textureMatrix.setScale(50.0, 50.0, 1.0);
-		this.ecsManager.addComponent(entity, new GraphicsComponent(phongQuad));
-		let posComp = new PositionComponent(new Vec3({ x: 0.0, y: -2.0, z: 0.0 }));
-		posComp.rotation.setValues(-90.0, 0.0, 0.0);
-		posComp.scale.setValues(50.0, 50.0, 1.0);
-		this.ecsManager.addComponent(entity, posComp);
-
-		// Collision stuff
-		let boundingBoxComp = new BoundingBoxComponent();
-		boundingBoxComp.setup(phongQuad);
-		boundingBoxComp.updateTransformMatrix(phongQuad.modelMatrix);
-		this.ecsManager.addComponent(entity, boundingBoxComp);
-		let collisionComp = new CollisionComponent();
-		collisionComp.isStatic = true;
-		this.ecsManager.addComponent(entity, collisionComp);
 	}
 
 	createTestEntity(pos: Vec3, rotX: number = 0.0) {
