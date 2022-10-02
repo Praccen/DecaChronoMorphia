@@ -9,7 +9,7 @@ export default class TextObject3D extends GuiObject {
 	private textNode: Text;
 
 	constructor() {
-		super();
+		super("floating-div");
 
 		this.position = new Vec3();
 		this.size = 42;
