@@ -47,4 +47,5 @@ canvas {
   text-decoration: none;
   display: inline-block;
   font-size: inherit;
+  image-rendering: pixelated;
 }

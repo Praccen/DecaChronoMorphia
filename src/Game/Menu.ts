@@ -38,10 +38,13 @@ export default class Menu {
 		this.startButton.position.x = 0.5;
 		this.startButton.position.y = 0.4;
 		this.startButton.textSize = 40;
-		this.startButton.getInputElement().style.backgroundColor = "cyan";
+		this.startButton.getInputElement().style.backgroundColor = "transparent";
+		this.startButton.getInputElement().style.backgroundImage =
+			"url(Assets/textures/buttons.png)";
+		this.startButton.getInputElement().style.backgroundPosition = "0% 0%";
+		this.startButton.getInputElement().style.backgroundSize = "220% 300%";
 		this.startButton.getInputElement().style.padding = "10px 10px";
-		this.startButton.getInputElement().style.border = "4px solid black";
-		this.startButton.textString = "Start game";
+		this.startButton.textString = "                 ";
 		this.startButton.center = true;
 
 		let self = this;
