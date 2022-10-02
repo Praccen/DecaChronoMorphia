@@ -13,11 +13,13 @@ export module CollisionSolver {
 		let resultingVec = new Vec3();
 		// let maxDepth = 0.0;
 		for (let inf of intersectionInformation) {
+			if (inf.affectMove) {
+				resultingVec.add(new Vec3(inf.axis).multiply(inf.depth));
+			}
 			// if (inf.depth > maxDepth) {
 			// 	resultingVec.deepAssign(inf.axis);
 			// 	maxDepth = inf.depth;
 			// }
-			resultingVec.add(new Vec3(inf.axis).multiply(inf.depth));
 		}
 		// resultingVec.multiply(maxDepth);
 

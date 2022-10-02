@@ -80,6 +80,7 @@ export default class CollisionSystem extends System {
 				const e2CollisionComp = <CollisionComponent>(
 					e2.getComponent(ComponentTypeEnum.COLLISION)
 				);
+
 				let e2BoundingBoxComp = <BoundingBoxComponent>(
 					e2.getComponent(ComponentTypeEnum.BOUNDINGBOX)
 				);
@@ -119,7 +120,8 @@ export default class CollisionSystem extends System {
 								IntersectionTester.identifyIntersectionInformation(
 									e1ShapeArray,
 									e2MeshCollisionComp.triangles,
-									information
+									information,
+									e2CollisionComp.hasForce && e1CollisionComp.hasForce
 								);
 						} else {
 							// Entity 2 does not have mesh collision, use the bounding box for intersection testing
@@ -127,7 +129,8 @@ export default class CollisionSystem extends System {
 								IntersectionTester.identifyIntersectionInformation(
 									e1ShapeArray,
 									[e2BoundingBoxComp.boundingBox],
-									information
+									information,
+									e2CollisionComp.hasForce && e1CollisionComp.hasForce
 								);
 						}
 					}
@@ -136,7 +139,8 @@ export default class CollisionSystem extends System {
 					collisionOccured = IntersectionTester.identifyIntersectionInformation(
 						[e1BoundingBoxComp.boundingBox],
 						[e2BoundingBoxComp.boundingBox],
-						information
+						information,
+						e2CollisionComp.hasForce && e1CollisionComp.hasForce
 					);
 				}
 				if (collisionOccured) {
@@ -156,9 +160,11 @@ export default class CollisionSystem extends System {
 			// Update velocities
 			if (movComp) {
 				for (let inf of information) {
-					let dotProd = movComp.velocity.dot(inf.axis);
-					if (dotProd < 0.0) {
-						movComp.velocity.subtract(new Vec3(inf.axis).multiply(dotProd));
+					if (inf.affectMove) {
+						let dotProd = movComp.velocity.dot(inf.axis);
+						if (dotProd < 0.0) {
+							movComp.velocity.subtract(new Vec3(inf.axis).multiply(dotProd));
+						}
 					}
 				}
 			}

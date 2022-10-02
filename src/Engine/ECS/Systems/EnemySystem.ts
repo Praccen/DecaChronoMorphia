@@ -110,7 +110,9 @@ export default class EnemySystem extends System {
 				dmgMoveComp.constantAcceleration.y = 0.0;
 				this.ecsManager.addComponent(dmgEntity, dmgMoveComp);
 
-				this.ecsManager.addComponent(dmgEntity, new CollisionComponent());
+				let collComp = new CollisionComponent();
+				collComp.hasForce = false;
+				this.ecsManager.addComponent(dmgEntity, collComp);
 
 				let enemyBBComp = new BoundingBoxComponent();
 				enemyBBComp.boundingBox.setMinAndMaxVectors(
