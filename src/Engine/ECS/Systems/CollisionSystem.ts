@@ -77,7 +77,7 @@ export default class CollisionSystem extends System {
 					continue;
 				}
 
-				const e2CollisionComp = <CollisionComponent>(
+				let e2CollisionComp = <CollisionComponent>(
 					e2.getComponent(ComponentTypeEnum.COLLISION)
 				);
 

@@ -54,6 +54,7 @@ export default class RoomSystem extends System {
 					if (!playerIsInRoom && room.active) {
 						this.ecsManager.deactivateEntities(room.entityIds.slice());
 						room.active = false;
+						// console.log("Deactivating room");
 						return;
 					}
 				});

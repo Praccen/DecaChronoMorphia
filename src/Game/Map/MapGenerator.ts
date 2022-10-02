@@ -117,7 +117,7 @@ export module MapGenerator {
 		texturePath: string,
 		ecsManager: ECSManager,
 		rendering: Rendering
-	) {
+	): number {
 		let enemyTexture = texturePath;
 		const enemyEntity = ecsManager.createEntity();
 		enemyEntity.isActive = isActive;

@@ -88,7 +88,7 @@ export default class ECSManager {
 		this.removeComponents();
 		this.removeEntitiesMarkedForDeletion();
 
-		this.updateEntityActivation();
+		// this.updateEntityActivation();
 
 		this.systems.get("POLYMORPHISM").update(dt);
 		this.systems.get("SPRITE_DIRECTION").update(dt);
@@ -141,10 +141,23 @@ export default class ECSManager {
 	}
 
 	activateEntities(entityIds: number[]) {
-		this.activateEntitiesQueue = entityIds;
+		for (const entityId of entityIds) {
+			let entity = this.getEntity(entityId);
+			if (entity) {
+				entity.isActive = true;
+			}
+		}
+		// this.activateEntitiesQueue = entityIds;
+		
 	}
 	deactivateEntities(entityIds: number[]) {
-		this.deactivateEntitiesQueue = entityIds;
+		for (const entityId of entityIds) {
+			let entity = this.getEntity(entityId);
+			if (entity) {
+				entity.isActive = false;
+			}
+		}
+		// this.deactivateEntitiesQueue = entityIds;
 	}
 
 	// Private
@@ -225,18 +238,19 @@ export default class ECSManager {
 	private updateEntityActivation() {
 		this.entities.forEach((entity) => {
 			if (
-				this.activateEntitiesQueue.some(
-					(activateEntity) => entity.id === activateEntity
-				)
-			) {
-				entity.isActive = true;
-			} else if (
 				this.deactivateEntitiesQueue.some(
 					(deactivateEntity) => entity.id === deactivateEntity
 				)
 			) {
 				entity.isActive = false;
 			}
+			else if (
+				this.activateEntitiesQueue.some(
+					(activateEntity) => entity.id === activateEntity
+				)
+			) {
+				entity.isActive = true;
+			} 
 		});
 
 		//empty queue
