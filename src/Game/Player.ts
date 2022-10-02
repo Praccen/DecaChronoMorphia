@@ -19,7 +19,6 @@ import ParticleSpawner from "../Engine/Objects/ParticleSpawner.js";
 import PlayerComponent from "../Engine/ECS/Components/PlayerComponent.js";
 import HealthComponent from "../Engine/ECS/Components/HealthComponent.js";
 import WeaponComponent from "../Engine/ECS/Components/WeaponComponent.js";
-import DamageComponent from "../Engine/ECS/Components/DamageComponent.js";
 
 export default class Player {
 	public playerEntity: Entity;
@@ -40,11 +39,7 @@ export default class Player {
 	private polymorphNumParticles: number = 200;
 	private playerParticleSpawnerLifeTime: number = 0.2;
 	private playerIsPolymorphing: boolean = false;
-	private nextForm: number;
-	private formCooldown: number = 50;
 	private boundingBoxModelMatrix: Matrix4;
-	private resetTimer: boolean = false;
-	private resetAnim: boolean = false;
 
 	constructor(rendering: Rendering, ecsManager: ECSManager) {
 		this.rendering = rendering;
@@ -231,17 +226,14 @@ export default class Player {
 		);
 	}
 
-	update(dt: number) {
+	updateInput(): [Vec3, boolean, boolean, Vec3] {
 		let accVec: Vec3 = new Vec3({ x: 0.0, y: 0.0, z: 0.0 });
 		let move = false;
 		let attacking = false;
 		let lookDir: Vec3 = new Vec3({ x: 0.0, y: 0.0, z: 0.0 });
-		this.formCooldown++;
+
 		let playerComp = <PlayerComponent>(
 			this.playerEntity.getComponent(ComponentTypeEnum.PLAYER)
-		);
-		let playerPosComp = <PositionComponent>(
-			this.playerEntity.getComponent(ComponentTypeEnum.POSITION)
 		);
 		if (input.keys["ArrowRight"]) {
 			lookDir.x = 1;
@@ -275,39 +267,25 @@ export default class Player {
 			accVec.add(new Vec3({ x: 1.0, y: 0.0, z: 0.0 }));
 			move = true;
 		}
-		// Debug switch forms
-		// if (input.keys["f"]) {
-		// 	if (this.formCooldown > 50) {
-		// 		if (this.nextForm == 0) {
-		// 			this.playerQuad.diffuse = this.normyTex;
-		// 			this.playerQuad.specular = this.normySpecTex;
-		// 			this.nextForm = 1;
-		// 		} else if (this.nextForm == 1) {
-		// 			this.playerQuad.diffuse = this.wizTex;
-		// 			this.playerQuad.specular = this.wizTex;
-		// 			this.nextForm = 2;
-		// 		} else if (this.nextForm == 2) {
-		// 			this.playerQuad.diffuse = this.mouseTex;
-		// 			this.playerQuad.specular = this.mouseTex;
-		// 			this.nextForm = 3;
-		// 		} else {
-		// 			this.playerQuad.diffuse = this.tankyTex;
-		// 			this.playerQuad.specular = this.tankyTexSpec;
-		// 			this.nextForm = 0;
-		// 		}
-		// 		this.formCooldown = 0;
-		// 	}
-		// }
 		if (input.keys[" "] && playerComp) {
 			playerComp.startDodge = true;
 		}
 		if (input.keys["e"]) {
 		}
 
+		return [accVec, move, attacking, lookDir];
+	}
+
+	update(dt: number) {
+		let accVec: Vec3;
+		let move: boolean;
+		let attacking: boolean;
+		let lookDir: Vec3;
+		[accVec, move, attacking, lookDir] = this.updateInput();
+
 		let playerPolymorphComp = <PolymorphComponent>(
 			this.playerEntity.getComponent(ComponentTypeEnum.POLYMORPH)
 		);
-
 		if (playerPolymorphComp) {
 			if (
 				playerPolymorphComp.currentPolymorphShape != this.currentPlayerShape
@@ -329,6 +307,10 @@ export default class Player {
 
 		let playerMoveComp = <MovementComponent>(
 			this.playerEntity.getComponent(ComponentTypeEnum.MOVEMENT)
+		);
+
+		let playerPosComp = <PositionComponent>(
+			this.playerEntity.getComponent(ComponentTypeEnum.POSITION)
 		);
 		if (attacking) {
 			const weaponComp = this.playerEntity.getComponent(

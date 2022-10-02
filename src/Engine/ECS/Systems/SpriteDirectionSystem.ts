@@ -40,10 +40,9 @@ export default class SpriteDirectionSystem extends System {
 			let playerDodge = false;
 			if (playerComp) {
 				playerDodge = playerComp.dodgeing;
-			}
-
-			if (!playerDodge) {
-				playerComp.resetAnim = true;
+				if (!playerDodge) {
+					playerComp.resetAnim = true;
+				}
 			}
 
 			positionComp.rotation.setValues(-30.0, 0.0, 0.0);
