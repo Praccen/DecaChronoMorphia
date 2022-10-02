@@ -7,7 +7,6 @@ import GraphicsComponent from "../Engine/ECS/Components/GraphicsComponent.js";
 import PositionComponent from "../Engine/ECS/Components/PositionComponent.js";
 import MovementComponent from "../Engine/ECS/Components/MovementComponent.js";
 import { ComponentTypeEnum } from "../Engine/ECS/Components/Component.js";
-import Checkbox from "../Engine/GUI/Checkbox.js";
 import TextObject3D from "../Engine/GUI/Text/TextObject3D.js";
 import Vec3 from "../Engine/Maths/Vec3.js";
 import PointLight from "../Engine/Lighting/PointLight.js";
@@ -22,10 +21,6 @@ import WeaponComponent from "../Engine/ECS/Components/WeaponComponent.js";
 export default class Game {
 	private rendering: Rendering;
 	private ecsManager: ECSManager;
-
-	private crtCheckbox: Checkbox;
-	private bloomCheckbox: Checkbox;
-	private shadowCheckbox: Checkbox;
 
 	private particleText: TextObject3D;
 	private particleSpawner: Entity;
@@ -95,32 +90,6 @@ export default class Game {
 		this.particleText.position = particleSpawnerPos;
 		this.particleText.center = true;
 
-		this.crtCheckbox = this.rendering.getNewCheckbox();
-		this.crtCheckbox.position.x = 0.8;
-		this.crtCheckbox.position.y = 0.1;
-		this.crtCheckbox.textString = "CRT-effect ";
-		this.crtCheckbox.getElement().style.color = "cyan";
-		this.crtCheckbox.getInputElement().style.accentColor = "red";
-
-		this.bloomCheckbox = this.rendering.getNewCheckbox();
-		this.bloomCheckbox.position.x = 0.8;
-		this.bloomCheckbox.position.y = 0.15;
-		this.bloomCheckbox.textString = "Bloom-effect ";
-		this.bloomCheckbox.getElement().style.color = "cyan";
-		this.bloomCheckbox.getInputElement().style.accentColor = "red";
-
-		this.shadowCheckbox = this.rendering.getNewCheckbox();
-		this.shadowCheckbox.position.x = 0.75;
-		this.shadowCheckbox.position.y = 0.2;
-		this.shadowCheckbox.textString = "Smaller shadows ";
-		this.shadowCheckbox.getElement().style.color = "cyan";
-		this.shadowCheckbox.getInputElement().style.accentColor = "red";
-
-		// let testButton = this.rendering.getNewButton();
-		// testButton.position.x = 0.5;
-		// testButton.position.y = 0.5;
-		// testButton.textString = "Test button";
-		// testButton.center = true;
 		this.playerObject = new Player(this.rendering, this.ecsManager);
 
 		MapGenerator.GenerateMap(5, 5, ecsManager, rendering);
@@ -283,16 +252,6 @@ export default class Game {
 
 	update(dt: number) {
 		this.playerObject.update(dt);
-
-		this.rendering.useCrt = this.crtCheckbox.getChecked();
-		this.rendering.useBloom = this.bloomCheckbox.getChecked();
-		if (this.shadowCheckbox.getChecked()) {
-			this.rendering.setShadowMappingResolution(400);
-			this.rendering.getDirectionalLight().lightProjectionBoxSideLength = 20.0;
-		} else {
-			this.rendering.setShadowMappingResolution(4096);
-			this.rendering.getDirectionalLight().lightProjectionBoxSideLength = 50.0;
-		}
 
 		let particleMovComp = <MovementComponent>(
 			this.particleSpawner.getComponent(ComponentTypeEnum.MOVEMENT)

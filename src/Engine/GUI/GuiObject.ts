@@ -7,10 +7,13 @@ export default class GuiObject {
 	textString: string;
 	center: boolean;
 
+	removed: boolean;
+
 	private divContainerElement: HTMLElement;
 	protected div: HTMLDivElement;
 
 	constructor() {
+		this.removed = false;
 		this.position2D = new Vec2();
 		this.fontSize = 42;
 		this.scaleWithWindow = true;
@@ -34,6 +37,15 @@ export default class GuiObject {
 
 	getElement(): HTMLDivElement {
 		return this.div;
+	}
+
+	setHidden(hidden: boolean) {
+		this.div.hidden = hidden;
+	}
+
+	remove() {
+		this.div.remove();
+		this.removed = true;
 	}
 
 	protected drawObject() {

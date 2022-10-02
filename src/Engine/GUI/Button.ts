@@ -25,6 +25,10 @@ export default class Button extends GuiObject {
 		return this.inputNode;
 	}
 
+	onClick(fn: any) {
+		this.inputNode.addEventListener("click", fn);
+	}
+
 	draw() {
 		this.position2D = this.position;
 		this.inputNode.value = this.textString;

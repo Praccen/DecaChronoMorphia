@@ -276,7 +276,6 @@ export default class Rendering {
 		for (let buffer of this.pingPongFramebuffers) {
 			buffer.setProportions(x, y);
 		}
-		// console.log("X: " + x + " px " + "Y: " + y + " px");
 	}
 
 	setShadowMappingResolution(res: number) {
@@ -609,23 +608,47 @@ export default class Rendering {
 		}
 		// -------------------------
 
-		// ---- Text rendering ----
-		for (const text of this.textObjects3D) {
-			text.draw(this.camera.getViewProjMatrix());
+		// ---- GUI rendering ----
+		for (let i = 0; i < this.textObjects3D.length; i++) {
+			if (!this.textObjects3D[i].removed) {
+				this.textObjects3D[i].draw(this.camera.getViewProjMatrix());
+			}
+			else {
+				this.textObjects3D.splice(i, 1);
+				i--;
+			}
 		}
 
-		for (const text of this.textObjects2D) {
-			text.draw();
+		for (let i = 0; i < this.textObjects2D.length; i++) {
+			if (!this.textObjects2D[i].removed) {
+				this.textObjects2D[i].draw();
+			}
+			else {
+				this.textObjects2D.splice(i, 1);
+				i--;
+			}
 		}
 
-		for (const checkbox of this.checkboxes) {
-			checkbox.draw();
+		for (let i = 0; i < this.checkboxes.length; i++) {
+			if (!this.checkboxes[i].removed) {
+				this.checkboxes[i].draw();
+			}
+			else {
+				this.checkboxes.splice(i, 1);
+				i--;
+			}
 		}
 
-		for (const button of this.buttons) {
-			button.draw();
+		for (let i = 0; i < this.buttons.length; i++) {
+			if (!this.buttons[i].removed) {
+				this.buttons[i].draw();
+			}
+			else {
+				this.buttons.splice(i, 1);
+				i--;
+			}
 		}
-		// ------------------------
+		// -----------------------
 	}
 
 	private renderTextureToScreen(texture: Texture) {
