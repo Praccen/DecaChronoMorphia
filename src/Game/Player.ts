@@ -13,6 +13,7 @@ import Texture from "../Engine/Textures/Texture.js";
 import CollisionComponent from "../Engine/ECS/Components/CollisionComponent.js";
 import BoundingBoxComponent from "../Engine/ECS/Components/BoundingBoxComponent.js";
 import PlayerComponent from "../Engine/ECS/Components/PlayerComponent.js";
+import HealthComponent from "../Engine/ECS/Components/HealthComponent.js";
 
 export default class Player {
 	public playerEntity: Entity;
@@ -81,7 +82,7 @@ export default class Player {
 		let playerAnimComp = new AnimationComponent();
 		playerAnimComp.spriteMap.setNrOfSprites(6, 6);
 		playerAnimComp.startingTile = { x: 0, y: 1 };
-		playerAnimComp.advanceBy = { x: 0.0, y: 0.0 };
+		playerAnimComp.advanceBy = { x: 1.0, y: 0.0 };
 		playerAnimComp.modAdvancement = { x: 2.0, y: 0.0 };
 		playerAnimComp.updateInterval = 0.3;
 		this.ecsManager.addComponent(this.playerEntity, playerAnimComp);
@@ -95,8 +96,12 @@ export default class Player {
 		playerBoundingBoxComp.updateBoundingBoxBasedOnPositionComp = true;
 		this.ecsManager.addComponent(this.playerEntity, playerBoundingBoxComp);
 		this.ecsManager.addComponent(this.playerEntity, new CollisionComponent());
+
 		let playerComp = new PlayerComponent();
 		this.ecsManager.addComponent(this.playerEntity, playerComp);
+
+		let healthComp = new HealthComponent(20);
+		this.ecsManager.addComponent(this.playerEntity, healthComp);
 	}
 
 	update(dt: number) {

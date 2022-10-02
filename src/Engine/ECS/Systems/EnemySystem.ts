@@ -120,12 +120,20 @@ export default class EnemySystem extends System {
 				enemyBBComp.updateBoundingBoxBasedOnPositionComp = true;
 				this.ecsManager.addComponent(dmgEntity, enemyBBComp);
 
-				let dmgTexture = "Assets/textures/mouse.png";
+				let dmgTexture = "Assets/textures/projectiles.png";
 				let phongQuad = this.rendering.getNewPhongQuad(dmgTexture, dmgTexture);
 				this.ecsManager.addComponent(
 					dmgEntity,
 					new GraphicsComponent(phongQuad)
 				);
+
+				let projectileAnimComp = new AnimationComponent();
+				projectileAnimComp.spriteMap.setNrOfSprites(3, 2);
+				projectileAnimComp.startingTile = { x: 0, y: 0 };
+				projectileAnimComp.advanceBy = { x: 0.0, y: 0.0 };
+				projectileAnimComp.modAdvancement = { x: 0.0, y: 0.0 };
+				projectileAnimComp.updateInterval = 0.0;
+				this.ecsManager.addComponent(dmgEntity, projectileAnimComp);
 				//-------------
 
 				weaponComp.attackTimer = weaponComp.attackCooldown;

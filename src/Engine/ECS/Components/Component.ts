@@ -13,6 +13,7 @@ export enum ComponentTypeEnum {
 	ENEMY,
 	WEAPON,
 	DAMAGE,
+	HEALTH,
 }
 
 export class Component {

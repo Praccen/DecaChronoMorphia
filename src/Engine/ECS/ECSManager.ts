@@ -15,6 +15,7 @@ import SpriteDirectionSystem from "./Systems/SpriteDirectionSystem.js";
 import DamageSystem from "./Systems/DamageSystem.js";
 import GraphicsComponent from "./Components/GraphicsComponent.js";
 import PlayerSystem from "./Systems/PlayerSystem.js";
+import HealthSystem from "./Systems/HealthSystem.js";
 
 export default class ECSManager {
 	private systems: Map<String, System>;
@@ -71,6 +72,7 @@ export default class ECSManager {
 		this.systems.set("SPRITE_DIRECTION", new SpriteDirectionSystem());
 		this.systems.set("DAMAGE", new DamageSystem(this));
 		this.systems.set("PLAYER", new PlayerSystem());
+		this.systems.set("HEALTH", new HealthSystem(this));
 	}
 
 	update(dt: number) {
@@ -94,6 +96,7 @@ export default class ECSManager {
 		this.systems.get("ROOM").update(dt);
 		this.systems.get("DAMAGE").update(dt);
 		this.systems.get("PLAYER").update(dt);
+		this.systems.get("HEALTH").update(dt);
 	}
 
 	updateRenderingSystems(dt: number) {
