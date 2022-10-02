@@ -37,15 +37,15 @@ export default class Menu {
 		this.startButton = this.rendering.getNewButton();
 		this.startButton.position.x = 0.5;
 		this.startButton.position.y = 0.4;
-		this.startButton.textSize = 40;
+		this.startButton.center = true;
+		this.startButton.textSize = 120;
 		this.startButton.getInputElement().style.backgroundColor = "transparent";
 		this.startButton.getInputElement().style.backgroundImage =
 			"url(Assets/textures/buttons.png)";
 		this.startButton.getInputElement().style.backgroundPosition = "0% 0%";
 		this.startButton.getInputElement().style.backgroundSize = "220% 300%";
 		this.startButton.getInputElement().style.padding = "10px 10px";
-		this.startButton.textString = "                 ";
-		this.startButton.center = true;
+		this.startButton.textString = "            ";
 
 		let self = this;
 		this.startButton.onClick(function () {
@@ -55,7 +55,7 @@ export default class Menu {
 		this.crtCB = this.rendering.getNewCheckbox();
 		this.crtCB.center = true;
 		this.crtCB.position.x = 0.5;
-		this.crtCB.position.y = 0.5;
+		this.crtCB.position.y = 0.6;
 		this.crtCB.textSize = 20;
 		this.crtCB.textString = "CRT-effect ";
 		this.crtCB.getElement().style.color = "cyan";
@@ -64,7 +64,7 @@ export default class Menu {
 		this.bloomCB = this.rendering.getNewCheckbox();
 		this.bloomCB.center = true;
 		this.bloomCB.position.x = 0.5;
-		this.bloomCB.position.y = 0.55;
+		this.bloomCB.position.y = 0.65;
 		this.bloomCB.textSize = 20;
 		this.bloomCB.textString = "Bloom-effect ";
 		this.bloomCB.getElement().style.color = "cyan";
@@ -73,7 +73,7 @@ export default class Menu {
 		this.fpsDisplayCB = this.rendering.getNewCheckbox();
 		this.fpsDisplayCB.center = true;
 		this.fpsDisplayCB.position.x = 0.5;
-		this.fpsDisplayCB.position.y = 0.6;
+		this.fpsDisplayCB.position.y = 0.7;
 		this.fpsDisplayCB.textSize = 20;
 		this.fpsDisplayCB.textString = "Fps counter ";
 		this.fpsDisplayCB.getElement().style.color = "cyan";
