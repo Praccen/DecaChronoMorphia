@@ -1,18 +1,22 @@
 import Rendering from "../Engine/Rendering.js";
 import Button from "../Engine/GUI/Button.js";
 import Checkbox from "../Engine/GUI/Checkbox.js";
+import TextObject2D from "../Engine/GUI/Text/TextObject2D.js";
 
 export default class Menu {
 	private rendering: Rendering;
 
 	private startGame: boolean;
 	private startButton: Button;
-	private crtCheckbox: Checkbox;
-	private bloomCheckbox: Checkbox;
+	private crtCB: Checkbox;
+	private bloomCB: Checkbox;
+	private fpsDisplayCB: Checkbox;
+	private fpsDisplay: TextObject2D;
 
-	constructor(rendering: Rendering) {
+	constructor(rendering: Rendering, fpsDisplay: TextObject2D) {
 		this.rendering = rendering;
 		this.startGame = false;
+		this.fpsDisplay = fpsDisplay;
 
 		// Load all textures to avoid loading mid game
 		let smileyTexture =
@@ -33,9 +37,10 @@ export default class Menu {
 		this.startButton = this.rendering.getNewButton();
 		this.startButton.position.x = 0.5;
 		this.startButton.position.y = 0.4;
-		this.startButton.textSize = 20;
+		this.startButton.textSize = 40;
 		this.startButton.getInputElement().style.backgroundColor = "cyan";
 		this.startButton.getInputElement().style.padding = "10px 10px";
+		this.startButton.getInputElement().style.border = "4px solid black";
 		this.startButton.textString = "Start game";
 		this.startButton.center = true;
 
@@ -44,33 +49,45 @@ export default class Menu {
 			self.startGame = true;
 		});
 
-		this.crtCheckbox = this.rendering.getNewCheckbox();
-		this.crtCheckbox.center = true;
-		this.crtCheckbox.position.x = 0.5;
-		this.crtCheckbox.position.y = 0.5;
-		this.crtCheckbox.textSize = 20;
-		this.crtCheckbox.textString = "CRT-effect ";
-		this.crtCheckbox.getElement().style.color = "cyan";
-		this.crtCheckbox.getInputElement().style.accentColor = "red";
+		this.crtCB = this.rendering.getNewCheckbox();
+		this.crtCB.center = true;
+		this.crtCB.position.x = 0.5;
+		this.crtCB.position.y = 0.5;
+		this.crtCB.textSize = 20;
+		this.crtCB.textString = "CRT-effect ";
+		this.crtCB.getElement().style.color = "cyan";
+		this.crtCB.getInputElement().style.accentColor = "red";
 
-		this.bloomCheckbox = this.rendering.getNewCheckbox();
-		this.bloomCheckbox.center = true;
-		this.bloomCheckbox.position.x = 0.5;
-		this.bloomCheckbox.position.y = 0.6;
-		this.bloomCheckbox.textSize = 20;
-		this.bloomCheckbox.textString = "Bloom-effect ";
-		this.bloomCheckbox.getElement().style.color = "cyan";
-		this.bloomCheckbox.getInputElement().style.accentColor = "red";
+		this.bloomCB = this.rendering.getNewCheckbox();
+		this.bloomCB.center = true;
+		this.bloomCB.position.x = 0.5;
+		this.bloomCB.position.y = 0.55;
+		this.bloomCB.textSize = 20;
+		this.bloomCB.textString = "Bloom-effect ";
+		this.bloomCB.getElement().style.color = "cyan";
+		this.bloomCB.getInputElement().style.accentColor = "red";
+
+		this.fpsDisplayCB = this.rendering.getNewCheckbox();
+		this.fpsDisplayCB.center = true;
+		this.fpsDisplayCB.position.x = 0.5;
+		this.fpsDisplayCB.position.y = 0.6;
+		this.fpsDisplayCB.textSize = 20;
+		this.fpsDisplayCB.textString = "Fps counter ";
+		this.fpsDisplayCB.getElement().style.color = "cyan";
+		this.fpsDisplayCB.getInputElement().style.accentColor = "red";
+		this.fpsDisplayCB.getInputElement().checked = true;
 	}
 
 	update(dt: number): boolean {
-		this.rendering.useCrt = this.crtCheckbox.getChecked();
-		this.rendering.useBloom = this.bloomCheckbox.getChecked();
+		this.rendering.useCrt = this.crtCB.getChecked();
+		this.rendering.useBloom = this.bloomCB.getChecked();
+		this.fpsDisplay.setHidden(!this.fpsDisplayCB.getChecked());
 
 		if (this.startGame) {
-			this.bloomCheckbox.remove();
-			this.crtCheckbox.remove();
 			this.startButton.remove();
+			this.crtCB.remove();
+			this.bloomCB.remove();
+			this.fpsDisplayCB.remove();
 			return true;
 		}
 		return false;

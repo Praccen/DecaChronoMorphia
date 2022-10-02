@@ -92,9 +92,12 @@ window.onload = async () => {
 	let gl = initWebGL();
 
 	let rendering = new Rendering(gl);
+
+	let fpsDisplay = rendering.getNew2DText();
+
 	let audio = new AudioPlayer();
 	let ecsManager = new ECSManager(rendering, audio);
-	let menu = new Menu(rendering);
+	let menu = new Menu(rendering, fpsDisplay);
 	let game: Game;
 
 	let lastTick = null;
@@ -108,7 +111,6 @@ window.onload = async () => {
 	let frameCounter = 0;
 	let dt = 0.0;
 
-	let fpsDisplay = rendering.getNew2DText();
 	fpsDisplay.position.x = 0.01;
 	fpsDisplay.position.y = 0.01;
 	fpsDisplay.size = 18;
