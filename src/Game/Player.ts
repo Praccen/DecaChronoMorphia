@@ -14,6 +14,8 @@ import CollisionComponent from "../Engine/ECS/Components/CollisionComponent.js";
 import BoundingBoxComponent from "../Engine/ECS/Components/BoundingBoxComponent.js";
 import PlayerComponent from "../Engine/ECS/Components/PlayerComponent.js";
 import HealthComponent from "../Engine/ECS/Components/HealthComponent.js";
+import WeaponComponent from "../Engine/ECS/Components/WeaponComponent.js";
+import DamageComponent from "../Engine/ECS/Components/DamageComponent.js";
 
 export default class Player {
 	public playerEntity: Entity;
@@ -102,6 +104,11 @@ export default class Player {
 
 		let healthComp = new HealthComponent(20);
 		this.ecsManager.addComponent(this.playerEntity, healthComp);
+
+		this.ecsManager.addComponent(
+			this.playerEntity,
+			new WeaponComponent(10, true, 4, 2)
+		);
 	}
 
 	update(dt: number) {
@@ -152,6 +159,55 @@ export default class Player {
 		}
 		if (input.keys[" "] && playerComp) {
 			playerComp.startDodge = true;
+		}
+		if (input.keys["e"]) {
+			const weaponComp = this.playerEntity.getComponent(
+				ComponentTypeEnum.WEAPON
+			) as WeaponComponent;
+			if (weaponComp) {
+				const dmgEntity = this.ecsManager.createEntity();
+				this.ecsManager.addComponent(
+					dmgEntity,
+					new DamageComponent(weaponComp.damage)
+				);
+				this.ecsManager.addComponent(
+					dmgEntity,
+					new PositionComponent(new Vec3({ x: 0.5, y: 0.5, z: 0.5 }))
+				);
+				const dmgMoveComp = new MovementComponent();
+				//if melee make damageEntity move super fast, otherwise more slow
+				dmgMoveComp.drag = 0.0;
+				dmgMoveComp.acceleration = 0.0;
+				dmgMoveComp.constantAcceleration.y = 0.0;
+				this.ecsManager.addComponent(dmgEntity, dmgMoveComp);
+
+				let collComp = new CollisionComponent();
+				collComp.hasForce = false;
+				this.ecsManager.addComponent(dmgEntity, collComp);
+
+				let enemyBBComp = new BoundingBoxComponent();
+				enemyBBComp.boundingBox.setMinAndMaxVectors(
+					new Vec3({ x: -0.2, y: -0.5, z: -0.2 }),
+					new Vec3({ x: 0.2, y: 0.5, z: 0.2 })
+				);
+				enemyBBComp.updateBoundingBoxBasedOnPositionComp = true;
+				this.ecsManager.addComponent(dmgEntity, enemyBBComp);
+
+				let dmgTexture = "Assets/textures/projectiles.png";
+				let phongQuad = this.rendering.getNewPhongQuad(dmgTexture, dmgTexture);
+				this.ecsManager.addComponent(
+					dmgEntity,
+					new GraphicsComponent(phongQuad)
+				);
+
+				let projectileAnimComp = new AnimationComponent();
+				projectileAnimComp.spriteMap.setNrOfSprites(3, 2);
+				projectileAnimComp.startingTile = { x: 0, y: 0 };
+				projectileAnimComp.advanceBy = { x: 0.0, y: 0.0 };
+				projectileAnimComp.modAdvancement = { x: 0.0, y: 0.0 };
+				projectileAnimComp.updateInterval = 0.0;
+				this.ecsManager.addComponent(dmgEntity, projectileAnimComp);
+			}
 		}
 
 		let playerMoveComp = <MovementComponent>(

@@ -96,7 +96,9 @@ export default class Triangle extends Shape {
 			let tempMatrix = new Matrix3();
 			tempMatrix.fromMatrix4(this.transformMatrix).invert().transpose();
 
-			this.transformedNormals[0] = tempMatrix.multiplyVec3(this.originalNormal).normalize();
+			this.transformedNormals[0] = tempMatrix
+				.multiplyVec3(this.originalNormal)
+				.normalize();
 			this.normalNeedsUpdate = false;
 		}
 		return this.transformedNormals;
