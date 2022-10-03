@@ -13,7 +13,6 @@ import PositionComponent from "../Components/PositionComponent.js";
 import ProjectileComponent, {
 	ProjectileTypeEnum,
 } from "../Components/ProjectileComponent.js";
-import WeaponComponent from "../Components/WeaponComponent.js";
 import WeaponComponent, {
 	WeaponTypeEnum,
 } from "../Components/WeaponComponent.js";
@@ -106,16 +105,16 @@ export default class WeaponSystem extends System {
 				} else if (weaponComp.weaponType == WeaponTypeEnum.MAGIC) {
 					dmgTexture = "Assets/textures/projectiles.png";
 					projectileAnimComp.spriteMap.setNrOfSprites(3, 2);
-					projectileAnimComp.startingTile = { x: 0, y: 0 };
+					projectileAnimComp.startingTile = { x: 0, y: 1 };
 					projectileAnimComp.advanceBy = { x: 1.0, y: 0.0 };
-					projectileAnimComp.modAdvancement = { x: 3.0, y: 0.0 };
+					projectileAnimComp.modAdvancement = { x: 2.0, y: 0.0 };
 					projectileAnimComp.updateInterval = 0.3;
 				} else if (weaponComp.weaponType == WeaponTypeEnum.SWORD) {
 					dmgTexture = "Assets/textures/normy.png";
 					projectileAnimComp.spriteMap.setNrOfSprites(6, 6);
-					projectileAnimComp.startingTile = { x: 0, y: 5 };
+					projectileAnimComp.startingTile = { x: 0, y: 4 };
 					projectileAnimComp.advanceBy = { x: 1.0, y: 0.0 };
-					projectileAnimComp.modAdvancement = { x: 4.0, y: 0.0 };
+					projectileAnimComp.modAdvancement = { x: 3.0, y: 0.0 };
 					projectileAnimComp.updateInterval = 0.3;
 				}
 
