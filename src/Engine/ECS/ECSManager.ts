@@ -20,6 +20,7 @@ import HealthSystem from "./Systems/HealthSystem.js";
 import { MapInformation } from "../../Game/Map/MapGenerator.js";
 import WeaponSystem from "./Systems/WeaponSystem.js";
 import AudioSystem from "./Systems/AudioSystem.js";
+import DoorSystem from "./Systems/DoorSystem.js";
 
 export default class ECSManager {
 	private systems: Map<String, System>;
@@ -65,6 +66,7 @@ export default class ECSManager {
 
 	initializeSystems(mapInformation: MapInformation, audio: AudioPlayer) {
 		this.systems.set("COLLISION", new CollisionSystem());
+		this.systems.set("DOOR", new DoorSystem());
 		this.systems.set("MOVEMENT", new MovementSystem());
 		this.systems.set("GRAPHICS", new GraphicsSystem());
 		this.systems.set("PARTICLE", new ParticleSpawnerSystem());
@@ -97,6 +99,7 @@ export default class ECSManager {
 		this.systems.get("MOVEMENT").update(dt);
 		this.systems.get("GRAPHICS").update(dt);
 		this.systems.get("COLLISION").update(dt);
+		this.systems.get("DOOR").update(dt);
 		this.systems.get("ANIMATION").update(dt);
 		this.systems.get("ENEMY").update(dt);
 		this.systems.get("ROOM").update(dt);
