@@ -3,7 +3,9 @@ import GraphicsComponent from "../Components/GraphicsComponent.js";
 import AnimationComponent from "../Components/AnimationComponent.js";
 import System from "./System.js";
 import PhongQuad from "../../Objects/PhongQuad.js";
-import ProjectileComponent from "../Components/ProjectileComponent.js";
+import ProjectileComponent, {
+	ProjectileGraphicsDirectionEnum,
+} from "../Components/ProjectileComponent.js";
 
 export default class AnimationSystem extends System {
 	constructor() {
@@ -57,6 +59,16 @@ export default class AnimationSystem extends System {
 
 				let quad = <PhongQuad>graphComp.object;
 				animComp.spriteMap.updateTextureMatrix(quad.textureMatrix);
+
+				if (projectileComp) {
+					if (
+						projectileComp.projectileGraphicsDirection ===
+						ProjectileGraphicsDirectionEnum.RIGHT
+					) {
+						console.log("Flip to right");
+						quad.textureMatrix.scale(-1, 1, 1);
+					}
+				}
 			}
 		}
 	}
