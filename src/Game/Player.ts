@@ -70,7 +70,7 @@ export default class Player {
 		this.tankyTexSpec = this.rendering.getTextureFromStore(
 			"Assets/textures/tanky_spec.png"
 		);
-		this.polymorphTexPath = "Assets/textures/skully.png";
+		this.polymorphTexPath = "Assets/textures/puff.png";
 
 		this.playerTextureMap = {
 			[PlayerShapeEnum.NORMIE]: [this.normyTex, this.normySpecTex],

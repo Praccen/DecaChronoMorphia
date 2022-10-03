@@ -113,23 +113,33 @@ export default class AudioPlayer {
 			this.sound_effects[key] &&
 			this.sound_effects_volume_multilpliers[key]
 		) {
-			this.sound_effects[key].volume =
-				volume * this.sound_effects_volume_multilpliers[key];
+			this.sound_effects[key].volume = Math.min(
+				volume * this.sound_effects_volume_multilpliers[key],
+				1
+			);
 		} else if (this.songs[key] && this.songs_volume_multilpliers[key]) {
-			this.songs[key].volume = volume * this.songs_volume_multilpliers[key];
+			this.songs[key].volume = Math.min(
+				volume * this.songs_volume_multilpliers[key],
+				1
+			);
 		}
 	}
 
 	setMusicVolume(volume: number) {
 		Object.keys(this.songs).forEach((key) => {
-			this.songs[key].volume = volume * this.songs_volume_multilpliers[key];
+			this.songs[key].volume = Math.min(
+				volume * this.songs_volume_multilpliers[key],
+				1
+			);
 		});
 	}
 
 	setSoundEffectVolume(volume: number) {
 		Object.keys(this.sound_effects).forEach((key) => {
-			this.sound_effects[key].volume =
-				volume * this.sound_effects_volume_multilpliers[key];
+			this.sound_effects[key].volume = Math.min(
+				volume * this.sound_effects_volume_multilpliers[key],
+				1
+			);
 		});
 	}
 
