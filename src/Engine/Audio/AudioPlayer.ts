@@ -44,7 +44,7 @@ export default class AudioPlayer {
 			"defeat_1.mp3",
 		];
 		const sound_effect_volume_multilpliers_list = [
-			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3,
+			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5,
 		];
 		let count = 0;
 		for (const file of sound_effect_files) {

@@ -82,8 +82,8 @@ export default class Player {
 
 		this.playerAccVecMultiplierMap = {
 			[PlayerShapeEnum.NORMIE]: 1,
-			[PlayerShapeEnum.TANKY]: 0.1,
-			[PlayerShapeEnum.WIZ]: 0.5,
+			[PlayerShapeEnum.TANKY]: 0.4,
+			[PlayerShapeEnum.WIZ]: 0.6,
 			[PlayerShapeEnum.MOUSE]: 2,
 		};
 
@@ -196,20 +196,20 @@ export default class Player {
 
 		this.playerBoundingBoxMap = {
 			[PlayerShapeEnum.NORMIE]: [
-				new Vec3({ x: -0.2, y: -0.5, z: -0.2 }),
-				new Vec3({ x: 0.2, y: 0.5, z: 0.2 }),
+				new Vec3({ x: -0.45, y: -0.5, z: -0.45 }),
+				new Vec3({ x: 0.45, y: 0.5, z: 0.45 }),
 			],
 			[PlayerShapeEnum.TANKY]: [
-				new Vec3({ x: -0.2, y: -0.5, z: -0.2 }),
-				new Vec3({ x: 0.2, y: 0.5, z: 0.2 }),
+				new Vec3({ x: -0.45, y: -0.5, z: -0.45 }),
+				new Vec3({ x: 0.45, y: 0.5, z: 0.45 }),
 			],
 			[PlayerShapeEnum.WIZ]: [
-				new Vec3({ x: -0.2, y: -0.5, z: -0.2 }),
-				new Vec3({ x: 0.2, y: 0.5, z: 0.2 }),
+				new Vec3({ x: -0.45, y: -0.5, z: -0.45 }),
+				new Vec3({ x: 0.45, y: 0.5, z: 0.45 }),
 			],
 			[PlayerShapeEnum.MOUSE]: [
-				new Vec3({ x: -0.2, y: -0.5, z: -0.2 }),
-				new Vec3({ x: 0.2, y: 0.5, z: 0.2 }),
+				new Vec3({ x: -0.45, y: -0.5, z: -0.3 }),
+				new Vec3({ x: 0.45, y: 0.5, z: 0.45 }),
 			],
 		};
 

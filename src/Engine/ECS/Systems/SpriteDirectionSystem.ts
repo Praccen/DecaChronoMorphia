@@ -82,7 +82,7 @@ export default class SpriteDirectionSystem extends System {
 					positionComp.rotation.setValues(-40.0, 15.0, -5.0);
 				}
 			}
-			if (playerDodge) {
+			if (playerComp && playerDodge) {
 				if (playerComp.resetAnim) {
 					animationComp.advancements = 0;
 					animationComp.updateTimer = 0;
