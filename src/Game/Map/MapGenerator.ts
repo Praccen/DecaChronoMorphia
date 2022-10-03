@@ -33,6 +33,17 @@ export interface MapInformation {
 	pointLightEntities: Entity[];
 }
 
+enum SpawnPointsEnum {
+	UP_LEFT,
+	UP_RIGHT,
+	MIDDLE,
+	DOWN_LEFT,
+	DOWN_RIGHT,
+}
+
+const ROOM_WIDTH = 8.0;
+const SPAWN_CHANCE = 0.3; //0-1 used to determine if a monster should spawn or not
+
 export module MapGenerator {
 	export async function GenerateMap(
 		xSize: number,
@@ -104,7 +115,7 @@ export module MapGenerator {
 			x: (roomTileX - 1) * 0.5,
 			y: 0.0,
 			z: (roomTileY - 1) * 0.5,
-		}).multiply(8.0);
+		}).multiply(ROOM_WIDTH);
 
 		const floorId = createFloorEntity(
 			new Vec3(roomCenter),
@@ -113,15 +124,42 @@ export module MapGenerator {
 			rendering
 		);
 
-		let enemyId = -1;
+		let enemyIds = [];
 		if (!isStartingRoom) {
-			enemyId = createEnemyEntity(
-				new Vec3(roomCenter),
-				false,
-				"Assets/textures/slime.png",
-				ecsManager,
-				rendering
-			);
+			Object.values(SpawnPointsEnum).forEach((spawnPoint) => {
+				if (isNaN(Number(spawnPoint))) return;
+				const spawnLocation = new Vec3(roomCenter);
+				if (Math.random() < SPAWN_CHANCE) {
+					switch (spawnPoint) {
+						case SpawnPointsEnum.UP_LEFT:
+							spawnLocation.x -= ROOM_WIDTH / 2 - 2.0;
+							spawnLocation.z -= ROOM_WIDTH / 2 - 2.0;
+							break;
+						case SpawnPointsEnum.UP_RIGHT:
+							spawnLocation.x += ROOM_WIDTH / 2 - 2.0;
+							spawnLocation.z -= ROOM_WIDTH / 2 - 2.0;
+							break;
+						case SpawnPointsEnum.DOWN_LEFT:
+							spawnLocation.x -= ROOM_WIDTH / 2 - 2.0;
+							spawnLocation.z += ROOM_WIDTH / 2 - 2.0;
+							break;
+						case SpawnPointsEnum.DOWN_RIGHT:
+							spawnLocation.x += ROOM_WIDTH / 2 - 2.0;
+							spawnLocation.z += ROOM_WIDTH / 2 - 2.0;
+							break;
+						//MIDDLE is left out so monster will spawn in center
+					}
+
+					const enemyId = createEnemyEntity(
+						spawnLocation,
+						false,
+						"Assets/textures/slime.png",
+						ecsManager,
+						rendering
+					);
+					enemyIds.push(enemyId);
+				}
+			});
 		}
 
 		createDoorEntity(new Vec3(roomCenter), ecsManager, rendering, wallsTowards);
@@ -129,7 +167,7 @@ export module MapGenerator {
 		const roomInformation: RoomInformation = {
 			roomPosition: roomPosition,
 			active: false,
-			entityIds: [enemyId],
+			entityIds: enemyIds,
 			floorId: floorId,
 		};
 
@@ -218,13 +256,13 @@ export module MapGenerator {
 			texturePath,
 			"Assets/textures/black.png"
 		);
-		phongQuad.textureMatrix.setScale(8.0, 8.0, 1.0);
+		phongQuad.textureMatrix.setScale(ROOM_WIDTH, ROOM_WIDTH, 1.0);
 		ecsManager.addComponent(floorEntity, new GraphicsComponent(phongQuad));
 		let posComp = new PositionComponent(
 			position.subtract(new Vec3({ x: 0.0, y: 0.5, z: 0.0 }))
 		);
 		posComp.rotation.setValues(-90.0, 0.0, 0.0);
-		posComp.scale.setValues(8.0, 8.0, 1.0);
+		posComp.scale.setValues(ROOM_WIDTH, ROOM_WIDTH, 1.0);
 		ecsManager.addComponent(floorEntity, posComp);
 
 		// Collision stuff
