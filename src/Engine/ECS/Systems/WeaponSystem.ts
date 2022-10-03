@@ -52,7 +52,7 @@ export default class WeaponSystem extends System {
 				const dmgEntity = this.ecsManager.createEntity();
 				this.ecsManager.addComponent(
 					dmgEntity,
-					new DamageComponent(weaponComp.damage)
+					new DamageComponent(weaponComp.damage, weaponComp.lifetime)
 				);
 				this.ecsManager.addComponent(
 					dmgEntity,
@@ -67,10 +67,11 @@ export default class WeaponSystem extends System {
 				const dmgMoveComp = new MovementComponent();
 				dmgMoveComp.accelerationDirection = weaponComp.direction;
 				//if melee make damageEntity move super fast, otherwise more slow
-				const projectileSpeed = weaponComp.shoots ? 1 : 3;
+				const projectileSpeed = weaponComp.shoots ? 1 : 0;
 				dmgMoveComp.velocity = new Vec3(weaponComp.direction).multiply(
 					projectileSpeed
 				);
+
 				dmgMoveComp.drag = 0.0;
 				dmgMoveComp.acceleration = 0.0;
 				dmgMoveComp.constantAcceleration.y = 0.0;

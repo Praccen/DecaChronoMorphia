@@ -179,7 +179,7 @@ export module MapGenerator {
 		ecsManager.addComponent(enemyEntity, new EnemyComponent());
 		ecsManager.addComponent(
 			enemyEntity,
-			new WeaponComponent(10, true, 4, 2, WeaponTypeEnum.ARROW)
+			new WeaponComponent(10, true, 4, 2, WeaponTypeEnum.ARROW, 10)
 		);
 
 		// Collision for enemy
