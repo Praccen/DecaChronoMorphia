@@ -28,7 +28,7 @@ export default class AudioSystem extends System {
                 }
                 //sound is requested to play and is not already playing, play it
                 if (soundValue.requestPlay && !soundValue.playing) {
-                    this.audio.playAudio(soundValue.audioKey, false);
+                    this.audio.playAudio(soundValue.audioKey, false, soundValue.volumeMulitplier);
                     soundValue.requestPlay = false;
                     soundValue.playing = true;
                 }

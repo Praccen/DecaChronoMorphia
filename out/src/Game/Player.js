@@ -12,7 +12,7 @@ import { PlayerShapeEnum } from "../Engine/ECS/Components/PlayerComponent.js";
 import ParticleSpawnerComponent from "../Engine/ECS/Components/ParticleSpawnerComponent.js";
 import PlayerComponent from "../Engine/ECS/Components/PlayerComponent.js";
 import HealthComponent from "../Engine/ECS/Components/HealthComponent.js";
-import WeaponComponent from "../Engine/ECS/Components/WeaponComponent.js";
+import WeaponComponent, { WeaponTypeEnum, } from "../Engine/ECS/Components/WeaponComponent.js";
 import Vec2 from "../Engine/Maths/Vec2.js";
 import AudioComponent, { AudioTypeEnum, } from "../Engine/ECS/Components/AudioComponent.js";
 import PointLightComponent from "../Engine/ECS/Components/PointLightComponent.js";
@@ -142,10 +142,20 @@ export default class Player {
         this.ecsManager.addComponent(this.playerEntity, playerComp);
         let healthComp = new HealthComponent(200);
         this.ecsManager.addComponent(this.playerEntity, healthComp);
-        this.ecsManager.addComponent(this.playerEntity, new WeaponComponent(10, true, 4, 2));
+        this.ecsManager.addComponent(this.playerEntity, new WeaponComponent(10, false, 4, 2, WeaponTypeEnum.SWORD));
         this.ecsManager.addComponent(this.playerEntity, new AudioComponent([
             { key: AudioTypeEnum.SHOOT, audioKey: "spell_cast_3", playTime: 1.5 },
-            { key: AudioTypeEnum.DAMAGE, audioKey: "damage_1", playTime: 2 },
+            {
+                key: AudioTypeEnum.DAMAGE,
+                audioKey: "damage_1",
+                playTime: 2,
+            },
+            { key: AudioTypeEnum.VICTORY, audioKey: "victory_1", playTime: 2 },
+            {
+                key: AudioTypeEnum.DEATH,
+                audioKey: "defeat_1",
+                playTime: 2,
+            },
             {
                 key: AudioTypeEnum.POLYMORPH,
                 audioKey: "spell_cast_5",
@@ -253,14 +263,14 @@ export default class Player {
     }
     doAbility(lookDir) {
         if (this.currentPlayerShape == PlayerShapeEnum.NORMIE) {
-            let playerPosComp = (this.playerEntity.getComponent(ComponentTypeEnum.POSITION));
             const weaponComp = this.playerEntity.getComponent(ComponentTypeEnum.WEAPON);
+            let playerPosComp = (this.playerEntity.getComponent(ComponentTypeEnum.POSITION));
             weaponComp.attackRequested = true;
             weaponComp.direction = new Vec3(lookDir).normalize();
             weaponComp.position = new Vec3({
-                x: weaponComp.direction.x * 1 + playerPosComp.position.x,
+                x: weaponComp.direction.x + playerPosComp.position.x,
                 y: 0.5,
-                z: weaponComp.direction.z * 1 + playerPosComp.position.z,
+                z: weaponComp.direction.z + playerPosComp.position.z,
             });
         }
         else if (this.currentPlayerShape == PlayerShapeEnum.WIZ) {

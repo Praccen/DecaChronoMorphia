@@ -1,11 +1,14 @@
 import Player from "./Player.js";
+import { MapGenerator } from "./Map/MapGenerator.js";
 export default class Game {
     rendering;
     ecsManager;
+    audio;
     playerObject;
-    constructor(rendering, ecsManager) {
+    constructor(rendering, ecsManager, audio) {
         this.rendering = rendering;
         this.ecsManager = ecsManager;
+        this.audio = audio;
         this.rendering.camera.setPosition(0.0, 0.0, 5.5);
         this.playerObject = new Player(this.rendering, this.ecsManager);
     }
@@ -15,6 +18,11 @@ export default class Game {
         this.rendering.getDirectionalLight().ambientMultiplier = 0.0;
         this.rendering.getDirectionalLight().colour.setValues(0.05, 0.05, 0.05);
         // ----------------
+        // ---- Map ----
+        const mapInformation = await MapGenerator.GenerateMap(5, 5, this.ecsManager, this.rendering);
+        this.ecsManager.initializeSystems(mapInformation, this.audio);
+        console.log("mapInformation :>> ", mapInformation);
+        // -------------
         this.playerObject.init();
     }
     update(dt) {

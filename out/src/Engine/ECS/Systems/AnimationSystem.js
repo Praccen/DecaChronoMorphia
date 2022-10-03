@@ -12,6 +12,7 @@ export default class AnimationSystem extends System {
             }
             let graphComp = (e.getComponent(ComponentTypeEnum.GRAPHICS));
             let animComp = (e.getComponent(ComponentTypeEnum.ANIMATION));
+            let projectileComp = (e.getComponent(ComponentTypeEnum.PROJECTILE));
             if (graphComp && animComp) {
                 if (animComp.stopAtLast &&
                     animComp.spriteMap.currentSprite.x ==

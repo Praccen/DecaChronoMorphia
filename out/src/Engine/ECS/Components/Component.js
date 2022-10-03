@@ -18,6 +18,7 @@ export var ComponentTypeEnum;
     ComponentTypeEnum[ComponentTypeEnum["DAMAGE"] = 15] = "DAMAGE";
     ComponentTypeEnum[ComponentTypeEnum["HEALTH"] = 16] = "HEALTH";
     ComponentTypeEnum[ComponentTypeEnum["AUDIO"] = 17] = "AUDIO";
+    ComponentTypeEnum[ComponentTypeEnum["PROJECTILE"] = 18] = "PROJECTILE";
 })(ComponentTypeEnum || (ComponentTypeEnum = {}));
 export class Component {
     _type;

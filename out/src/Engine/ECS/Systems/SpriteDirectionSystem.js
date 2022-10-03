@@ -17,6 +17,11 @@ export default class SpriteDirectionSystem extends System {
             const animationComp = e.getComponent(ComponentTypeEnum.ANIMATION);
             const positionComp = e.getComponent(ComponentTypeEnum.POSITION);
             const playerComp = e.getComponent(ComponentTypeEnum.PLAYER);
+            const projectileComp = e.getComponent(ComponentTypeEnum.PROJECTILE);
+            const enemyComp = e.getComponent(ComponentTypeEnum.ENEMY);
+            if (!enemyComp && !playerComp) {
+                return;
+            }
             let playerDodge = false;
             if (playerComp) {
                 playerDodge = playerComp.dodgeing;

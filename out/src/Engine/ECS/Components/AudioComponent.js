@@ -4,6 +4,8 @@ export var AudioTypeEnum;
     AudioTypeEnum[AudioTypeEnum["DAMAGE"] = 0] = "DAMAGE";
     AudioTypeEnum[AudioTypeEnum["SHOOT"] = 1] = "SHOOT";
     AudioTypeEnum[AudioTypeEnum["POLYMORPH"] = 2] = "POLYMORPH";
+    AudioTypeEnum[AudioTypeEnum["DEATH"] = 3] = "DEATH";
+    AudioTypeEnum[AudioTypeEnum["VICTORY"] = 4] = "VICTORY";
 })(AudioTypeEnum || (AudioTypeEnum = {}));
 export default class AudioComponent extends Component {
     sounds;
