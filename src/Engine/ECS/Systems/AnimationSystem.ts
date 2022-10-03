@@ -25,9 +25,6 @@ export default class AnimationSystem extends System {
 			let animComp = <AnimationComponent>(
 				e.getComponent(ComponentTypeEnum.ANIMATION)
 			);
-			let projectileComp = <ProjectileComponent>(
-				e.getComponent(ComponentTypeEnum.PROJECTILE)
-			);
 
 			if (graphComp && animComp) {
 				if (
@@ -59,16 +56,6 @@ export default class AnimationSystem extends System {
 
 				let quad = <PhongQuad>graphComp.object;
 				animComp.spriteMap.updateTextureMatrix(quad.textureMatrix);
-
-				if (projectileComp) {
-					if (
-						projectileComp.projectileGraphicsDirection ===
-						ProjectileGraphicsDirectionEnum.RIGHT
-					) {
-						console.log("Flip to right");
-						quad.textureMatrix.scale(-1, 1, 1);
-					}
-				}
 			}
 		}
 	}

@@ -1,9 +1,5 @@
 import { Component, ComponentTypeEnum } from "./Component.js";
-
-export enum ProjectileTypeEnum {
-	FIRE,
-	ARROW,
-}
+import { WeaponTypeEnum } from "./WeaponComponent.js";
 
 export enum ProjectileGraphicsDirectionEnum {
 	RIGHT,
@@ -11,17 +7,15 @@ export enum ProjectileGraphicsDirectionEnum {
 }
 
 export default class ProjectileComponent extends Component {
-	projectileType: ProjectileTypeEnum;
 	projectileGraphicsDirection: ProjectileGraphicsDirectionEnum;
-
-	flipped: boolean;
+	weaponType: WeaponTypeEnum;
 
 	constructor(
-		projectileType: ProjectileTypeEnum,
-		projectileGraphicsDirection: ProjectileGraphicsDirectionEnum
+		projectileGraphicsDirection: ProjectileGraphicsDirectionEnum,
+		weaponType: WeaponTypeEnum
 	) {
 		super(ComponentTypeEnum.PROJECTILE);
-		this.projectileType = projectileType;
 		this.projectileGraphicsDirection = projectileGraphicsDirection;
+		this.weaponType = weaponType;
 	}
 }
