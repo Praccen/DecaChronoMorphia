@@ -114,7 +114,7 @@ export default class Player {
 				projectileSpeed: 4,
 				attackCooldown: 1,
 				weaponType: WeaponTypeEnum.MAGIC,
-				lifetime: 10,
+				lifetime: 5,
 			},
 		};
 

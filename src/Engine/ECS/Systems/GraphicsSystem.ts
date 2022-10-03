@@ -78,12 +78,14 @@ export default class GraphicsSystem extends System {
 						projectileComp.projectileGraphicsDirection ===
 						ProjectileGraphicsDirectionEnum.UP
 					) {
-						let quad = <PhongQuad>graphComp.object;
-						quad.textureMatrix.scale(1, -1, 1);
-						let animComp = <AnimationComponent>(
-							e.getComponent(ComponentTypeEnum.ANIMATION)
-						);
-						animComp.startingTile.y = 5;
+						if (projectileComp.weaponType != WeaponTypeEnum.MAGIC) {
+							let quad = <PhongQuad>graphComp.object;
+							quad.textureMatrix.scale(1, -1, 1);
+							let animComp = <AnimationComponent>(
+								e.getComponent(ComponentTypeEnum.ANIMATION)
+							);
+							animComp.startingTile.y = 5;
+						}
 					}
 				}
 				posComp.calculateMatrix(graphComp.object.modelMatrix);
