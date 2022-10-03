@@ -58,16 +58,6 @@ export default class AnimationSystem extends System {
 				);
 
 				let quad = <PhongQuad>graphComp.object;
-				if (projectileComp) {
-					if (
-						!projectileComp.flipped &&
-						projectileComp.projectileGraphicsDirection ===
-							ProjectileGraphicsDirectionEnum.RIGHT
-					) {
-						console.log("Flip to right");
-						projectileComp.flipped = true;
-					}
-				}
 				animComp.spriteMap.updateTextureMatrix(quad.textureMatrix);
 			}
 		}

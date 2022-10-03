@@ -99,6 +99,10 @@ export default class WeaponSystem extends System {
 
 				let dmgTexture = "Assets/textures/projectiles.png";
 				let phongQuad = this.rendering.getNewPhongQuad(dmgTexture, dmgTexture);
+				if (projectileDirection === ProjectileGraphicsDirectionEnum.RIGHT) {
+					console.log("Flip to right");
+					phongQuad.textureMatrix.scale(1, -1, 1);
+				}
 				this.ecsManager.addComponent(
 					dmgEntity,
 					new GraphicsComponent(phongQuad)
@@ -107,9 +111,9 @@ export default class WeaponSystem extends System {
 				let projectileAnimComp = new AnimationComponent();
 				projectileAnimComp.spriteMap.setNrOfSprites(3, 2);
 				projectileAnimComp.startingTile = { x: 0, y: 0 };
-				projectileAnimComp.advanceBy = { x: 0.0, y: 0.0 };
-				projectileAnimComp.modAdvancement = { x: 0.0, y: 0.0 };
-				projectileAnimComp.updateInterval = 0.0;
+				projectileAnimComp.advanceBy = { x: 1.0, y: 0.0 };
+				projectileAnimComp.modAdvancement = { x: 3.0, y: 0.0 };
+				projectileAnimComp.updateInterval = 0.2;
 				this.ecsManager.addComponent(dmgEntity, projectileAnimComp);
 
 				weaponComp.attackTimer = weaponComp.attackCooldown;
