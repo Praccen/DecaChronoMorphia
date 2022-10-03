@@ -11,7 +11,6 @@ import MovementComponent from "../Components/MovementComponent.js";
 import PointLightComponent from "../Components/PointLightComponent.js";
 import PositionComponent from "../Components/PositionComponent.js";
 import ProjectileComponent, {
-	ProjectileGraphicsDirectionEnum,
 	ProjectileTypeEnum,
 } from "../Components/ProjectileComponent.js";
 import WeaponComponent from "../Components/WeaponComponent.js";
@@ -75,15 +74,8 @@ export default class WeaponSystem extends System {
 				dmgMoveComp.acceleration = 0.0;
 				dmgMoveComp.constantAcceleration.y = 0.0;
 				this.ecsManager.addComponent(dmgEntity, dmgMoveComp);
-				let projectileDirection = ProjectileGraphicsDirectionEnum.RIGHT;
-				if (weaponComp.direction.x < 0) {
-					projectileDirection = ProjectileGraphicsDirectionEnum.LEFT;
-				}
 
-				let projectileComp = new ProjectileComponent(
-					ProjectileTypeEnum.FIRE,
-					projectileDirection
-				);
+				let projectileComp = new ProjectileComponent(ProjectileTypeEnum.FIRE);
 				this.ecsManager.addComponent(dmgEntity, projectileComp);
 
 				let collComp = new CollisionComponent();

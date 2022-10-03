@@ -3,9 +3,7 @@ import GraphicsComponent from "../Components/GraphicsComponent.js";
 import AnimationComponent from "../Components/AnimationComponent.js";
 import System from "./System.js";
 import PhongQuad from "../../Objects/PhongQuad.js";
-import ProjectileComponent, {
-	ProjectileGraphicsDirectionEnum,
-} from "../Components/ProjectileComponent.js";
+import ProjectileComponent from "../Components/ProjectileComponent.js";
 
 export default class AnimationSystem extends System {
 	constructor() {
