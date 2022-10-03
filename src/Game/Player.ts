@@ -233,7 +233,7 @@ export default class Player {
 
 		this.ecsManager.addComponent(
 			this.playerEntity,
-			new WeaponComponent(10, true, 4, 2, WeaponTypeEnum.SWORD)
+			new WeaponComponent(10, false, 4, 2, WeaponTypeEnum.SWORD)
 		);
 
 		this.ecsManager.addComponent(
@@ -376,12 +376,15 @@ export default class Player {
 			const weaponComp = this.playerEntity.getComponent(
 				ComponentTypeEnum.WEAPON
 			) as WeaponComponent;
+			let playerPosComp = <PositionComponent>(
+				this.playerEntity.getComponent(ComponentTypeEnum.POSITION)
+			);
 			weaponComp.attackRequested = true;
 			weaponComp.direction = new Vec3(lookDir).normalize();
 			weaponComp.position = new Vec3({
-				x: weaponComp.direction.x,
+				x: weaponComp.direction.x + playerPosComp.position.x,
 				y: 0.5,
-				z: weaponComp.direction.z,
+				z: weaponComp.direction.z + playerPosComp.position.z,
 			});
 		} else if (this.currentPlayerShape == PlayerShapeEnum.WIZ) {
 		} else if (this.currentPlayerShape == PlayerShapeEnum.TANKY) {
