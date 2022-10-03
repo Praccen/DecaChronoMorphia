@@ -97,7 +97,7 @@ window.onload = async () => {
 
 	let audio = new AudioPlayer();
 	let ecsManager = new ECSManager(rendering);
-	let menu = new Menu(rendering, fpsDisplay);
+	let menu = new Menu(rendering, fpsDisplay, audio);
 	let game: Game;
 
 	let lastTick = null;

@@ -2,9 +2,12 @@ import Rendering from "../Engine/Rendering.js";
 import Button from "../Engine/GUI/Button.js";
 import Checkbox from "../Engine/GUI/Checkbox.js";
 import TextObject2D from "../Engine/GUI/Text/TextObject2D.js";
+import Slider from "../Engine/GUI/Slider.js";
+import AudioPlayer from "../Engine/Audio/AudioPlayer.js";
 
 export default class Menu {
 	private rendering: Rendering;
+	private audioPlayer: AudioPlayer;
 
 	private startGame: boolean;
 	private startButton: Button;
@@ -12,9 +15,11 @@ export default class Menu {
 	private bloomCB: Checkbox;
 	private fpsDisplayCB: Checkbox;
 	private fpsDisplay: TextObject2D;
+	private volumeSlider: Slider;
 
-	constructor(rendering: Rendering, fpsDisplay: TextObject2D) {
+	constructor(rendering: Rendering, fpsDisplay: TextObject2D, audioPlayer: AudioPlayer) {
 		this.rendering = rendering;
+		this.audioPlayer = audioPlayer;
 		this.startGame = false;
 		this.fpsDisplay = fpsDisplay;
 
@@ -79,18 +84,34 @@ export default class Menu {
 		this.fpsDisplayCB.getElement().style.color = "cyan";
 		this.fpsDisplayCB.getInputElement().style.accentColor = "red";
 		this.fpsDisplayCB.getInputElement().checked = true;
+
+		this.volumeSlider = this.rendering.getNewSlider();
+		this.volumeSlider.center = true;
+		this.volumeSlider.position.x = 0.5;
+		this.volumeSlider.position.y = 0.75;
+		this.volumeSlider.textSize = 20;
+		this.volumeSlider.textString = "Volume ";
+		this.volumeSlider.getElement().style.color = "cyan";
+		this.volumeSlider.getInputElement().style.accentColor = "red";
+		this.volumeSlider.getInputElement().min = "0";
+		this.volumeSlider.getInputElement().max = "100";
+
 	}
 
 	update(dt: number): boolean {
 		this.rendering.useCrt = this.crtCB.getChecked();
 		this.rendering.useBloom = this.bloomCB.getChecked();
 		this.fpsDisplay.setHidden(!this.fpsDisplayCB.getChecked());
+		this.audioPlayer.setMusicVolume(this.volumeSlider.getValue() * 0.001);
+		this.audioPlayer.setSoundEffectVolume(this.volumeSlider.getValue() * 0.001);
+		
 
 		if (this.startGame) {
 			this.startButton.remove();
 			this.crtCB.remove();
 			this.bloomCB.remove();
 			this.fpsDisplayCB.remove();
+			this.volumeSlider.remove();
 			return true;
 		}
 		return false;
