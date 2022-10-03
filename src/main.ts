@@ -5,7 +5,6 @@ import ECSManager from "./Engine/ECS/ECSManager.js";
 import AudioPlayer from "./Engine/Audio/AudioPlayer.js";
 import { SAT } from "./Engine/Maths/SAT.js";
 import Menu from "./Game/Menu.js";
-import { MapGenerator } from "./Game/Map/MapGenerator.js";
 
 SAT.runUnitTests();
 
@@ -100,17 +99,6 @@ window.onload = async () => {
 	let ecsManager = new ECSManager(rendering);
 	let menu = new Menu(rendering, fpsDisplay);
 	let game: Game;
-
-	// ---- Map ----
-	const mapInformation = await MapGenerator.GenerateMap(
-		5,
-		5,
-		ecsManager,
-		rendering
-	);
-	ecsManager.initializeSystems(mapInformation, audio);
-	console.log("mapInformation :>> ", mapInformation);
-	// -------------
 
 	let lastTick = null;
 
@@ -232,7 +220,7 @@ window.onload = async () => {
 			requestAnimationFrame(menuLoop);
 		} else {
 			audio.pauseAudio("main_theme_4");
-			game = new Game(rendering, ecsManager);
+			game = new Game(rendering, ecsManager, audio);
 			await game.init();
 			requestAnimationFrame(gameLoop);
 		}

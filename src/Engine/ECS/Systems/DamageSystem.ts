@@ -55,13 +55,13 @@ export default class DamageSystem extends System {
 				damEnHealth.health -= damageComp.damage;
 			}
 
-			
-			let pointLightComp = e.getComponent(ComponentTypeEnum.POINTLIGHT) as PointLightComponent;
+			let pointLightComp = e.getComponent(
+				ComponentTypeEnum.POINTLIGHT
+			) as PointLightComponent;
 			pointLightComp.pointLight.removed = true;
 
 			this.ecsManager.removeComponent(e, ComponentTypeEnum.GRAPHICS);
 			this.ecsManager.removeEntity(e.id);
-
 		});
 	}
 }

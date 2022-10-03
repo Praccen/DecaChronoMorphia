@@ -10,7 +10,12 @@ import GraphicsComponent from "../Components/GraphicsComponent.js";
 import MovementComponent from "../Components/MovementComponent.js";
 import PointLightComponent from "../Components/PointLightComponent.js";
 import PositionComponent from "../Components/PositionComponent.js";
-import WeaponComponent from "../Components/WeaponComponent.js";
+import ProjectileComponent, {
+	ProjectileTypeEnum,
+} from "../Components/ProjectileComponent.js";
+import WeaponComponent, {
+	WeaponTypeEnum,
+} from "../Components/WeaponComponent.js";
 import ECSManager from "../ECSManager.js";
 import System from "./System.js";
 
@@ -34,7 +39,7 @@ export default class WeaponSystem extends System {
 				ComponentTypeEnum.WEAPON
 			) as WeaponComponent;
 
-			weaponComp.attackTimer = Math.max(weaponComp.attackTimer - dt, 0);
+			weaponComp.attackTimer -= dt;
 
 			if (weaponComp.attackRequested && weaponComp.attackTimer <= 0) {
 				const audioComp = e.getComponent(
@@ -44,7 +49,6 @@ export default class WeaponSystem extends System {
 					audioComp.sounds[AudioTypeEnum.SHOOT].requestPlay = true;
 				}
 
-				weaponComp.attackRequested = false;
 				const dmgEntity = this.ecsManager.createEntity();
 				this.ecsManager.addComponent(
 					dmgEntity,
@@ -72,6 +76,9 @@ export default class WeaponSystem extends System {
 				dmgMoveComp.constantAcceleration.y = 0.0;
 				this.ecsManager.addComponent(dmgEntity, dmgMoveComp);
 
+				let projectileComp = new ProjectileComponent(ProjectileTypeEnum.FIRE);
+				this.ecsManager.addComponent(dmgEntity, projectileComp);
+
 				let collComp = new CollisionComponent();
 				collComp.hasForce = false;
 				this.ecsManager.addComponent(dmgEntity, collComp);
@@ -84,19 +91,43 @@ export default class WeaponSystem extends System {
 				enemyBBComp.updateBoundingBoxBasedOnPositionComp = true;
 				this.ecsManager.addComponent(dmgEntity, enemyBBComp);
 
-				let dmgTexture = "Assets/textures/projectiles.png";
+				let dmgTexture: string;
+				let projectileAnimComp = new AnimationComponent();
+
+				if (weaponComp.weaponType == WeaponTypeEnum.ARROW) {
+					dmgTexture = "Assets/textures/projectiles.png";
+					projectileAnimComp.spriteMap.setNrOfSprites(3, 2);
+					projectileAnimComp.startingTile = { x: 0, y: 0 };
+					projectileAnimComp.advanceBy = { x: 0.0, y: 0.0 };
+					projectileAnimComp.modAdvancement = { x: 0.0, y: 0.0 };
+					projectileAnimComp.updateInterval = 0.0;
+				} else if (weaponComp.weaponType == WeaponTypeEnum.MAGIC) {
+					dmgTexture = "Assets/textures/projectiles.png";
+					projectileAnimComp.spriteMap.setNrOfSprites(3, 2);
+					projectileAnimComp.startingTile = { x: 0, y: 1 };
+					projectileAnimComp.advanceBy = { x: 1.0, y: 0.0 };
+					projectileAnimComp.modAdvancement = { x: 2.0, y: 0.0 };
+					projectileAnimComp.updateInterval = 0.3;
+				} else if (weaponComp.weaponType == WeaponTypeEnum.SWORD) {
+					dmgTexture = "Assets/textures/normy.png";
+					projectileAnimComp.spriteMap.setNrOfSprites(6, 6);
+					projectileAnimComp.startingTile = { x: 0, y: 4 };
+					projectileAnimComp.advanceBy = { x: 1.0, y: 0.0 };
+					projectileAnimComp.modAdvancement = { x: 3.0, y: 0.0 };
+					projectileAnimComp.updateInterval = 0.3;
+				}
+
 				let phongQuad = this.rendering.getNewPhongQuad(dmgTexture, dmgTexture);
+				if (weaponComp.direction.x > 0) {
+					console.log("Flip to right");
+					// phongQuad.textureMatrix.scale(1, -1, 1);
+					phongQuad.modelMatrix.scale(1, -1, 1);
+				}
 				this.ecsManager.addComponent(
 					dmgEntity,
 					new GraphicsComponent(phongQuad)
 				);
 
-				let projectileAnimComp = new AnimationComponent();
-				projectileAnimComp.spriteMap.setNrOfSprites(3, 2);
-				projectileAnimComp.startingTile = { x: 0, y: 0 };
-				projectileAnimComp.advanceBy = { x: 0.0, y: 0.0 };
-				projectileAnimComp.modAdvancement = { x: 0.0, y: 0.0 };
-				projectileAnimComp.updateInterval = 0.0;
 				this.ecsManager.addComponent(dmgEntity, projectileAnimComp);
 
 				let light = this.rendering.getNewPointLight();
@@ -110,6 +141,7 @@ export default class WeaponSystem extends System {
 
 				weaponComp.attackTimer = weaponComp.attackCooldown;
 			}
+			weaponComp.attackRequested = false;
 		});
 	}
 }

@@ -3,6 +3,7 @@ import GraphicsComponent from "../Components/GraphicsComponent.js";
 import AnimationComponent from "../Components/AnimationComponent.js";
 import System from "./System.js";
 import PhongQuad from "../../Objects/PhongQuad.js";
+import ProjectileComponent from "../Components/ProjectileComponent.js";
 
 export default class AnimationSystem extends System {
 	constructor() {
@@ -21,6 +22,9 @@ export default class AnimationSystem extends System {
 			);
 			let animComp = <AnimationComponent>(
 				e.getComponent(ComponentTypeEnum.ANIMATION)
+			);
+			let projectileComp = <ProjectileComponent>(
+				e.getComponent(ComponentTypeEnum.PROJECTILE)
 			);
 
 			if (graphComp && animComp) {
