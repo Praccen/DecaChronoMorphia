@@ -34,7 +34,7 @@ export default class WeaponSystem extends System {
 				ComponentTypeEnum.WEAPON
 			) as WeaponComponent;
 
-			weaponComp.attackTimer = Math.max(weaponComp.attackTimer - dt, 0);
+			weaponComp.attackTimer -= dt;
 
 			if (weaponComp.attackRequested && weaponComp.attackTimer <= 0) {
 				const audioComp = e.getComponent(
@@ -44,7 +44,6 @@ export default class WeaponSystem extends System {
 					audioComp.sounds[AudioTypeEnum.SHOOT].requestPlay = true;
 				}
 
-				weaponComp.attackRequested = false;
 				const dmgEntity = this.ecsManager.createEntity();
 				this.ecsManager.addComponent(
 					dmgEntity,
@@ -110,6 +109,7 @@ export default class WeaponSystem extends System {
 
 				weaponComp.attackTimer = weaponComp.attackCooldown;
 			}
+			weaponComp.attackRequested = false;
 		});
 	}
 }
