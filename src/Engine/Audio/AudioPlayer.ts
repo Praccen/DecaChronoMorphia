@@ -160,12 +160,14 @@ export default class AudioPlayer {
 	}
 
 	stopAll() {
-		// for(const s of Object.values(this.sounds)) {
-		//     const playPromise = s.play();
-		//     playPromise.then(() => {
-		//         s.pause();
-		//         s.currentTime = 0.0;
-		//     })
-		// }
+		Object.keys(this.songs).forEach((key) => {
+			this.songs[key].pause();
+			this.songs[key].currentTime = 0;
+		});
+
+		Object.keys(this.sound_effects).forEach((key) => {
+			this.sound_effects[key].pause();
+			this.sound_effects[key].currentTime = 0;
+		});
 	}
 }

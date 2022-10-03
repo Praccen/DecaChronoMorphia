@@ -61,6 +61,8 @@ export default class Player {
 	private boundingBoxModelMatrix: Matrix4;
 	private lookDir: Vec3 = new Vec3({ x: 0.0, y: 0.0, z: 0.0 });
 
+	public isDead: boolean;
+
 	constructor(rendering: Rendering, ecsManager: ECSManager) {
 		this.rendering = rendering;
 		this.ecsManager = ecsManager;
@@ -121,6 +123,8 @@ export default class Player {
 		this.currentPlayerShape = PlayerShapeEnum.NORMIE;
 
 		this.boundingBoxModelMatrix = new Matrix4(null);
+
+		this.isDead = false;
 	}
 
 	updatePlayerQuad() {
@@ -262,13 +266,13 @@ export default class Player {
 		playerBoundingBoxComp.updateTransformMatrix(this.boundingBoxModelMatrix);
 		this.ecsManager.addComponent(this.playerEntity, new CollisionComponent());
 
-		let playerComp = new PlayerComponent();
+		let playerComp = new PlayerComponent(this);
 		playerComp.dodgeStartingTile = new Vec2({ x: 0, y: 2 });
 		playerComp.dodgeModAdvancement = new Vec2({ x: 6, y: 0 });
 		playerComp.dodgeUpdateInterval = 0.3;
 		this.ecsManager.addComponent(this.playerEntity, playerComp);
 
-		let healthComp = new HealthComponent(200);
+		let healthComp = new HealthComponent(100);
 		this.ecsManager.addComponent(this.playerEntity, healthComp);
 
 		const attackData = this.playerAttackData[PlayerShapeEnum.NORMIE];

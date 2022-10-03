@@ -5,6 +5,7 @@ import TextObject2D from "../Engine/GUI/Text/TextObject2D.js";
 import Slider from "../Engine/GUI/Slider.js";
 import AudioPlayer from "../Engine/Audio/AudioPlayer.js";
 import Quad from "../Engine/Objects/Quad.js";
+import { options } from "../main.js";
 
 export default class Menu {
 	private rendering: Rendering;
@@ -31,20 +32,45 @@ export default class Menu {
 		this.fpsDisplay = fpsDisplay;
 
 		// Load all textures to avoid loading mid game
-		let smileyTexture =
-			"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/SNice.svg/1200px-SNice.svg.png";
-		rendering.loadTextureToStore(smileyTexture);
-		let floorTexture =
-			"https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/371b6fdf-69a3-4fa2-9ff0-bd04d50f4b98/de8synv-6aad06ab-ed16-47fd-8898-d21028c571c4.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzM3MWI2ZmRmLTY5YTMtNGZhMi05ZmYwLWJkMDRkNTBmNGI5OFwvZGU4c3ludi02YWFkMDZhYi1lZDE2LTQ3ZmQtODg5OC1kMjEwMjhjNTcxYzQucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.wa-oSVpeXEpWqfc_bexczFs33hDFvEGGAQD969J7Ugw";
-		rendering.loadTextureToStore(floorTexture);
-		let laserTexture =
-			"https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/f04b32b4-58c3-4e24-a642-67320f0a66bb/ddwzap4-c0ad82e3-b949-479c-973c-11daaa55a554.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2YwNGIzMmI0LTU4YzMtNGUyNC1hNjQyLTY3MzIwZjBhNjZiYlwvZGR3emFwNC1jMGFkODJlMy1iOTQ5LTQ3OWMtOTczYy0xMWRhYWE1NWE1NTQucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.vSK6b4_DsskmHsiVKQtXQAospMA6_WZ2BoFYrODpFKQ";
-		rendering.loadTextureToStore(laserTexture);
-		let boxTexture =
-			"https://as2.ftcdn.net/v2/jpg/01/99/14/99/1000_F_199149981_RG8gciij11WKAQ5nKi35Xx0ovesLCRaU.jpg";
-		rendering.loadTextureToStore(boxTexture);
-		let fireTexture = "Assets/textures/fire.png";
-		rendering.loadTextureToStore(fireTexture);
+		let textures = [
+		"black.png       ",
+		"mouse_front.png   ",
+		"puff.png        ",
+		"tanky_spec.png",
+		"buttons.png     ",
+		"normy.png         ",
+		"rip.png         ",
+		"voxelPalette.png",
+		"door.png        ",
+		"normy_fron.png    ",
+		"skully.png      ",
+		"wall.png",
+		"dryady.png      ",
+		"normy_front2.png  ",
+		"slime.png       ",
+		"wall2.png",
+		"fire.png        ",
+		"normy_front3.png  ",
+		"slime_spec.png  ",
+		"witch_dialog_1.png",
+		"knight.png      ",
+		"normy_spec.png    ",
+		"stone.png       ",
+		"witch_dialog_2.png",
+		"mouse.png       ",
+		"owo.png           ",
+		"stone_moss.png  ",
+		"witch_sheet.png",
+		"mouse_back.png  ",
+		"projectiles.png   ",
+		"tanky.png       ",
+		"wizard.png",
+		];
+		for (const texFile of textures) {
+			this.rendering.loadTextureToStore("Assets/textures/" + texFile);
+		}
+
+
 
 		this.titleText = this.rendering.getNew2DText();
 		this.titleText.position.x = 0.5;
@@ -76,6 +102,7 @@ export default class Menu {
 		this.crtCB.textString = "CRT-effect ";
 		this.crtCB.getElement().style.color = "cyan";
 		this.crtCB.getInputElement().style.accentColor = "red";
+		this.crtCB.getInputElement().checked = options.useCrt;
 
 		this.bloomCB = this.rendering.getNewCheckbox();
 		this.bloomCB.center = true;
@@ -85,6 +112,7 @@ export default class Menu {
 		this.bloomCB.textString = "Bloom-effect ";
 		this.bloomCB.getElement().style.color = "cyan";
 		this.bloomCB.getInputElement().style.accentColor = "red";
+		this.bloomCB.getInputElement().checked = options.useBloom;
 
 		this.fpsDisplayCB = this.rendering.getNewCheckbox();
 		this.fpsDisplayCB.center = true;
@@ -94,7 +122,7 @@ export default class Menu {
 		this.fpsDisplayCB.textString = "Fps counter ";
 		this.fpsDisplayCB.getElement().style.color = "cyan";
 		this.fpsDisplayCB.getInputElement().style.accentColor = "red";
-		this.fpsDisplayCB.getInputElement().checked = true;
+		this.fpsDisplayCB.getInputElement().checked = options.showFps;
 
 		this.volumeSlider = this.rendering.getNewSlider();
 		this.volumeSlider.center = true;
@@ -106,6 +134,7 @@ export default class Menu {
 		this.volumeSlider.getInputElement().style.accentColor = "red";
 		this.volumeSlider.getInputElement().min = "0";
 		this.volumeSlider.getInputElement().max = "100";
+		this.volumeSlider.getInputElement().value = options.volume * 1000 + "";
 
 		this.witch = this.rendering.getNewQuad(
 			"Assets/textures/witch_dialog_1.png"
@@ -114,11 +143,15 @@ export default class Menu {
 	}
 
 	update(dt: number): boolean {
-		this.rendering.useCrt = this.crtCB.getChecked();
-		this.rendering.useBloom = this.bloomCB.getChecked();
-		this.fpsDisplay.setHidden(!this.fpsDisplayCB.getChecked());
-		this.audioPlayer.setMusicVolume(this.volumeSlider.getValue() * 0.001);
-		this.audioPlayer.setSoundEffectVolume(this.volumeSlider.getValue() * 0.001);
+		options.useCrt = this.crtCB.getChecked();
+		this.rendering.useCrt = options.useCrt;
+		options.useBloom = this.bloomCB.getChecked();
+		this.rendering.useBloom = options.useBloom;
+		options.showFps = this.fpsDisplayCB.getChecked();
+		this.fpsDisplay.setHidden(!options.showFps);
+		options.volume = this.volumeSlider.getValue() * 0.001;
+		this.audioPlayer.setMusicVolume(options.volume);
+		this.audioPlayer.setSoundEffectVolume(options.volume);
 
 		if (this.startGame) {
 			this.rendering.deleteQuad(this.witch);
