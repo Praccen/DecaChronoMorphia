@@ -23,7 +23,9 @@ export default class Player {
     playerQuad;
     playerParticleSpawner;
     playerTextureMap;
+    playerAccVecMultiplierMap;
     playerBoundingBoxMap;
+    playerAttackData;
     currentPlayerShape;
     mouseTex;
     wizTex;
@@ -36,6 +38,8 @@ export default class Player {
     playerParticleSpawnerLifeTime = 0.2;
     playerIsPolymorphing = false;
     boundingBoxModelMatrix;
+    lookDir = new Vec3({ x: 0.0, y: 0.0, z: 0.0 });
+    isDead;
     constructor(rendering, ecsManager) {
         this.rendering = rendering;
         this.ecsManager = ecsManager;
@@ -45,15 +49,60 @@ export default class Player {
         this.wizTex = this.rendering.getTextureFromStore("Assets/textures/wizard.png");
         this.tankyTex = this.rendering.getTextureFromStore("Assets/textures/tanky.png");
         this.tankyTexSpec = this.rendering.getTextureFromStore("Assets/textures/tanky_spec.png");
-        this.polymorphTexPath = "Assets/textures/skully.png";
+        this.polymorphTexPath = "Assets/textures/puff.png";
         this.playerTextureMap = {
             [PlayerShapeEnum.NORMIE]: [this.normyTex, this.normySpecTex],
             [PlayerShapeEnum.TANKY]: [this.tankyTex, this.tankyTexSpec],
             [PlayerShapeEnum.WIZ]: [this.wizTex, this.wizTex],
             [PlayerShapeEnum.MOUSE]: [this.mouseTex, this.mouseTex],
         };
+        this.playerAccVecMultiplierMap = {
+            [PlayerShapeEnum.NORMIE]: 1,
+            [PlayerShapeEnum.TANKY]: 0.4,
+            [PlayerShapeEnum.WIZ]: 0.6,
+            [PlayerShapeEnum.MOUSE]: 2,
+        };
+        this.playerAttackData = {
+            [PlayerShapeEnum.NORMIE]: {
+                damage: 5,
+                shoots: false,
+                range: 2,
+                projectileSpeed: 2,
+                attackCooldown: 0.6,
+                weaponType: WeaponTypeEnum.SWORD,
+                lifetime: 0.24,
+            },
+            // [PlayerShapeEnum.TANKY]: {
+            // 	damage: 5,
+            // 	shoots: false,
+            // 	range: 2,
+            // 	projectileSpeed: 2,
+            // 	attackCooldown: 0.2,
+            // 	weaponType: WeaponTypeEnum.SWORD,
+            // 	lifetime: 0.08,
+            // },
+            [PlayerShapeEnum.WIZ]: {
+                damage: 10,
+                shoots: true,
+                range: 4,
+                projectileSpeed: 4,
+                attackCooldown: 1,
+                weaponType: WeaponTypeEnum.MAGIC,
+                lifetime: 5,
+            },
+            // [PlayerShapeEnum.MOUSE]: {
+            // 	damage: 5,
+            // 	shoots: false,
+            // 	range: 2,
+            // 	projectileSpeed: 2,
+            // 	attackCooldown: 0.2,
+            // 	weaponType: WeaponTypeEnum.SWORD,
+            // 	lifetime: 0.08,
+            // },
+        };
         this.currentPlayerShape = PlayerShapeEnum.NORMIE;
         this.boundingBoxModelMatrix = new Matrix4(null);
+        this.isDead = false;
     }
     updatePlayerQuad() {
         this.playerQuad.diffuse = this.playerTextureMap[this.currentPlayerShape][0];
@@ -111,20 +160,20 @@ export default class Player {
         this.ecsManager.addComponent(this.playerEntity, particleSpawnerComp);
         this.playerBoundingBoxMap = {
             [PlayerShapeEnum.NORMIE]: [
-                new Vec3({ x: -0.2, y: -0.5, z: -0.2 }),
-                new Vec3({ x: 0.2, y: 0.5, z: 0.2 }),
+                new Vec3({ x: -0.45, y: -0.5, z: -0.45 }),
+                new Vec3({ x: 0.45, y: 0.5, z: 0.45 }),
             ],
             [PlayerShapeEnum.TANKY]: [
-                new Vec3({ x: -0.2, y: -0.5, z: -0.2 }),
-                new Vec3({ x: 0.2, y: 0.5, z: 0.2 }),
+                new Vec3({ x: -0.45, y: -0.5, z: -0.45 }),
+                new Vec3({ x: 0.45, y: 0.5, z: 0.45 }),
             ],
             [PlayerShapeEnum.WIZ]: [
-                new Vec3({ x: -0.2, y: -0.5, z: -0.2 }),
-                new Vec3({ x: 0.2, y: 0.5, z: 0.2 }),
+                new Vec3({ x: -0.45, y: -0.5, z: -0.45 }),
+                new Vec3({ x: 0.45, y: 0.5, z: 0.45 }),
             ],
             [PlayerShapeEnum.MOUSE]: [
-                new Vec3({ x: -0.2, y: -0.5, z: -0.2 }),
-                new Vec3({ x: 0.2, y: 0.5, z: 0.2 }),
+                new Vec3({ x: -0.45, y: -0.5, z: -0.3 }),
+                new Vec3({ x: 0.45, y: 0.5, z: 0.45 }),
             ],
         };
         // Collision stuff
@@ -135,14 +184,15 @@ export default class Player {
         this.boundingBoxModelMatrix.setTranslate(playerPosComp.position.x, playerPosComp.position.y, playerPosComp.position.z);
         playerBoundingBoxComp.updateTransformMatrix(this.boundingBoxModelMatrix);
         this.ecsManager.addComponent(this.playerEntity, new CollisionComponent());
-        let playerComp = new PlayerComponent();
+        let playerComp = new PlayerComponent(this);
         playerComp.dodgeStartingTile = new Vec2({ x: 0, y: 2 });
         playerComp.dodgeModAdvancement = new Vec2({ x: 6, y: 0 });
         playerComp.dodgeUpdateInterval = 0.3;
         this.ecsManager.addComponent(this.playerEntity, playerComp);
-        let healthComp = new HealthComponent(200);
+        let healthComp = new HealthComponent(100);
         this.ecsManager.addComponent(this.playerEntity, healthComp);
-        this.ecsManager.addComponent(this.playerEntity, new WeaponComponent(10, false, 0, 2, WeaponTypeEnum.SWORD, 0.5));
+        const attackData = this.playerAttackData[PlayerShapeEnum.NORMIE];
+        this.ecsManager.addComponent(this.playerEntity, new WeaponComponent(attackData.damage, attackData.shoots, attackData.range, attackData.projectileSpeed, attackData.attackCooldown, attackData.weaponType, attackData.lifetime));
         this.ecsManager.addComponent(this.playerEntity, new AudioComponent([
             { key: AudioTypeEnum.SHOOT, audioKey: "spell_cast_3", playTime: 1.5 },
             {
@@ -173,48 +223,53 @@ export default class Player {
     }
     updateInput() {
         let accVec = new Vec3({ x: 0.0, y: 0.0, z: 0.0 });
+        let polymorphComp = (this.playerEntity.getComponent(ComponentTypeEnum.POLYMORPH));
+        let accVecMultiplier = 1;
+        if (polymorphComp) {
+            accVecMultiplier =
+                this.playerAccVecMultiplierMap[polymorphComp.currentPolymorphShape];
+        }
         let move = false;
         let ability = false;
-        let lookDir = new Vec3({ x: 0.0, y: 0.0, z: 0.0 });
         let playerComp = (this.playerEntity.getComponent(ComponentTypeEnum.PLAYER));
         if (input.keys["ArrowRight"]) {
-            lookDir.x = 1;
+            this.lookDir.x = 1;
             ability = true;
         }
         if (input.keys["ArrowLeft"]) {
-            lookDir.x = -1;
+            this.lookDir.x = -1;
             ability = true;
         }
         if (input.keys["ArrowDown"]) {
-            lookDir.z = 1;
+            this.lookDir.z = 1;
             ability = true;
         }
         if (input.keys["ArrowUp"]) {
-            lookDir.z = -1;
+            this.lookDir.z = -1;
             ability = true;
         }
-        if (input.keys["w"]) {
-            accVec.add(new Vec3({ x: 0.0, y: 0.0, z: -1.0 }));
+        if (input.keys["w"] || input.keys["W"]) {
+            accVec.add(new Vec3({ x: 0.0, y: 0.0, z: -1.0 * accVecMultiplier }));
             move = true;
         }
-        if (input.keys["s"]) {
-            accVec.add(new Vec3({ x: 0.0, y: 0.0, z: 1.0 }));
+        if (input.keys["s"] || input.keys["S"]) {
+            accVec.add(new Vec3({ x: 0.0, y: 0.0, z: 1.0 * accVecMultiplier }));
             move = true;
         }
-        if (input.keys["a"]) {
-            accVec.add(new Vec3({ x: -1.0, y: 0.0, z: 0.0 }));
+        if (input.keys["a"] || input.keys["A"]) {
+            accVec.add(new Vec3({ x: -1.0 * accVecMultiplier, y: 0.0, z: 0.0 }));
             move = true;
         }
-        if (input.keys["d"]) {
-            accVec.add(new Vec3({ x: 1.0, y: 0.0, z: 0.0 }));
+        if (input.keys["d"] || input.keys["D"]) {
+            accVec.add(new Vec3({ x: 1.0 * accVecMultiplier, y: 0.0, z: 0.0 }));
             move = true;
         }
         if (input.keys[" "] && playerComp) {
             playerComp.startDodge = true;
         }
-        if (input.keys["e"]) {
+        if (input.keys["e"] || input.keys["E"]) {
         }
-        return [accVec, move, ability, lookDir];
+        return [accVec, move, ability, this.lookDir];
     }
     updatePolymorph() {
         let playerPolymorphComp = (this.playerEntity.getComponent(ComponentTypeEnum.POLYMORPH));
@@ -254,6 +309,7 @@ export default class Player {
             playerComp.dodgeStartingTile = new Vec2({ x: 0, y: 2 });
             playerComp.dodgeModAdvancement = new Vec2({ x: 6, y: 0 });
             playerComp.dodgeUpdateInterval = 0.1;
+            playerComp.dodgeLength = 2.5;
         }
         else if (this.currentPlayerShape == PlayerShapeEnum.MOUSE) {
             playerComp.dodgeStartingTile = new Vec2({ x: 0, y: 2 });
@@ -261,30 +317,54 @@ export default class Player {
             playerComp.dodgeUpdateInterval = 0.3;
         }
     }
+    reAssignWeaponData(currWeapon, attackData) {
+        currWeapon.damage = attackData.damage;
+        currWeapon.shoots = attackData.shoots;
+        currWeapon.range = attackData.range;
+        currWeapon.projectileSpeed = attackData.projectileSpeed;
+        currWeapon.attackCooldown = attackData.attackCooldown;
+        currWeapon.weaponType = attackData.weaponType;
+        currWeapon.lifetime = attackData.lifetime;
+    }
     doAbility(lookDir) {
+        const weaponComp = this.playerEntity.getComponent(ComponentTypeEnum.WEAPON);
         if (this.currentPlayerShape == PlayerShapeEnum.NORMIE) {
-            const weaponComp = this.playerEntity.getComponent(ComponentTypeEnum.WEAPON);
-            let playerPosComp = (this.playerEntity.getComponent(ComponentTypeEnum.POSITION));
+            const attackData = this.playerAttackData[PlayerShapeEnum.NORMIE];
+            this.reAssignWeaponData(weaponComp, attackData);
+            weaponComp.direction = new Vec3(this.lookDir).normalize();
             weaponComp.attackRequested = true;
-            weaponComp.direction = new Vec3(lookDir).normalize();
-            weaponComp.position = new Vec3({
-                x: weaponComp.direction.x + playerPosComp.position.x,
-                y: 0.5,
-                z: weaponComp.direction.z + playerPosComp.position.z,
-            });
         }
         else if (this.currentPlayerShape == PlayerShapeEnum.WIZ) {
+            const attackData = this.playerAttackData[PlayerShapeEnum.WIZ];
+            this.reAssignWeaponData(weaponComp, attackData);
+            weaponComp.direction = new Vec3(this.lookDir).normalize();
+            weaponComp.attackRequested = true;
         }
         else if (this.currentPlayerShape == PlayerShapeEnum.TANKY) {
         }
         else if (this.currentPlayerShape == PlayerShapeEnum.MOUSE) {
         }
     }
-    doDodge() {
+    doDodge(accVec) {
         const animCorp = this.playerEntity.getComponent(ComponentTypeEnum.ANIMATION);
+        const moveComp = this.playerEntity.getComponent(ComponentTypeEnum.MOVEMENT);
+        animCorp.modAdvancement.x = 6;
         if (this.currentPlayerShape == PlayerShapeEnum.NORMIE) {
         }
         else if (this.currentPlayerShape == PlayerShapeEnum.WIZ) {
+            const playerComp = this.playerEntity.getComponent(ComponentTypeEnum.PLAYER);
+            if (playerComp.dodgeAbiltiy) {
+                playerComp.dodgeAbiltiy = false;
+                let playerPosComp = (this.playerEntity.getComponent(ComponentTypeEnum.POSITION));
+                let newPosX = playerPosComp.position.x + accVec.x * 1.0;
+                let newPosZ = playerPosComp.position.z + accVec.z * 1.0;
+                if (newPosX > -3 && newPosX < 35) {
+                    if (newPosZ > -3 && newPosZ < 35) {
+                        playerPosComp.position.x = newPosX;
+                        playerPosComp.position.y = newPosZ;
+                    }
+                }
+            }
         }
         else if (this.currentPlayerShape == PlayerShapeEnum.TANKY) {
             if (animCorp) {
@@ -292,6 +372,7 @@ export default class Player {
             }
         }
         else if (this.currentPlayerShape == PlayerShapeEnum.MOUSE) {
+            animCorp.modAdvancement.x = 3;
         }
     }
     // Restore values that are not active after dodge
@@ -299,6 +380,10 @@ export default class Player {
         const animComp = this.playerEntity.getComponent(ComponentTypeEnum.ANIMATION);
         if (animComp) {
             animComp.stopAtLast = false;
+        }
+        const playerComp = this.playerEntity.getComponent(ComponentTypeEnum.PLAYER);
+        if (playerComp) {
+            playerComp.dodgeAbiltiy = true;
         }
         if (this.currentPlayerShape == PlayerShapeEnum.NORMIE) {
         }
@@ -313,20 +398,29 @@ export default class Player {
         let accVec;
         let move;
         let ability;
-        let lookDir;
-        [accVec, move, ability, lookDir] = this.updateInput();
+        this.lookDir = new Vec3({ x: 0, y: 0, z: 0 });
+        [accVec, move, ability, this.lookDir] = this.updateInput();
         this.updatePolymorph();
         let playerMoveComp = (this.playerEntity.getComponent(ComponentTypeEnum.MOVEMENT));
         let playerPosComp = (this.playerEntity.getComponent(ComponentTypeEnum.POSITION));
         const playerComp = this.playerEntity.getComponent(ComponentTypeEnum.PLAYER);
         if (ability) {
-            this.doAbility(lookDir);
+            this.doAbility(this.lookDir);
         }
         if (playerComp && playerComp.dodgeing) {
-            this.doDodge();
+            this.doDodge(accVec);
         }
         else {
             this.noDodge();
+        }
+        const weaponComp = this.playerEntity.getComponent(ComponentTypeEnum.WEAPON);
+        playerPosComp = (this.playerEntity.getComponent(ComponentTypeEnum.POSITION));
+        if (weaponComp) {
+            weaponComp.position = new Vec3({
+                x: weaponComp.direction.x * 0.5 + playerPosComp.position.x,
+                y: 0.2,
+                z: weaponComp.direction.z * 0.5 + playerPosComp.position.z,
+            });
         }
         // Set player acceleration
         if (move && playerMoveComp) {

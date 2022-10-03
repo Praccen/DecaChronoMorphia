@@ -23,6 +23,7 @@ import LightingPass from "./ShaderPrograms/DeferredRendering/LightingPass.js";
 import BloomExtraction from "./ShaderPrograms/PostProcessing/BloomExtraction.js";
 import BloomBlending from "./ShaderPrograms/PostProcessing/BloomBlending.js";
 import GaussianBlur from "./ShaderPrograms/PostProcessing/GaussianBlur.js";
+import Slider from "./GUI/Slider.js";
 export default class Rendering {
     // public
     camera;
@@ -83,6 +84,7 @@ export default class Rendering {
     textObjects3D;
     checkboxes;
     buttons;
+    sliders;
     // -----------------------
     constructor(gl) {
         this.gl = gl;
@@ -168,6 +170,7 @@ export default class Rendering {
         this.textObjects3D = new Array();
         this.checkboxes = new Array();
         this.buttons = new Array();
+        this.sliders = new Array();
         // -----------------------
         this.initGL();
     }
@@ -244,6 +247,10 @@ export default class Rendering {
     getNewButton() {
         const length = this.buttons.push(new Button());
         return this.buttons[length - 1];
+    }
+    getNewSlider() {
+        const length = this.sliders.push(new Slider());
+        return this.sliders[length - 1];
     }
     getNewParticleSpawner(texturePath, numberOfStartingParticles = 0) {
         let length = this.particleSpawners.push(new ParticleSpawner(this.gl, this.particleShaderProgram, this.textureStore.getTexture(texturePath), numberOfStartingParticles));
@@ -434,6 +441,15 @@ export default class Rendering {
             }
             else {
                 this.buttons.splice(i, 1);
+                i--;
+            }
+        }
+        for (let i = 0; i < this.sliders.length; i++) {
+            if (!this.sliders[i].removed) {
+                this.sliders[i].draw();
+            }
+            else {
+                this.sliders.splice(i, 1);
                 i--;
             }
         }

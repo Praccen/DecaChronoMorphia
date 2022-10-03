@@ -18,6 +18,11 @@ export default class HealthSystem extends System {
                 if (audioComp) {
                     audioComp.sounds[AudioTypeEnum.DEATH].requestPlay = true;
                 }
+                let pComp = e.getComponent(ComponentTypeEnum.PLAYER);
+                if (pComp) {
+                    // This is the player dying
+                    pComp.player.isDead = true;
+                }
                 this.ecsManager.removeComponent(e, ComponentTypeEnum.GRAPHICS);
                 this.ecsManager.removeEntity(e.id);
             }

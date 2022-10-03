@@ -13,8 +13,24 @@ export default class DoorSystem extends System {
             let doorComp = e.getComponent(ComponentTypeEnum.DOOR);
             const collisionComp = e.getComponent(ComponentTypeEnum.COLLISION);
             let posComp = e.getComponent(ComponentTypeEnum.POSITION);
-            if (collisionComp.currentCollisionEntities.size > 0) {
-                if (!doorComp.isOpen) {
+            if (doorComp.openDirection != 0) {
+                doorComp.doorClosingTimer += dt;
+                if (doorComp.doorClosingTimer > doorComp.doorCloseAfter) {
+                    if (doorComp.openDirection == 1) {
+                        posComp.position.x -= 0.5;
+                        posComp.position.z -= 0.5;
+                    }
+                    else {
+                        posComp.position.x += 0.5;
+                        posComp.position.z += 0.5;
+                    }
+                    posComp.rotation.y -= 90;
+                    doorComp.doorClosingTimer = 0.0;
+                    doorComp.openDirection = 0;
+                }
+            }
+            else {
+                if (collisionComp.currentCollisionEntities.size > 0) {
                     // Ugly maths for opening door
                     let [collidingEntity] = collisionComp.currentCollisionEntities;
                     let collidingEntityPosComp = collidingEntity.getComponent(ComponentTypeEnum.POSITION);
@@ -23,13 +39,14 @@ export default class DoorSystem extends System {
                             posComp.position.z > collidingEntityPosComp.position.z)) {
                         posComp.position.x += 0.5;
                         posComp.position.z += 0.5;
+                        doorComp.openDirection = 1;
                     }
                     else {
                         posComp.position.x -= 0.5;
                         posComp.position.z -= 0.5;
+                        doorComp.openDirection = -1;
                     }
                     posComp.rotation.y += 90;
-                    doorComp.isOpen = true;
                 }
             }
         });

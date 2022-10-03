@@ -1,15 +1,18 @@
 import { Component, ComponentTypeEnum } from "./Component.js";
-export var ProjectileTypeEnum;
-(function (ProjectileTypeEnum) {
-    ProjectileTypeEnum[ProjectileTypeEnum["FIRE"] = 0] = "FIRE";
-    ProjectileTypeEnum[ProjectileTypeEnum["ARROW"] = 1] = "ARROW";
-})(ProjectileTypeEnum || (ProjectileTypeEnum = {}));
+export var ProjectileGraphicsDirectionEnum;
+(function (ProjectileGraphicsDirectionEnum) {
+    ProjectileGraphicsDirectionEnum[ProjectileGraphicsDirectionEnum["RIGHT"] = 0] = "RIGHT";
+    ProjectileGraphicsDirectionEnum[ProjectileGraphicsDirectionEnum["LEFT"] = 1] = "LEFT";
+    ProjectileGraphicsDirectionEnum[ProjectileGraphicsDirectionEnum["UP"] = 2] = "UP";
+    ProjectileGraphicsDirectionEnum[ProjectileGraphicsDirectionEnum["DOWN"] = 3] = "DOWN";
+})(ProjectileGraphicsDirectionEnum || (ProjectileGraphicsDirectionEnum = {}));
 export default class ProjectileComponent extends Component {
-    projectileType;
-    flipped;
-    constructor(projectileType) {
+    projectileGraphicsDirection;
+    weaponType;
+    constructor(projectileGraphicsDirection, weaponType) {
         super(ComponentTypeEnum.PROJECTILE);
-        this.projectileType = projectileType;
+        this.projectileGraphicsDirection = projectileGraphicsDirection;
+        this.weaponType = weaponType;
     }
 }
 //# sourceMappingURL=ProjectileComponent.js.map

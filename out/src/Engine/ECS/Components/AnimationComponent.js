@@ -8,6 +8,7 @@ export default class AnimationComponent extends Component {
     updateTimer;
     advancements;
     stopAtLast;
+    invert;
     spriteMap;
     constructor() {
         super(ComponentTypeEnum.ANIMATION);
@@ -18,6 +19,7 @@ export default class AnimationComponent extends Component {
         this.updateTimer = 0.0;
         this.advancements = 0;
         this.stopAtLast = false;
+        this.invert = false;
         this.spriteMap = new SpriteMap();
     }
 }

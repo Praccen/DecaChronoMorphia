@@ -10,13 +10,11 @@ SAT.runUnitTests();
 export let canvas = document.getElementById("gameCanvas");
 let guicontainer = document.getElementById("guicontainer");
 export let input = new Input();
-export let texturesRequestedVsLoaded = {
-    req: 0,
-    loaded: 0,
-};
-export let meshesRequestedVsLoaded = {
-    req: 0,
-    loaded: 0,
+export let options = {
+    useCrt: false,
+    useBloom: true,
+    showFps: true,
+    volume: 0.05,
 };
 let heightByWidth = 1080 / 1920;
 let widthByHeight = 1920 / 1080;
@@ -72,12 +70,32 @@ function resize(gl, rendering) {
 window.onload = async () => {
     "use strict";
     let gl = initWebGL();
-    let rendering = new Rendering(gl);
-    let fpsDisplay = rendering.getNew2DText();
+    let rendering;
+    let fpsDisplay;
     let audio = new AudioPlayer();
-    let ecsManager = new ECSManager(rendering);
-    let menu = new Menu(rendering, fpsDisplay);
+    let ecsManager;
+    let menu;
     let game;
+    let firstLoop;
+    function init() {
+        rendering = new Rendering(gl);
+        if (fpsDisplay) {
+            fpsDisplay.getElement().remove();
+        }
+        fpsDisplay = rendering.getNew2DText();
+        audio.stopAll();
+        ecsManager = new ECSManager(rendering);
+        menu = new Menu(rendering, fpsDisplay, audio);
+        game = null;
+        firstLoop = true;
+        fpsDisplay.position.x = 0.01;
+        fpsDisplay.position.y = 0.01;
+        fpsDisplay.size = 18;
+        fpsDisplay.scaleWithWindow = false;
+        fpsDisplay.getElement().style.color = "lime";
+        resize(gl, rendering);
+    }
+    init();
     let lastTick = null;
     // Fixed update rate
     let minUpdateRate = 1.0 / 144.0;
@@ -86,11 +104,6 @@ window.onload = async () => {
     let fpsUpdateTimer = 0.0;
     let frameCounter = 0;
     let dt = 0.0;
-    fpsDisplay.position.x = 0.01;
-    fpsDisplay.position.y = 0.01;
-    fpsDisplay.size = 18;
-    fpsDisplay.scaleWithWindow = false;
-    fpsDisplay.getElement().style.color = "lime";
     function updateFrameTimers() {
         let now = Date.now();
         dt = (now - (lastTick || now)) * 0.001;
@@ -110,6 +123,7 @@ window.onload = async () => {
     /* Gameloop */
     function gameLoop() {
         updateFrameTimers();
+        let quitGame = false;
         //Only update if update timer goes over update rate
         while (updateTimer >= minUpdateRate) {
             if (updatesSinceRender >= 20) {
@@ -117,54 +131,38 @@ window.onload = async () => {
                 updateTimer = 0;
                 break;
             }
-            game.update(minUpdateRate);
+            quitGame = game.update(minUpdateRate);
             ecsManager.update(minUpdateRate);
             updateTimer -= minUpdateRate;
             updatesSinceRender++;
         }
         if (updatesSinceRender == 0) {
             // dt is faster than min update rate, allow faster updates
-            game.update(updateTimer);
+            quitGame = game.update(updateTimer);
             ecsManager.update(updateTimer);
             updateTimer = 0.0;
         }
         ecsManager.updateRenderingSystems(dt);
-        rendering.draw();
-        requestAnimationFrame(gameLoop);
+        if (!firstLoop) {
+            rendering.draw();
+        }
+        firstLoop = false;
+        return quitGame;
     }
     window.addEventListener("resize", function () {
         resize(gl, rendering);
     });
-    function waitForTextureLoading() {
-        //Waits until all textures are loaded before starting the game
-        if (texturesRequestedVsLoaded.loaded < texturesRequestedVsLoaded.req) {
-            requestAnimationFrame(waitForTextureLoading);
-        }
-        else {
-            console.log("All " +
-                texturesRequestedVsLoaded.loaded +
-                "/" +
-                texturesRequestedVsLoaded.req +
-                " textures loaded!");
-        }
-    }
-    function waitForMeshLoading() {
-        //Waits until all meshes are loaded before starting the game
-        if (meshesRequestedVsLoaded.loaded < meshesRequestedVsLoaded.req) {
-            requestAnimationFrame(waitForMeshLoading);
-        }
-        else {
-            console.log("All " +
-                meshesRequestedVsLoaded.loaded +
-                "/" +
-                meshesRequestedVsLoaded.req +
-                " meshes loaded!");
-        }
-    }
     console.log("Everything is ready.");
-    resize(gl, rendering);
-    //requestAnimationFrame(waitForTextureLoading);
-    //requestAnimationFrame(waitForMeshLoading);
+    async function runGame() {
+        if (!gameLoop()) {
+            requestAnimationFrame(runGame);
+        }
+        else {
+            // Restart game
+            init();
+            requestAnimationFrame(menuLoop);
+        }
+    }
     async function menuLoop() {
         updateFrameTimers();
         if (input.mouseClicked) {
@@ -179,7 +177,7 @@ window.onload = async () => {
             audio.pauseAudio("main_theme_4");
             game = new Game(rendering, ecsManager, audio);
             await game.init();
-            requestAnimationFrame(gameLoop);
+            requestAnimationFrame(runGame);
         }
     }
     requestAnimationFrame(menuLoop);

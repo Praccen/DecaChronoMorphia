@@ -1,4 +1,3 @@
-import { texturesRequestedVsLoaded } from "../../main.js";
 export default class Texture {
     // Public
     width;
@@ -68,7 +67,6 @@ export default class Texture {
         image.crossOrigin = "";
         image.src = URL;
         let self = this;
-        texturesRequestedVsLoaded.req++;
         image.addEventListener("load", function () {
             // Now that the image has loaded copy it to the texture and save the width/height.
             self.width = image.width;
@@ -79,7 +77,6 @@ export default class Texture {
                 self.gl.generateMipmap(self.gl.TEXTURE_2D);
                 self.gl.texParameteri(self.gl.TEXTURE_2D, self.gl.TEXTURE_MIN_FILTER, self.gl.LINEAR_MIPMAP_LINEAR);
             }
-            texturesRequestedVsLoaded.loaded++;
         });
     }
     setTexParameters(a, b) {

@@ -9,7 +9,7 @@ import GraphicsComponent from "../Components/GraphicsComponent.js";
 import MovementComponent from "../Components/MovementComponent.js";
 import PointLightComponent from "../Components/PointLightComponent.js";
 import PositionComponent from "../Components/PositionComponent.js";
-import ProjectileComponent, { ProjectileTypeEnum, } from "../Components/ProjectileComponent.js";
+import ProjectileComponent, { ProjectileGraphicsDirectionEnum, } from "../Components/ProjectileComponent.js";
 import { WeaponTypeEnum, } from "../Components/WeaponComponent.js";
 import System from "./System.js";
 export default class WeaponSystem extends System {
@@ -27,13 +27,18 @@ export default class WeaponSystem extends System {
             }
             const weaponComp = e.getComponent(ComponentTypeEnum.WEAPON);
             weaponComp.attackTimer -= dt;
+            if (weaponComp.weaponType == WeaponTypeEnum.SWORD) {
+                weaponComp.damageEnts.forEach((element) => {
+                    const positionComp = element.getComponent(ComponentTypeEnum.POSITION);
+                    positionComp.position.x = weaponComp.position.x;
+                    positionComp.position.y = weaponComp.position.y;
+                    positionComp.position.z = weaponComp.position.z;
+                });
+            }
             if (weaponComp.attackRequested && weaponComp.attackTimer <= 0) {
-                const audioComp = e.getComponent(ComponentTypeEnum.AUDIO);
-                if (audioComp) {
-                    audioComp.sounds[AudioTypeEnum.SHOOT].requestPlay = true;
-                }
                 const dmgEntity = this.ecsManager.createEntity();
-                this.ecsManager.addComponent(dmgEntity, new DamageComponent(weaponComp.damage, weaponComp.lifetime));
+                weaponComp.damageEnts.push(dmgEntity);
+                this.ecsManager.addComponent(dmgEntity, new DamageComponent(weaponComp.damage, weaponComp.lifetime, e.id));
                 this.ecsManager.addComponent(dmgEntity, new PositionComponent(new Vec3({
                     x: weaponComp.position.x,
                     y: weaponComp.position.y,
@@ -42,14 +47,14 @@ export default class WeaponSystem extends System {
                 const dmgMoveComp = new MovementComponent();
                 dmgMoveComp.accelerationDirection = weaponComp.direction;
                 //if melee make damageEntity move super fast, otherwise more slow
-                const projectileSpeed = weaponComp.shoots ? 1 : 0;
+                const projectileSpeed = weaponComp.shoots
+                    ? weaponComp.projectileSpeed
+                    : 3;
                 dmgMoveComp.velocity = new Vec3(weaponComp.direction).multiply(projectileSpeed);
                 dmgMoveComp.drag = 0.0;
                 dmgMoveComp.acceleration = 0.0;
                 dmgMoveComp.constantAcceleration.y = 0.0;
                 this.ecsManager.addComponent(dmgEntity, dmgMoveComp);
-                let projectileComp = new ProjectileComponent(ProjectileTypeEnum.FIRE);
-                this.ecsManager.addComponent(dmgEntity, projectileComp);
                 let collComp = new CollisionComponent();
                 collComp.hasForce = false;
                 this.ecsManager.addComponent(dmgEntity, collComp);
@@ -59,13 +64,16 @@ export default class WeaponSystem extends System {
                 this.ecsManager.addComponent(dmgEntity, enemyBBComp);
                 let dmgTexture;
                 let projectileAnimComp = new AnimationComponent();
+                const audioComp = e.getComponent(ComponentTypeEnum.AUDIO);
                 if (weaponComp.weaponType == WeaponTypeEnum.ARROW) {
                     dmgTexture = "Assets/textures/projectiles.png";
                     projectileAnimComp.spriteMap.setNrOfSprites(3, 2);
                     projectileAnimComp.startingTile = { x: 0, y: 0 };
-                    projectileAnimComp.advanceBy = { x: 0.0, y: 0.0 };
-                    projectileAnimComp.modAdvancement = { x: 0.0, y: 0.0 };
-                    projectileAnimComp.updateInterval = 0.0;
+                    projectileAnimComp.advanceBy = { x: 1.0, y: 0.0 };
+                    projectileAnimComp.modAdvancement = { x: 2.0, y: 0.0 };
+                    projectileAnimComp.updateInterval = 0.3;
+                    audioComp.sounds[AudioTypeEnum.SHOOT].audioKey = "spell_cast_3";
+                    audioComp.sounds[AudioTypeEnum.SHOOT].playTime = 1;
                 }
                 else if (weaponComp.weaponType == WeaponTypeEnum.MAGIC) {
                     dmgTexture = "Assets/textures/projectiles.png";
@@ -74,6 +82,8 @@ export default class WeaponSystem extends System {
                     projectileAnimComp.advanceBy = { x: 1.0, y: 0.0 };
                     projectileAnimComp.modAdvancement = { x: 2.0, y: 0.0 };
                     projectileAnimComp.updateInterval = 0.3;
+                    audioComp.sounds[AudioTypeEnum.SHOOT].audioKey = "spell_cast_5";
+                    audioComp.sounds[AudioTypeEnum.SHOOT].playTime = 1;
                 }
                 else if (weaponComp.weaponType == WeaponTypeEnum.SWORD) {
                     dmgTexture = "Assets/textures/normy.png";
@@ -81,15 +91,32 @@ export default class WeaponSystem extends System {
                     projectileAnimComp.startingTile = { x: 0, y: 4 };
                     projectileAnimComp.advanceBy = { x: 1.0, y: 0.0 };
                     projectileAnimComp.modAdvancement = { x: 3.0, y: 0.0 };
-                    projectileAnimComp.updateInterval = 0.3;
+                    projectileAnimComp.updateInterval = 0.08;
+                    audioComp.sounds[AudioTypeEnum.SHOOT].audioKey = "sword_attack_4";
+                    audioComp.sounds[AudioTypeEnum.SHOOT].playTime = 0.5;
+                }
+                if (audioComp) {
+                    audioComp.sounds[AudioTypeEnum.SHOOT].requestPlay = true;
                 }
                 let phongQuad = this.rendering.getNewPhongQuad(dmgTexture, dmgTexture);
+                let projectileDirection = ProjectileGraphicsDirectionEnum.DOWN;
                 if (weaponComp.direction.x > 0) {
-                    console.log("Flip to right");
-                    // phongQuad.textureMatrix.scale(1, -1, 1);
-                    phongQuad.modelMatrix.scale(1, -1, 1);
+                    projectileDirection = ProjectileGraphicsDirectionEnum.RIGHT;
                 }
-                this.ecsManager.addComponent(dmgEntity, new GraphicsComponent(phongQuad));
+                else if (weaponComp.direction.x < 0) {
+                    projectileDirection = ProjectileGraphicsDirectionEnum.LEFT;
+                }
+                else {
+                    if (weaponComp.direction.z > 0) {
+                        projectileDirection = ProjectileGraphicsDirectionEnum.UP;
+                    }
+                    else if (weaponComp.direction.z < 0) {
+                        projectileDirection = ProjectileGraphicsDirectionEnum.DOWN;
+                    }
+                }
+                let projectileComp = new ProjectileComponent(projectileDirection, weaponComp.weaponType);
+                this.ecsManager.addComponent(dmgEntity, projectileComp);
+                +this.ecsManager.addComponent(dmgEntity, new GraphicsComponent(phongQuad));
                 this.ecsManager.addComponent(dmgEntity, projectileAnimComp);
                 let light = this.rendering.getNewPointLight();
                 light.colour.setValues(3.0, 0.0, 0.0);

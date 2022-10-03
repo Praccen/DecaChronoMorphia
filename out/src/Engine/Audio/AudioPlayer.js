@@ -22,10 +22,6 @@ export default class AudioPlayer {
             "jump_1.wav",
             "jump_2.wav",
             "rat_sound_1.wav",
-            "sword_attack_1.mp3",
-            "sword_attack_2.mp3",
-            "sword_attack_3.mp3",
-            "sword_attack_4.mp3",
             "pickup_1.wav",
             "pickup_2.wav",
             "power_up_1.wav",
@@ -37,10 +33,14 @@ export default class AudioPlayer {
             "old_wizard_speach_1.mp3",
             "victory_1.mp3",
             "enemy_death_1.wav",
+            "sword_attack_1.mp3",
+            "sword_attack_2.mp3",
+            "sword_attack_3.mp3",
+            "sword_attack_4.mp3",
             "defeat_1.mp3",
         ];
         const sound_effect_volume_multilpliers_list = [
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 7, 5,
         ];
         let count = 0;
         for (const file of sound_effect_files) {
@@ -101,22 +101,20 @@ export default class AudioPlayer {
     setAudioVolume(key, volume) {
         if (this.sound_effects[key] &&
             this.sound_effects_volume_multilpliers[key]) {
-            this.sound_effects[key].volume =
-                volume * this.sound_effects_volume_multilpliers[key];
+            this.sound_effects[key].volume = Math.min(volume * this.sound_effects_volume_multilpliers[key], 1);
         }
         else if (this.songs[key] && this.songs_volume_multilpliers[key]) {
-            this.songs[key].volume = volume * this.songs_volume_multilpliers[key];
+            this.songs[key].volume = Math.min(volume * this.songs_volume_multilpliers[key], 1);
         }
     }
     setMusicVolume(volume) {
         Object.keys(this.songs).forEach((key) => {
-            this.songs[key].volume = volume * this.songs_volume_multilpliers[key];
+            this.songs[key].volume = Math.min(volume * this.songs_volume_multilpliers[key], 1);
         });
     }
     setSoundEffectVolume(volume) {
         Object.keys(this.sound_effects).forEach((key) => {
-            this.sound_effects[key].volume =
-                volume * this.sound_effects_volume_multilpliers[key];
+            this.sound_effects[key].volume = Math.min(volume * this.sound_effects_volume_multilpliers[key], 1);
         });
     }
     setAudioTime(key, time) {
@@ -136,13 +134,14 @@ export default class AudioPlayer {
         }
     }
     stopAll() {
-        // for(const s of Object.values(this.sounds)) {
-        //     const playPromise = s.play();
-        //     playPromise.then(() => {
-        //         s.pause();
-        //         s.currentTime = 0.0;
-        //     })
-        // }
+        Object.keys(this.songs).forEach((key) => {
+            this.songs[key].pause();
+            this.songs[key].currentTime = 0;
+        });
+        Object.keys(this.sound_effects).forEach((key) => {
+            this.sound_effects[key].pause();
+            this.sound_effects[key].currentTime = 0;
+        });
     }
 }
 //# sourceMappingURL=AudioPlayer.js.map

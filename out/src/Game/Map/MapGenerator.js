@@ -1,3 +1,4 @@
+import { EnemyData, EnemyTypesEnum } from "../../Constants/EnemyData.js";
 import AnimationComponent from "../../Engine/ECS/Components/AnimationComponent.js";
 import AudioComponent, { AudioTypeEnum, } from "../../Engine/ECS/Components/AudioComponent.js";
 import BoundingBoxComponent from "../../Engine/ECS/Components/BoundingBoxComponent.js";
@@ -5,14 +6,25 @@ import CollisionComponent from "../../Engine/ECS/Components/CollisionComponent.j
 import DoorComponent from "../../Engine/ECS/Components/DoorComponent.js";
 import EnemyComponent from "../../Engine/ECS/Components/EnemyComponent.js";
 import GraphicsComponent from "../../Engine/ECS/Components/GraphicsComponent.js";
+import HealthComponent from "../../Engine/ECS/Components/HealthComponent.js";
 import MeshCollisionComponent from "../../Engine/ECS/Components/MeshCollisionComponent.js";
 import MovementComponent from "../../Engine/ECS/Components/MovementComponent.js";
 import PointLightComponent from "../../Engine/ECS/Components/PointLightComponent.js";
 import PositionComponent from "../../Engine/ECS/Components/PositionComponent.js";
-import WeaponComponent, { WeaponTypeEnum, } from "../../Engine/ECS/Components/WeaponComponent.js";
+import WeaponComponent from "../../Engine/ECS/Components/WeaponComponent.js";
 import Vec2 from "../../Engine/Maths/Vec2.js";
 import Vec3 from "../../Engine/Maths/Vec3.js";
 import { LabyrinthGenerator } from "./LabyrinthGenerator.js";
+var SpawnPointsEnum;
+(function (SpawnPointsEnum) {
+    SpawnPointsEnum[SpawnPointsEnum["UP_LEFT"] = 0] = "UP_LEFT";
+    SpawnPointsEnum[SpawnPointsEnum["UP_RIGHT"] = 1] = "UP_RIGHT";
+    SpawnPointsEnum[SpawnPointsEnum["MIDDLE"] = 2] = "MIDDLE";
+    SpawnPointsEnum[SpawnPointsEnum["DOWN_LEFT"] = 3] = "DOWN_LEFT";
+    SpawnPointsEnum[SpawnPointsEnum["DOWN_RIGHT"] = 4] = "DOWN_RIGHT";
+})(SpawnPointsEnum || (SpawnPointsEnum = {}));
+const ROOM_WIDTH = 8.0;
+const SPAWN_CHANCE = 0.3; //0-1 used to determine if a monster should spawn or not
 export var MapGenerator;
 (function (MapGenerator) {
     async function GenerateMap(xSize, ySize, ecsManager, rendering) {
@@ -40,6 +52,7 @@ export var MapGenerator;
     async function createRoom(map, roomTileX, roomTileY, ecsManager, rendering) {
         const roomPosition = new Vec2({ x: roomTileX, y: roomTileY });
         const isStartingRoom = roomTileX === 1 && roomTileY === 1;
+        const isBossRoom = roomTileX === 9 && roomTileY === 9;
         // Find out how the room should look
         let wallsTowards = [
             map[roomTileX][roomTileY - 1] > 0 ? true : false,
@@ -55,45 +68,101 @@ export var MapGenerator;
             x: (roomTileX - 1) * 0.5,
             y: 0.0,
             z: (roomTileY - 1) * 0.5,
-        }).multiply(8.0);
+        }).multiply(ROOM_WIDTH);
         const floorId = createFloorEntity(new Vec3(roomCenter), floorTexturePaths[Math.floor(Math.random() * 2.0)], ecsManager, rendering);
-        let enemyId = -1;
-        if (!isStartingRoom) {
-            enemyId = createEnemyEntity(new Vec3(roomCenter), false, "Assets/textures/slime.png", ecsManager, rendering);
+        let enemyIds = [];
+        if (!isStartingRoom && !isBossRoom) {
+            Object.values(SpawnPointsEnum).forEach((spawnPoint) => {
+                if (isNaN(Number(spawnPoint)))
+                    return;
+                const spawnLocation = new Vec3(roomCenter);
+                if (Math.random() < SPAWN_CHANCE) {
+                    switch (spawnPoint) {
+                        case SpawnPointsEnum.UP_LEFT:
+                            spawnLocation.x -= ROOM_WIDTH / 2 - 2.0;
+                            spawnLocation.z -= ROOM_WIDTH / 2 - 2.0;
+                            break;
+                        case SpawnPointsEnum.UP_RIGHT:
+                            spawnLocation.x += ROOM_WIDTH / 2 - 2.0;
+                            spawnLocation.z -= ROOM_WIDTH / 2 - 2.0;
+                            break;
+                        case SpawnPointsEnum.DOWN_LEFT:
+                            spawnLocation.x -= ROOM_WIDTH / 2 - 2.0;
+                            spawnLocation.z += ROOM_WIDTH / 2 - 2.0;
+                            break;
+                        case SpawnPointsEnum.DOWN_RIGHT:
+                            spawnLocation.x += ROOM_WIDTH / 2 - 2.0;
+                            spawnLocation.z += ROOM_WIDTH / 2 - 2.0;
+                            break;
+                        //MIDDLE is left out so monster will spawn in center
+                    }
+                    const enemyId = createEnemyEntity(spawnLocation, false, ecsManager, rendering);
+                    enemyIds.push(enemyId);
+                }
+            });
+        }
+        else if (isBossRoom) {
+            const enemyId = createEnemyEntity(new Vec3(roomCenter), false, ecsManager, rendering, true);
+            enemyIds.push(enemyId);
         }
         createDoorEntity(new Vec3(roomCenter), ecsManager, rendering, wallsTowards);
         const roomInformation = {
             roomPosition: roomPosition,
             active: false,
-            entityIds: [enemyId],
+            entityIds: enemyIds,
             floorId: floorId,
         };
         await createWallEntities(new Vec3(roomCenter), ecsManager, rendering, wallsTowards, isStartingRoom, roomInformation);
         return roomInformation;
     }
-    function createEnemyEntity(position, isActive, texturePath, ecsManager, rendering) {
-        let enemyTexture = texturePath;
+    function createEnemyEntity(position, isActive, ecsManager, rendering, boss = false) {
+        let enemyKey = EnemyTypesEnum.SLIME;
+        if (boss) {
+            enemyKey = EnemyTypesEnum.WITCH;
+        }
+        else {
+            const enemyEnumKeys = Object.values(EnemyTypesEnum);
+            const enemyEnumKeyIndex = Math.floor(Math.random() * (enemyEnumKeys.length - 1) //-1 to avoid hitting witch
+            );
+            enemyKey = enemyEnumKeys[enemyEnumKeyIndex];
+        }
+        const enemyData = EnemyData[enemyKey];
+        let enemyTexture = enemyData.texturePath;
         const enemyEntity = ecsManager.createEntity();
         enemyEntity.isActive = isActive;
         let phongQuad = rendering.getNewPhongQuad(enemyTexture, enemyTexture);
         phongQuad.modelMatrix.setTranslate(0.0, -10.0, 0.0);
         ecsManager.addComponent(enemyEntity, new GraphicsComponent(phongQuad));
-        let enemyMoveComp = new MovementComponent();
+        let enemyMoveComp = new MovementComponent(enemyData.acceleration);
         ecsManager.addComponent(enemyEntity, enemyMoveComp);
         let enemyPosComp = new PositionComponent(position);
         enemyPosComp.rotation.setValues(-30.0, 0.0, 0.0);
+        if (enemyKey === EnemyTypesEnum.DRYAD) {
+            enemyPosComp.scale.y = 1.5;
+        }
+        else if (enemyKey === EnemyTypesEnum.WITCH) {
+            enemyPosComp.scale.y = 1.0;
+        }
         ecsManager.addComponent(enemyEntity, enemyPosComp);
         // Update the wall model matrix to avoid it being stuck on 0,0 if inactive
         enemyPosComp.calculateMatrix(phongQuad.modelMatrix);
         let enemyAnimComp = new AnimationComponent();
-        enemyAnimComp.spriteMap.setNrOfSprites(3, 2);
+        enemyAnimComp.spriteMap.setNrOfSprites(enemyKey === EnemyTypesEnum.WITCH ? 6 : 3, enemyKey === EnemyTypesEnum.DRYAD || enemyKey === EnemyTypesEnum.WITCH
+            ? enemyKey === EnemyTypesEnum.DRYAD
+                ? 1
+                : 6
+            : 2);
         enemyAnimComp.startingTile = { x: 0, y: 0 };
         enemyAnimComp.advanceBy = { x: 1.0, y: 0.0 };
-        enemyAnimComp.modAdvancement = { x: 2.0, y: 1.0 };
+        enemyAnimComp.modAdvancement = {
+            x: 2.0,
+            y: 1.0,
+        };
         enemyAnimComp.updateInterval = 0.3;
         ecsManager.addComponent(enemyEntity, enemyAnimComp);
-        ecsManager.addComponent(enemyEntity, new EnemyComponent());
-        ecsManager.addComponent(enemyEntity, new WeaponComponent(10, true, 4, 2, WeaponTypeEnum.ARROW, 10));
+        ecsManager.addComponent(enemyEntity, new EnemyComponent(enemyKey));
+        ecsManager.addComponent(enemyEntity, new WeaponComponent(enemyData.damage, enemyData.shoots, enemyData.range, enemyData.projectileSpeed, enemyData.attackCooldown, enemyData.weaponType, 10));
+        ecsManager.addComponent(enemyEntity, new HealthComponent(enemyData.health));
         // Collision for enemy
         let enemyBBComp = new BoundingBoxComponent();
         enemyBBComp.boundingBox.setMinAndMaxVectors(new Vec3({ x: -0.2, y: -0.5, z: -0.2 }), new Vec3({ x: 0.2, y: 0.5, z: 0.2 }));
@@ -103,8 +172,13 @@ export var MapGenerator;
         ecsManager.addComponent(enemyEntity, new AudioComponent([
             {
                 key: AudioTypeEnum.SHOOT,
-                audioKey: "spell_cast_3",
+                audioKey: enemyData.attackSound,
                 playTime: 1.5,
+            },
+            {
+                key: AudioTypeEnum.DEATH,
+                audioKey: enemyData.deathSound,
+                playTime: 2,
             },
         ]));
         return enemyEntity.id;
@@ -112,11 +186,11 @@ export var MapGenerator;
     function createFloorEntity(position, texturePath, ecsManager, rendering) {
         let floorEntity = ecsManager.createEntity();
         let phongQuad = rendering.getNewPhongQuad(texturePath, "Assets/textures/black.png");
-        phongQuad.textureMatrix.setScale(8.0, 8.0, 1.0);
+        phongQuad.textureMatrix.setScale(ROOM_WIDTH, ROOM_WIDTH, 1.0);
         ecsManager.addComponent(floorEntity, new GraphicsComponent(phongQuad));
         let posComp = new PositionComponent(position.subtract(new Vec3({ x: 0.0, y: 0.5, z: 0.0 })));
         posComp.rotation.setValues(-90.0, 0.0, 0.0);
-        posComp.scale.setValues(8.0, 8.0, 1.0);
+        posComp.scale.setValues(ROOM_WIDTH, ROOM_WIDTH, 1.0);
         ecsManager.addComponent(floorEntity, posComp);
         // Collision stuff
         let floorBoundingBoxComp = new BoundingBoxComponent();
