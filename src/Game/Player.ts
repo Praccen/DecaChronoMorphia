@@ -233,7 +233,7 @@ export default class Player {
 
 		this.ecsManager.addComponent(
 			this.playerEntity,
-			new WeaponComponent(10, false, 4, 2, WeaponTypeEnum.SWORD)
+			new WeaponComponent(10, false, 0, 2, WeaponTypeEnum.SWORD, 0.5)
 		);
 
 		this.ecsManager.addComponent(
