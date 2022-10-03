@@ -65,7 +65,7 @@ export default class Game {
 		let self = this;
 		this.gameOverButton.onClick(function () {
 			self.gameOver = true;
-			self.gameOverButton.getElement().remove();
+			self.gameOverButton.remove();
 		});
 	}
 
@@ -74,6 +74,7 @@ export default class Game {
 
 		if (this.playerObject.isDead) {
 			this.gameOverButton.setHidden(false);
+			this.playerObject.playerHPText.remove();
 		}
 
 		if (input.keys["p"] || this.gameOver) {
