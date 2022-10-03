@@ -142,7 +142,7 @@ export default class Player {
         this.ecsManager.addComponent(this.playerEntity, playerComp);
         let healthComp = new HealthComponent(200);
         this.ecsManager.addComponent(this.playerEntity, healthComp);
-        this.ecsManager.addComponent(this.playerEntity, new WeaponComponent(10, false, 4, 2, WeaponTypeEnum.SWORD));
+        this.ecsManager.addComponent(this.playerEntity, new WeaponComponent(10, false, 0, 2, WeaponTypeEnum.SWORD, 0.5));
         this.ecsManager.addComponent(this.playerEntity, new AudioComponent([
             { key: AudioTypeEnum.SHOOT, audioKey: "spell_cast_3", playTime: 1.5 },
             {

@@ -2,6 +2,7 @@ import AnimationComponent from "../../Engine/ECS/Components/AnimationComponent.j
 import AudioComponent, { AudioTypeEnum, } from "../../Engine/ECS/Components/AudioComponent.js";
 import BoundingBoxComponent from "../../Engine/ECS/Components/BoundingBoxComponent.js";
 import CollisionComponent from "../../Engine/ECS/Components/CollisionComponent.js";
+import DoorComponent from "../../Engine/ECS/Components/DoorComponent.js";
 import EnemyComponent from "../../Engine/ECS/Components/EnemyComponent.js";
 import GraphicsComponent from "../../Engine/ECS/Components/GraphicsComponent.js";
 import MeshCollisionComponent from "../../Engine/ECS/Components/MeshCollisionComponent.js";
@@ -92,7 +93,7 @@ export var MapGenerator;
         enemyAnimComp.updateInterval = 0.3;
         ecsManager.addComponent(enemyEntity, enemyAnimComp);
         ecsManager.addComponent(enemyEntity, new EnemyComponent());
-        ecsManager.addComponent(enemyEntity, new WeaponComponent(10, true, 4, 2, WeaponTypeEnum.ARROW));
+        ecsManager.addComponent(enemyEntity, new WeaponComponent(10, true, 4, 2, WeaponTypeEnum.ARROW, 10));
         // Collision for enemy
         let enemyBBComp = new BoundingBoxComponent();
         enemyBBComp.boundingBox.setMinAndMaxVectors(new Vec3({ x: -0.2, y: -0.5, z: -0.2 }), new Vec3({ x: 0.2, y: 0.5, z: 0.2 }));
@@ -128,7 +129,7 @@ export var MapGenerator;
         return floorEntity.id;
     }
     async function createDoorEntity(position, ecsManager, rendering, wallsTowards) {
-        for (let i = 0; i < wallsTowards.length; i++) {
+        for (let i = 1; i < wallsTowards.length; i += 2) {
             if (wallsTowards[i]) {
                 continue;
             }
@@ -138,17 +139,10 @@ export var MapGenerator;
             let doorMesh = await rendering.getNewMesh(objPath, doorTexture, doorTexture);
             ecsManager.addComponent(doorEntity, new GraphicsComponent(doorMesh));
             let posComp = new PositionComponent(new Vec3(position).add(new Vec3({ x: 0.0, y: 0.5, z: 0.0 })));
-            if (i == 0) {
-                posComp.position.add(new Vec3({ x: 0.0, y: 0.0, z: -4.0 }));
-            }
-            else if (i == 1) {
+            if (i == 1) {
                 posComp.position.add(new Vec3({ x: 0.0, y: 0.0, z: 4.0 }));
             }
-            else if (i == 2) {
-                posComp.position.add(new Vec3({ x: -4.0, y: 0.0, z: 0.0 }));
-                posComp.rotation.setValues(0.0, 90.0);
-            }
-            else if (i == 3) {
+            if (i == 3) {
                 posComp.position.add(new Vec3({ x: 4.0, y: 0.0, z: 0.0 }));
                 posComp.rotation.setValues(0.0, -90.0);
             }
@@ -159,13 +153,11 @@ export var MapGenerator;
             boxBoundingBoxComp.setup(doorMesh);
             boxBoundingBoxComp.updateTransformMatrix(doorMesh.modelMatrix);
             ecsManager.addComponent(doorEntity, boxBoundingBoxComp);
-            // let collComp = new CollisionComponent();
-            // collComp.isStatic = true;
-            // ecsManager.addComponent(doorEntity, collComp);
-            let meshCollComp = new MeshCollisionComponent();
-            meshCollComp.setup(doorMesh);
-            meshCollComp.updateTransformMatrix(doorMesh.modelMatrix);
-            ecsManager.addComponent(doorEntity, meshCollComp);
+            let collComp = new CollisionComponent();
+            collComp.isStatic = true;
+            collComp.hasForce = false;
+            ecsManager.addComponent(doorEntity, collComp);
+            ecsManager.addComponent(doorEntity, new DoorComponent());
         }
     }
     async function createWallEntities(position, ecsManager, rendering, wallsTowards, isActive, roomInformation) {
@@ -175,9 +167,13 @@ export var MapGenerator;
                 objPath = "Assets/objs/WallWithoutOpening.obj";
             }
             let entity = ecsManager.createEntity();
-            const texturePath = "Assets/textures/wall.png";
-            let wallMesh = await rendering.getNewMesh(objPath, texturePath, texturePath);
-            wallMesh.textureMatrix.scale(4.0, 1.0, 1.0);
+            const texturePath = [
+                "Assets/textures/wall.png",
+                "Assets/textures/wall2.png",
+            ];
+            let rand = Math.floor(Math.random() * 2.0);
+            let wallMesh = (await rendering.getNewMesh(objPath, texturePath[rand], texturePath[rand]));
+            wallMesh.textureMatrix.scale(8.0, 1.0, 1.0);
             ecsManager.addComponent(entity, new GraphicsComponent(wallMesh));
             let posComp = new PositionComponent(new Vec3(position).subtract(new Vec3({ x: 0.0, y: 0.5, z: 0.0 })));
             if (i == 0) {

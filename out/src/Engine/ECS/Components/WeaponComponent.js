@@ -15,8 +15,9 @@ export default class WeaponComponent extends Component {
     //attack speed
     attackCooldown;
     attackTimer;
+    lifetime;
     weaponType;
-    constructor(damage, shoots, range, attackCooldown, weaponType) {
+    constructor(damage, shoots, range, attackCooldown, weaponType, attackTimeAlive) {
         super(ComponentTypeEnum.WEAPON);
         this.damage = damage;
         this.shoots = shoots;
@@ -24,6 +25,7 @@ export default class WeaponComponent extends Component {
         this.attackCooldown = attackCooldown;
         this.attackTimer = 0;
         this.weaponType = weaponType;
+        this.lifetime = attackTimeAlive;
     }
 }
 //# sourceMappingURL=WeaponComponent.js.map
