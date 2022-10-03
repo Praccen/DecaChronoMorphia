@@ -64,7 +64,7 @@ export default class WeaponSystem extends System {
 				weaponComp.damageEnts.push(dmgEntity);
 				this.ecsManager.addComponent(
 					dmgEntity,
-					new DamageComponent(weaponComp.damage, weaponComp.lifetime)
+					new DamageComponent(weaponComp.damage, weaponComp.lifetime, e.id)
 				);
 				this.ecsManager.addComponent(
 					dmgEntity,

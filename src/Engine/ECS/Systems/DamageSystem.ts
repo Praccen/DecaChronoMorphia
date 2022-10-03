@@ -39,6 +39,10 @@ export default class DamageSystem extends System {
 			const damagedEntity = collisionComp.currentCollisionEntities
 				.values()
 				.next();
+
+			if (damagedEntity.value.id == damageComp.ownerId) {
+				return;
+			}
 			const damEnHealth = damagedEntity.value.getComponent(
 				ComponentTypeEnum.HEALTH
 			) as HealthComponent;

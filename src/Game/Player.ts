@@ -234,7 +234,7 @@ export default class Player {
 
 		this.ecsManager.addComponent(
 			this.playerEntity,
-			new WeaponComponent(10, false, 0, 2, WeaponTypeEnum.SWORD, 0.5)
+			new WeaponComponent(10, false, 0, 2, WeaponTypeEnum.SWORD, 1.0)
 		);
 
 		this.ecsManager.addComponent(
@@ -418,9 +418,9 @@ export default class Player {
 			);
 			if (weaponComp) {
 				weaponComp.position = new Vec3({
-					x: weaponComp.direction.x * 0.2 + playerPosComp.position.x,
-					y: 0.5,
-					z: weaponComp.direction.z * 0.2 + playerPosComp.position.z,
+					x: weaponComp.direction.x * 0.5 + playerPosComp.position.x,
+					y: 0.2,
+					z: weaponComp.direction.z * 0.5 + playerPosComp.position.z,
 				});
 			}
 		} else if (this.currentPlayerShape == PlayerShapeEnum.WIZ) {
