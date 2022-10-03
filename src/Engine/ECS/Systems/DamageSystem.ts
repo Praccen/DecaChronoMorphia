@@ -25,6 +25,13 @@ export default class DamageSystem extends System {
 				ComponentTypeEnum.COLLISION
 			) as CollisionComponent;
 
+			damageComp.timeAlive += dt;
+			if (damageComp.timeAlive > damageComp.lifetime) {
+				this.ecsManager.removeComponent(e, ComponentTypeEnum.GRAPHICS);
+				this.ecsManager.removeEntity(e.id);
+				return;
+			}
+
 			if (collisionComp.currentCollisionEntities.size === 0) {
 				return;
 			}

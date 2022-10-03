@@ -4,6 +4,7 @@ import AudioComponent, {
 } from "../../Engine/ECS/Components/AudioComponent.js";
 import BoundingBoxComponent from "../../Engine/ECS/Components/BoundingBoxComponent.js";
 import CollisionComponent from "../../Engine/ECS/Components/CollisionComponent.js";
+import DoorComponent from "../../Engine/ECS/Components/DoorComponent.js";
 import EnemyComponent from "../../Engine/ECS/Components/EnemyComponent.js";
 import GraphicsComponent from "../../Engine/ECS/Components/GraphicsComponent.js";
 import MeshCollisionComponent from "../../Engine/ECS/Components/MeshCollisionComponent.js";
@@ -179,7 +180,7 @@ export module MapGenerator {
 		ecsManager.addComponent(enemyEntity, new EnemyComponent());
 		ecsManager.addComponent(
 			enemyEntity,
-			new WeaponComponent(10, true, 4, 2, WeaponTypeEnum.ARROW)
+			new WeaponComponent(10, true, 4, 2, WeaponTypeEnum.ARROW, 10)
 		);
 
 		// Collision for enemy
@@ -247,7 +248,7 @@ export module MapGenerator {
 		rendering: Rendering,
 		wallsTowards: boolean[]
 	) {
-		for (let i = 0; i < wallsTowards.length; i++) {
+		for (let i = 1; i < wallsTowards.length; i += 2) {
 			if (wallsTowards[i]) {
 				continue;
 			}
@@ -265,14 +266,10 @@ export module MapGenerator {
 				new Vec3(position).add(new Vec3({ x: 0.0, y: 0.5, z: 0.0 }))
 			);
 
-			if (i == 0) {
-				posComp.position.add(new Vec3({ x: 0.0, y: 0.0, z: -4.0 }));
-			} else if (i == 1) {
+			if (i == 1) {
 				posComp.position.add(new Vec3({ x: 0.0, y: 0.0, z: 4.0 }));
-			} else if (i == 2) {
-				posComp.position.add(new Vec3({ x: -4.0, y: 0.0, z: 0.0 }));
-				posComp.rotation.setValues(0.0, 90.0);
-			} else if (i == 3) {
+			}
+			if (i == 3) {
 				posComp.position.add(new Vec3({ x: 4.0, y: 0.0, z: 0.0 }));
 				posComp.rotation.setValues(0.0, -90.0);
 			}
@@ -285,14 +282,12 @@ export module MapGenerator {
 			boxBoundingBoxComp.setup(doorMesh);
 			boxBoundingBoxComp.updateTransformMatrix(doorMesh.modelMatrix);
 			ecsManager.addComponent(doorEntity, boxBoundingBoxComp);
-			// let collComp = new CollisionComponent();
-			// collComp.isStatic = true;
-			// ecsManager.addComponent(doorEntity, collComp);
+			let collComp = new CollisionComponent();
+			collComp.isStatic = true;
+			collComp.hasForce = false;
+			ecsManager.addComponent(doorEntity, collComp);
 
-			let meshCollComp = new MeshCollisionComponent();
-			meshCollComp.setup(doorMesh);
-			meshCollComp.updateTransformMatrix(doorMesh.modelMatrix);
-			ecsManager.addComponent(doorEntity, meshCollComp);
+			ecsManager.addComponent(doorEntity, new DoorComponent());
 		}
 	}
 
@@ -311,14 +306,20 @@ export module MapGenerator {
 			}
 
 			let entity = ecsManager.createEntity();
-			const texturePath = "Assets/textures/wall.png";
-			let wallMesh = await rendering.getNewMesh(
-				objPath,
-				texturePath,
-				texturePath
-			) as Mesh;
+			const texturePath = [
+				"Assets/textures/wall.png",
+				"Assets/textures/wall2.png",
+			];
 
-			wallMesh.textureMatrix.scale(4.0, 1.0, 1.0);
+			let rand = Math.floor(Math.random() * 2.0);
+
+			let wallMesh = (await rendering.getNewMesh(
+				objPath,
+				texturePath[rand],
+				texturePath[rand]
+			)) as Mesh;
+
+			wallMesh.textureMatrix.scale(8.0, 1.0, 1.0);
 
 			ecsManager.addComponent(entity, new GraphicsComponent(wallMesh));
 			let posComp = new PositionComponent(

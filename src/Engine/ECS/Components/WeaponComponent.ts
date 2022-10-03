@@ -18,6 +18,7 @@ export default class WeaponComponent extends Component {
 	//attack speed
 	attackCooldown: number;
 	attackTimer: number;
+	lifetime: number;
 	weaponType: WeaponTypeEnum;
 
 	constructor(
@@ -25,7 +26,8 @@ export default class WeaponComponent extends Component {
 		shoots: boolean,
 		range: number,
 		attackCooldown: number,
-		weaponType: WeaponTypeEnum
+		weaponType: WeaponTypeEnum,
+		attackTimeAlive: number
 	) {
 		super(ComponentTypeEnum.WEAPON);
 		this.damage = damage;
@@ -34,5 +36,6 @@ export default class WeaponComponent extends Component {
 		this.attackCooldown = attackCooldown;
 		this.attackTimer = 0;
 		this.weaponType = weaponType;
+		this.lifetime = attackTimeAlive;
 	}
 }
