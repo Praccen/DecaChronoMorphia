@@ -125,7 +125,7 @@ export default class WeaponSystem extends System {
 					projectileAnimComp.startingTile = { x: 0, y: 4 };
 					projectileAnimComp.advanceBy = { x: 1.0, y: 0.0 };
 					projectileAnimComp.modAdvancement = { x: 3.0, y: 0.0 };
-					projectileAnimComp.updateInterval = 0.08;
+					projectileAnimComp.updateInterval = 0.3;
 					audioComp.sounds[AudioTypeEnum.SHOOT].audioKey = "sword_attack_4";
 				}
 

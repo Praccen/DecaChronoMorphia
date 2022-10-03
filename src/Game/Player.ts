@@ -101,14 +101,23 @@ export default class Player {
 		};
 		this.playerAttackData = {
 			[PlayerShapeEnum.NORMIE]: {
-				damage: 10,
+				damage: 5,
 				shoots: false,
 				range: 2,
 				projectileSpeed: 2,
 				attackCooldown: 1,
 				weaponType: WeaponTypeEnum.SWORD,
-				lifetime: 1.0,
+				lifetime: 1,
 			},
+			// [PlayerShapeEnum.TANKY]: {
+			// 	damage: 5,
+			// 	shoots: false,
+			// 	range: 2,
+			// 	projectileSpeed: 2,
+			// 	attackCooldown: 0.2,
+			// 	weaponType: WeaponTypeEnum.SWORD,
+			// 	lifetime: 0.08,
+			// },
 			[PlayerShapeEnum.WIZ]: {
 				damage: 10,
 				shoots: true,
@@ -118,6 +127,15 @@ export default class Player {
 				weaponType: WeaponTypeEnum.MAGIC,
 				lifetime: 5,
 			},
+			// [PlayerShapeEnum.MOUSE]: {
+			// 	damage: 5,
+			// 	shoots: false,
+			// 	range: 2,
+			// 	projectileSpeed: 2,
+			// 	attackCooldown: 0.2,
+			// 	weaponType: WeaponTypeEnum.SWORD,
+			// 	lifetime: 0.08,
+			// },
 		};
 
 		this.currentPlayerShape = PlayerShapeEnum.NORMIE;
