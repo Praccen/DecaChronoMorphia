@@ -90,8 +90,11 @@ export module MapGenerator {
 			map[roomTileX - 1][roomTileY] > 0 ? true : false,
 			map[roomTileX + 1][roomTileY] > 0 ? true : false,
 		];
-		const floorTexturePath =
-			"https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/371b6fdf-69a3-4fa2-9ff0-bd04d50f4b98/de8synv-6aad06ab-ed16-47fd-8898-d21028c571c4.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzM3MWI2ZmRmLTY5YTMtNGZhMi05ZmYwLWJkMDRkNTBmNGI5OFwvZGU4c3ludi02YWFkMDZhYi1lZDE2LTQ3ZmQtODg5OC1kMjEwMjhjNTcxYzQucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.wa-oSVpeXEpWqfc_bexczFs33hDFvEGGAQD969J7Ugw";
+
+		const floorTexturePaths = [
+			"Assets/textures/stone.png",
+			"Assets/textures/stone_moss.png"
+		];
 
 		let roomCenter = new Vec3({
 			x: (roomTileX - 1) * 0.5,
@@ -101,7 +104,7 @@ export module MapGenerator {
 
 		const floorId = createFloorEntity(
 			new Vec3(roomCenter),
-			floorTexturePath,
+			floorTexturePaths[Math.floor(Math.random() * 2.0)],
 			ecsManager,
 			rendering
 		);
