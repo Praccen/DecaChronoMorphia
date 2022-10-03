@@ -99,7 +99,7 @@ export default class WeaponSystem extends System {
 
 				let dmgTexture = "Assets/textures/projectiles.png";
 				let phongQuad = this.rendering.getNewPhongQuad(dmgTexture, dmgTexture);
-				if (projectileDirection === ProjectileGraphicsDirectionEnum.RIGHT) {
+				if (weaponComp.direction.x > 0) {
 					console.log("Flip to right");
 					phongQuad.textureMatrix.scale(1, -1, 1);
 				}
