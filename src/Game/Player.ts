@@ -26,6 +26,7 @@ import AudioComponent, {
 	AudioTypeEnum,
 } from "../Engine/ECS/Components/AudioComponent.js";
 import PointLightComponent from "../Engine/ECS/Components/PointLightComponent.js";
+import TextObject3D from "../Engine/GUI/Text/TextObject3D.js";
 
 export default class Player {
 	public playerEntity: Entity;
@@ -61,6 +62,7 @@ export default class Player {
 	private boundingBoxModelMatrix: Matrix4;
 	private lookDir: Vec3 = new Vec3({ x: 0.0, y: 0.0, z: 0.0 });
 
+	public playerHPText: TextObject3D;
 	public isDead: boolean;
 
 	constructor(rendering: Rendering, ecsManager: ECSManager) {
@@ -141,6 +143,8 @@ export default class Player {
 		this.currentPlayerShape = PlayerShapeEnum.NORMIE;
 
 		this.boundingBoxModelMatrix = new Matrix4(null);
+
+		this.playerHPText = this.rendering.getNew3DText();
 
 		this.isDead = false;
 	}
@@ -337,6 +341,14 @@ export default class Player {
 		let pointLightComp = new PointLightComponent(playerPointLight);
 		pointLightComp.posOffset.setValues(0.0, 0.5, 0.2);
 		this.ecsManager.addComponent(this.playerEntity, pointLightComp);
+
+		
+		this.playerHPText.textString = healthComp.health + "";
+		this.playerHPText.center = true;
+		this.playerHPText.scaleFontWithDistance = true;
+		this.playerHPText.size = 50;
+		this.playerHPText.position = playerPosComp.position;
+		this.playerHPText.getElement().style.color = "lime";
 	}
 
 	updateInput(): [Vec3, boolean, boolean, Vec3] {
@@ -633,6 +645,14 @@ export default class Player {
 				ComponentTypeEnum.BOUNDINGBOX
 			) as BoundingBoxComponent;
 			bbComp.boundingBox.setUpdateNeeded();
+		}
+
+		let healthComp = this.playerEntity.getComponent(ComponentTypeEnum.HEALTH) as HealthComponent;
+		if (healthComp) {
+			this.playerHPText.textString = healthComp.health + "";
+			if (healthComp.health < 30) {
+				this.playerHPText.getElement().style.color = "red";
+			}
 		}
 	}
 }
