@@ -47,7 +47,6 @@ export default class Game {
 			this.rendering
 		);
 		this.ecsManager.initializeSystems(mapInformation, this.audio);
-		console.log("mapInformation :>> ", mapInformation);
 		// -------------
 
 		this.playerObject.init();

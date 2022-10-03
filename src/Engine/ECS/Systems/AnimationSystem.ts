@@ -6,6 +6,8 @@ import PhongQuad from "../../Objects/PhongQuad.js";
 import ProjectileComponent, {
 	ProjectileGraphicsDirectionEnum,
 } from "../Components/ProjectileComponent.js";
+import EnemyComponent from "../Components/EnemyComponent.js";
+import { EnemyTypesEnum } from "../../../Constants/EnemyData.js";
 
 export default class AnimationSystem extends System {
 	constructor() {
@@ -24,6 +26,9 @@ export default class AnimationSystem extends System {
 			);
 			let animComp = <AnimationComponent>(
 				e.getComponent(ComponentTypeEnum.ANIMATION)
+			);
+			const enemyComponent = <EnemyComponent>(
+				e.getComponent(ComponentTypeEnum.ENEMY)
 			);
 
 			if (graphComp && animComp) {
@@ -51,10 +56,17 @@ export default class AnimationSystem extends System {
 					Math.max(animComp.modAdvancement.y, 1.0);
 
 				if (!animComp.invert) {
-					animComp.spriteMap.setCurrentSprite(
-						animComp.startingTile.x + xAdvance,
-						animComp.startingTile.y + yAdvance
-					);
+					if (enemyComponent?.enemyType === EnemyTypesEnum.WITCH) {
+						animComp.spriteMap.setCurrentSprite(
+							animComp.startingTile.x + xAdvance,
+							0.0
+						);
+					} else {
+						animComp.spriteMap.setCurrentSprite(
+							animComp.startingTile.x + xAdvance,
+							animComp.startingTile.y + yAdvance
+						);
+					}
 				} else {
 					animComp.spriteMap.setCurrentSprite(
 						animComp.spriteMap.nrOfSprites.x - xAdvance - 1,

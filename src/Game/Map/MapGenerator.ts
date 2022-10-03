@@ -58,7 +58,6 @@ export module MapGenerator {
 			rooms: [],
 			pointLightEntities: [],
 		};
-
 		for (let y = 1; y < labyrinth.length - 1; y += 2) {
 			for (let x = 1; x < labyrinth[y].length - 1; x += 2) {
 				if (labyrinth[x][y] == 0) {
@@ -99,6 +98,7 @@ export module MapGenerator {
 	) {
 		const roomPosition = new Vec2({ x: roomTileX, y: roomTileY });
 		const isStartingRoom = roomTileX === 1 && roomTileY === 1;
+		const isBossRoom = roomTileX === 9 && roomTileY === 9;
 
 		// Find out how the room should look
 		let wallsTowards = [
@@ -127,7 +127,7 @@ export module MapGenerator {
 		);
 
 		let enemyIds = [];
-		if (!isStartingRoom) {
+		if (!isStartingRoom && !isBossRoom) {
 			Object.values(SpawnPointsEnum).forEach((spawnPoint) => {
 				if (isNaN(Number(spawnPoint))) return;
 				const spawnLocation = new Vec3(roomCenter);
@@ -161,6 +161,15 @@ export module MapGenerator {
 					enemyIds.push(enemyId);
 				}
 			});
+		} else if (isBossRoom) {
+			const enemyId = createEnemyEntity(
+				new Vec3(roomCenter),
+				false,
+				ecsManager,
+				rendering,
+				true
+			);
+			enemyIds.push(enemyId);
 		}
 
 		createDoorEntity(new Vec3(roomCenter), ecsManager, rendering, wallsTowards);
@@ -187,13 +196,20 @@ export module MapGenerator {
 		position: Vec3,
 		isActive: boolean,
 		ecsManager: ECSManager,
-		rendering: Rendering
+		rendering: Rendering,
+		boss: boolean = false
 	): number {
-		const enemyEnumKeys = Object.values(EnemyTypesEnum);
-		const enemyEnumKeyIndex = Math.floor(Math.random() * enemyEnumKeys.length);
-		const enemyKey = enemyEnumKeys[enemyEnumKeyIndex];
+		let enemyKey = EnemyTypesEnum.SLIME;
+		if (boss) {
+			enemyKey = EnemyTypesEnum.WITCH;
+		} else {
+			const enemyEnumKeys = Object.values(EnemyTypesEnum);
+			const enemyEnumKeyIndex = Math.floor(
+				Math.random() * (enemyEnumKeys.length - 1) //-1 to avoid hitting witch
+			);
+			enemyKey = enemyEnumKeys[enemyEnumKeyIndex];
+		}
 		const enemyData = EnemyData[enemyKey];
-		// const enemyData = EnemyData[EnemyTypesEnum.DRYAD];
 
 		let enemyTexture = enemyData.texturePath;
 		const enemyEntity = ecsManager.createEntity();
@@ -208,23 +224,36 @@ export module MapGenerator {
 
 		let enemyPosComp = new PositionComponent(position);
 		enemyPosComp.rotation.setValues(-30.0, 0.0, 0.0);
+		if (enemyKey === EnemyTypesEnum.DRYAD) {
+			enemyPosComp.scale.y = 1.5;
+		} else if (enemyKey === EnemyTypesEnum.WITCH) {
+			enemyPosComp.scale.y = 1.0;
+		}
 		ecsManager.addComponent(enemyEntity, enemyPosComp);
 
 		// Update the wall model matrix to avoid it being stuck on 0,0 if inactive
 		enemyPosComp.calculateMatrix(phongQuad.modelMatrix);
 
 		let enemyAnimComp = new AnimationComponent();
+
 		enemyAnimComp.spriteMap.setNrOfSprites(
-			3,
-			enemyKey === EnemyTypesEnum.DRYAD ? 1 : 2
+			enemyKey === EnemyTypesEnum.WITCH ? 6 : 3,
+			enemyKey === EnemyTypesEnum.DRYAD || enemyKey === EnemyTypesEnum.WITCH
+				? enemyKey === EnemyTypesEnum.DRYAD
+					? 1
+					: 6
+				: 2
 		);
 		enemyAnimComp.startingTile = { x: 0, y: 0 };
 		enemyAnimComp.advanceBy = { x: 1.0, y: 0.0 };
-		enemyAnimComp.modAdvancement = { x: 2.0, y: 1.0 };
+		enemyAnimComp.modAdvancement = {
+			x: 2.0,
+			y: 1.0,
+		};
 		enemyAnimComp.updateInterval = 0.3;
 		ecsManager.addComponent(enemyEntity, enemyAnimComp);
 
-		ecsManager.addComponent(enemyEntity, new EnemyComponent());
+		ecsManager.addComponent(enemyEntity, new EnemyComponent(enemyKey));
 		ecsManager.addComponent(
 			enemyEntity,
 			new WeaponComponent(

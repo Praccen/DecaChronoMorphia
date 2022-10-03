@@ -5,6 +5,7 @@ export enum EnemyTypesEnum {
 	WOLF = "WOLF",
 	DRYAD = "DRYAD",
 	SKULL = "SKULL",
+	WITCH = "WITCH",
 }
 
 export interface EnemyDataType {
@@ -24,6 +25,21 @@ export interface EnemyDataType {
 
 export type EnemyDataTypes = {
 	[key in EnemyTypesEnum]: EnemyDataType;
+};
+
+export const BossData: EnemyDataType = {
+	health: 50,
+	damage: 30,
+	shoots: true,
+	range: 3,
+	projectileSpeed: 5,
+	attackCooldown: 2,
+	attackSound: "spell_cast_1",
+	deathSound: "enemy_death_1",
+	weaponType: WeaponTypeEnum.MAGIC,
+	attackTimeAlive: 5,
+	acceleration: 3.0,
+	texturePath: "Assets/textures/witch_sheet.png",
 };
 
 export const EnemyData: EnemyDataTypes = {
@@ -82,5 +98,19 @@ export const EnemyData: EnemyDataTypes = {
 		attackTimeAlive: 10,
 		acceleration: 2.0,
 		texturePath: "Assets/textures/skully.png",
+	},
+	[EnemyTypesEnum.WITCH]: {
+		health: 50,
+		damage: 30,
+		shoots: true,
+		range: 3,
+		projectileSpeed: 5,
+		attackCooldown: 2,
+		attackSound: "spell_cast_1",
+		deathSound: "enemy_death_1",
+		weaponType: WeaponTypeEnum.MAGIC,
+		attackTimeAlive: 5,
+		acceleration: 3.0,
+		texturePath: "Assets/textures/witch_sheet.png",
 	},
 };
