@@ -77,7 +77,7 @@ export default class Menu {
 		this.controlsText.position.y = 0.5;
 		this.controlsText.center = true;
 		this.controlsText.size = 30;
-		this.controlsText.textString = "Controls: \r\nMove with WASD \r\nAttack with arrow keys \r\nUse special ability with space";
+		this.controlsText.textString = "Controls: \r\nMove with WASD \r\nAttack with arrow keys \r\nUse special ability with space \r\nP to exit back to main menu";
 		this.controlsText.getElement().style.color = "white";
 
 		this.startButton = this.rendering.getNewButton();
