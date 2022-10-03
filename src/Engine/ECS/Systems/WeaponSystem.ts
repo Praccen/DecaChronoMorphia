@@ -8,6 +8,7 @@ import { ComponentTypeEnum } from "../Components/Component.js";
 import DamageComponent from "../Components/DamageComponent.js";
 import GraphicsComponent from "../Components/GraphicsComponent.js";
 import MovementComponent from "../Components/MovementComponent.js";
+import PointLightComponent from "../Components/PointLightComponent.js";
 import PositionComponent from "../Components/PositionComponent.js";
 import WeaponComponent from "../Components/WeaponComponent.js";
 import ECSManager from "../ECSManager.js";
@@ -97,6 +98,15 @@ export default class WeaponSystem extends System {
 				projectileAnimComp.modAdvancement = { x: 0.0, y: 0.0 };
 				projectileAnimComp.updateInterval = 0.0;
 				this.ecsManager.addComponent(dmgEntity, projectileAnimComp);
+
+				let light = this.rendering.getNewPointLight();
+				light.colour.setValues(3.0, 0.0, 0.0);
+				light.linear = 3.0;
+				light.quadratic = 6.0;
+
+				let lightComp = new PointLightComponent(light);
+				lightComp.posOffset.setValues(0.0, 0.0, 0.1);
+				this.ecsManager.addComponent(dmgEntity, lightComp);
 
 				weaponComp.attackTimer = weaponComp.attackCooldown;
 			}
