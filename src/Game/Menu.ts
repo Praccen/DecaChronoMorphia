@@ -20,6 +20,7 @@ export default class Menu {
 	private fpsDisplayCB: Checkbox;
 	private fpsDisplay: TextObject2D;
 	private volumeSlider: Slider;
+	private controlsText: TextObject2D;
 
 	constructor(
 		rendering: Rendering,
@@ -70,6 +71,14 @@ export default class Menu {
 		this.titleText.size = 80;
 		this.titleText.textString = "Decachronomorphia";
 		this.titleText.getElement().style.color = "white";
+
+		this.controlsText = this.rendering.getNew2DText();
+		this.controlsText.position.x = 0.8;
+		this.controlsText.position.y = 0.5;
+		this.controlsText.center = true;
+		this.controlsText.size = 30;
+		this.controlsText.textString = "Controls: \r\nMove with WASD \r\nAttack with arrow keys \r\nUse special ability with space";
+		this.controlsText.getElement().style.color = "white";
 
 		this.startButton = this.rendering.getNewButton();
 		this.startButton.position.x = 0.5;
@@ -152,6 +161,7 @@ export default class Menu {
 			this.bloomCB.remove();
 			this.fpsDisplayCB.remove();
 			this.volumeSlider.remove();
+			this.controlsText.remove();
 			return true;
 		}
 		return false;
