@@ -11,6 +11,7 @@ import MovementComponent from "../Components/MovementComponent.js";
 import PointLightComponent from "../Components/PointLightComponent.js";
 import PositionComponent from "../Components/PositionComponent.js";
 import ProjectileComponent, {
+	ProjectileGraphicsDirectionEnum,
 	ProjectileTypeEnum,
 } from "../Components/ProjectileComponent.js";
 import WeaponComponent, {
@@ -77,9 +78,6 @@ export default class WeaponSystem extends System {
 				dmgMoveComp.constantAcceleration.y = 0.0;
 				this.ecsManager.addComponent(dmgEntity, dmgMoveComp);
 
-				let projectileComp = new ProjectileComponent(ProjectileTypeEnum.FIRE);
-				this.ecsManager.addComponent(dmgEntity, projectileComp);
-
 				let collComp = new CollisionComponent();
 				collComp.hasForce = false;
 				this.ecsManager.addComponent(dmgEntity, collComp);
@@ -119,11 +117,18 @@ export default class WeaponSystem extends System {
 				}
 
 				let phongQuad = this.rendering.getNewPhongQuad(dmgTexture, dmgTexture);
+
+				let projectileDirection = ProjectileGraphicsDirectionEnum.LEFT;
 				if (weaponComp.direction.x > 0) {
-					console.log("Flip to right");
-					// phongQuad.textureMatrix.scale(1, -1, 1);
-					phongQuad.modelMatrix.scale(1, -1, 1);
+					projectileDirection = ProjectileGraphicsDirectionEnum.RIGHT;
 				}
+
+				let projectileComp = new ProjectileComponent(
+					ProjectileTypeEnum.FIRE,
+					projectileDirection
+				);
+				this.ecsManager.addComponent(dmgEntity, projectileComp);
+
 				this.ecsManager.addComponent(
 					dmgEntity,
 					new GraphicsComponent(phongQuad)
