@@ -12,7 +12,6 @@ import PointLightComponent from "../Components/PointLightComponent.js";
 import PositionComponent from "../Components/PositionComponent.js";
 import ProjectileComponent, {
 	ProjectileGraphicsDirectionEnum,
-	ProjectileTypeEnum,
 } from "../Components/ProjectileComponent.js";
 import WeaponComponent, {
 	WeaponTypeEnum,
@@ -97,9 +96,9 @@ export default class WeaponSystem extends System {
 					dmgTexture = "Assets/textures/projectiles.png";
 					projectileAnimComp.spriteMap.setNrOfSprites(3, 2);
 					projectileAnimComp.startingTile = { x: 0, y: 0 };
-					projectileAnimComp.advanceBy = { x: 0.0, y: 0.0 };
-					projectileAnimComp.modAdvancement = { x: 0.0, y: 0.0 };
-					projectileAnimComp.updateInterval = 0.0;
+					projectileAnimComp.advanceBy = { x: 1.0, y: 0.0 };
+					projectileAnimComp.modAdvancement = { x: 2.0, y: 0.0 };
+					projectileAnimComp.updateInterval = 0.3;
 				} else if (weaponComp.weaponType == WeaponTypeEnum.MAGIC) {
 					dmgTexture = "Assets/textures/projectiles.png";
 					projectileAnimComp.spriteMap.setNrOfSprites(3, 2);
@@ -122,18 +121,16 @@ export default class WeaponSystem extends System {
 				if (weaponComp.direction.x > 0) {
 					projectileDirection = ProjectileGraphicsDirectionEnum.RIGHT;
 				}
-
 				let projectileComp = new ProjectileComponent(
-					ProjectileTypeEnum.FIRE,
-					projectileDirection
+					projectileDirection,
+					weaponComp.weaponType
 				);
-				this.ecsManager.addComponent(dmgEntity, projectileComp);
 
-				this.ecsManager.addComponent(
+				this.ecsManager.addComponent(dmgEntity, projectileComp);
+				+this.ecsManager.addComponent(
 					dmgEntity,
 					new GraphicsComponent(phongQuad)
 				);
-
 				this.ecsManager.addComponent(dmgEntity, projectileAnimComp);
 
 				let light = this.rendering.getNewPointLight();
