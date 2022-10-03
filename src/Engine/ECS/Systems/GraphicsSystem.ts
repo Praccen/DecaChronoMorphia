@@ -2,15 +2,11 @@ import System from "./System.js";
 import GraphicsComponent from "../Components/GraphicsComponent.js";
 import { ComponentTypeEnum } from "../Components/Component.js";
 import PositionComponent from "../Components/PositionComponent.js";
-import MeshCollisionComponent from "../Components/MeshCollisionComponent.js";
 import PointLightComponent from "../Components/PointLightComponent.js";
 import ProjectileComponent, {
 	ProjectileGraphicsDirectionEnum,
 } from "../Components/ProjectileComponent.js";
 import PhongQuad from "../../Objects/PhongQuad.js";
-import WeaponComponent, {
-	WeaponTypeEnum,
-} from "../Components/WeaponComponent.js";
 import AnimationComponent from "../Components/AnimationComponent.js";
 
 export default class GraphicsSystem extends System {

@@ -423,6 +423,7 @@ export default class Player {
 			playerComp.dodgeStartingTile = new Vec2({ x: 0, y: 2 });
 			playerComp.dodgeModAdvancement = new Vec2({ x: 6, y: 0 });
 			playerComp.dodgeUpdateInterval = 0.1;
+			playerComp.dodgeLength = 2.5;
 		} else if (this.currentPlayerShape == PlayerShapeEnum.MOUSE) {
 			playerComp.dodgeStartingTile = new Vec2({ x: 0, y: 2 });
 			playerComp.dodgeModAdvancement = new Vec2({ x: 6, y: 0 });
@@ -459,13 +460,34 @@ export default class Player {
 		}
 	}
 
-	doDodge() {
+	doDodge(accVec: Vec3) {
 		const animCorp = this.playerEntity.getComponent(
 			ComponentTypeEnum.ANIMATION
 		) as AnimationComponent;
+		const moveComp = this.playerEntity.getComponent(
+			ComponentTypeEnum.MOVEMENT
+		) as MovementComponent;
 
 		if (this.currentPlayerShape == PlayerShapeEnum.NORMIE) {
 		} else if (this.currentPlayerShape == PlayerShapeEnum.WIZ) {
+			const playerComp = this.playerEntity.getComponent(
+				ComponentTypeEnum.PLAYER
+			) as PlayerComponent;
+
+			if (playerComp.dodgeAbiltiy) {
+				playerComp.dodgeAbiltiy = false;
+				let playerPosComp = <PositionComponent>(
+					this.playerEntity.getComponent(ComponentTypeEnum.POSITION)
+				);
+				let newPosX = playerPosComp.position.x + accVec.x * 1.0;
+				let newPosZ = playerPosComp.position.z + accVec.z * 1.0;
+				if (newPosX > -3 && newPosX < 35) {
+					if (newPosZ > -3 && newPosZ < 35) {
+						playerPosComp.position.x = newPosX;
+						playerPosComp.position.y = newPosZ;
+					}
+				}
+			}
 		} else if (this.currentPlayerShape == PlayerShapeEnum.TANKY) {
 			if (animCorp) {
 				animCorp.stopAtLast = true;
@@ -482,6 +504,12 @@ export default class Player {
 
 		if (animComp) {
 			animComp.stopAtLast = false;
+		}
+		const playerComp = this.playerEntity.getComponent(
+			ComponentTypeEnum.PLAYER
+		) as PlayerComponent;
+		if (playerComp) {
+			playerComp.dodgeAbiltiy = true;
 		}
 
 		if (this.currentPlayerShape == PlayerShapeEnum.NORMIE) {
@@ -516,7 +544,7 @@ export default class Player {
 		}
 
 		if (playerComp && playerComp.dodgeing) {
-			this.doDodge();
+			this.doDodge(accVec);
 		} else {
 			this.noDodge();
 		}
