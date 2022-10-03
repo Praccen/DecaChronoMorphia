@@ -472,6 +472,7 @@ export default class Player {
 			ComponentTypeEnum.MOVEMENT
 		) as MovementComponent;
 
+		animCorp.modAdvancement.x = 6;
 		if (this.currentPlayerShape == PlayerShapeEnum.NORMIE) {
 		} else if (this.currentPlayerShape == PlayerShapeEnum.WIZ) {
 			const playerComp = this.playerEntity.getComponent(
@@ -497,6 +498,7 @@ export default class Player {
 				animCorp.stopAtLast = true;
 			}
 		} else if (this.currentPlayerShape == PlayerShapeEnum.MOUSE) {
+			animCorp.modAdvancement.x = 3;
 		}
 	}
 
