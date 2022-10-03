@@ -15,6 +15,7 @@ export interface EnemyDataType {
 	attackCooldown: number;
 	attackSound: string;
 	weaponType: WeaponTypeEnum;
+	attackTimeAlive: number;
 	acceleration: number;
 	texturePath: string;
 }
@@ -32,6 +33,7 @@ export const EnemyData: EnemyDataTypes = {
 		attackCooldown: 2,
 		attackSound: "spell_cast_3",
 		weaponType: WeaponTypeEnum.ARROW,
+		attackTimeAlive: 10,
 		acceleration: 5.0,
 		texturePath: "Assets/textures/slime.png",
 	},
@@ -43,6 +45,7 @@ export const EnemyData: EnemyDataTypes = {
 		attackCooldown: 2,
 		attackSound: "spell_cast_3",
 		weaponType: WeaponTypeEnum.SWORD,
+		attackTimeAlive: 1.0,
 		acceleration: 10.0,
 		texturePath: "Assets/textures/owo.png",
 	},
@@ -54,6 +57,7 @@ export const EnemyData: EnemyDataTypes = {
 		attackCooldown: 2,
 		attackSound: "spell_cast_3",
 		weaponType: WeaponTypeEnum.ARROW,
+		attackTimeAlive: 10,
 		acceleration: 0,
 		texturePath: "Assets/textures/dryady.png",
 	},
@@ -65,6 +69,7 @@ export const EnemyData: EnemyDataTypes = {
 		attackCooldown: 3,
 		attackSound: "spell_cast_3",
 		weaponType: WeaponTypeEnum.MAGIC,
+		attackTimeAlive: 10,
 		acceleration: 2.0,
 		texturePath: "Assets/textures/skully.png",
 	},
