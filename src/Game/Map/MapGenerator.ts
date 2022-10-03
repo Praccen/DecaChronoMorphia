@@ -10,7 +10,9 @@ import MeshCollisionComponent from "../../Engine/ECS/Components/MeshCollisionCom
 import MovementComponent from "../../Engine/ECS/Components/MovementComponent.js";
 import PointLightComponent from "../../Engine/ECS/Components/PointLightComponent.js";
 import PositionComponent from "../../Engine/ECS/Components/PositionComponent.js";
-import WeaponComponent from "../../Engine/ECS/Components/WeaponComponent.js";
+import WeaponComponent, {
+	WeaponTypeEnum,
+} from "../../Engine/ECS/Components/WeaponComponent.js";
 import ECSManager from "../../Engine/ECS/ECSManager.js";
 import Entity from "../../Engine/ECS/Entity.js";
 import Vec2 from "../../Engine/Maths/Vec2.js";
@@ -93,7 +95,7 @@ export module MapGenerator {
 
 		const floorTexturePaths = [
 			"Assets/textures/stone.png",
-			"Assets/textures/stone_moss.png"
+			"Assets/textures/stone_moss.png",
 		];
 
 		let roomCenter = new Vec3({
@@ -174,7 +176,10 @@ export module MapGenerator {
 		ecsManager.addComponent(enemyEntity, enemyAnimComp);
 
 		ecsManager.addComponent(enemyEntity, new EnemyComponent());
-		ecsManager.addComponent(enemyEntity, new WeaponComponent(10, true, 4, 2));
+		ecsManager.addComponent(
+			enemyEntity,
+			new WeaponComponent(10, true, 4, 2, WeaponTypeEnum.ARROW)
+		);
 
 		// Collision for enemy
 		let enemyBBComp = new BoundingBoxComponent();
@@ -189,7 +194,11 @@ export module MapGenerator {
 		ecsManager.addComponent(
 			enemyEntity,
 			new AudioComponent([
-				{ key: AudioTypeEnum.SHOOT, audioKey: "spell_cast_3", playTime: 1.5 },
+				{
+					key: AudioTypeEnum.SHOOT,
+					audioKey: "spell_cast_3",
+					playTime: 1.5,
+				},
 			])
 		);
 
@@ -242,8 +251,7 @@ export module MapGenerator {
 				continue;
 			}
 			const objPath = "Assets/objs/cube.obj";
-			const doorTexture =
-				"https://as2.ftcdn.net/v2/jpg/01/99/14/99/1000_F_199149981_RG8gciij11WKAQ5nKi35Xx0ovesLCRaU.jpg";
+			const doorTexture = "Assets/textures/door.png";
 
 			let doorEntity = ecsManager.createEntity();
 			let doorMesh = await rendering.getNewMesh(
@@ -253,7 +261,7 @@ export module MapGenerator {
 			);
 			ecsManager.addComponent(doorEntity, new GraphicsComponent(doorMesh));
 			let posComp = new PositionComponent(
-				new Vec3(position).subtract(new Vec3({ x: 0.0, y: 0.5, z: 0.0 }))
+				new Vec3(position).add(new Vec3({ x: 0.0, y: 0.5, z: 0.0 }))
 			);
 
 			if (i == 0) {
@@ -325,7 +333,7 @@ export module MapGenerator {
 				posComp.rotation.setValues(0.0, -90.0);
 			}
 
-			posComp.scale.setValues(1.25, 0.5, 0.5);
+			posComp.scale.setValues(1.25, 1.0, 0.5);
 			ecsManager.addComponent(entity, posComp);
 
 			// Update the wall model matrix to avoid it being stuck on 0,0 if inactive

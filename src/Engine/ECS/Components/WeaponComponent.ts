@@ -1,6 +1,12 @@
 import Vec3 from "../../Maths/Vec3.js";
 import { Component, ComponentTypeEnum } from "./Component.js";
 
+export enum WeaponTypeEnum {
+	SWORD,
+	ARROW,
+	MAGIC,
+}
+
 export default class WeaponComponent extends Component {
 	damage: number;
 	shoots: boolean; //if this weapon shoots a projectile
@@ -12,12 +18,14 @@ export default class WeaponComponent extends Component {
 	//attack speed
 	attackCooldown: number;
 	attackTimer: number;
+	weaponType: WeaponTypeEnum;
 
 	constructor(
 		damage: number,
 		shoots: boolean,
 		range: number,
-		attackCooldown: number
+		attackCooldown: number,
+		weaponType: WeaponTypeEnum
 	) {
 		super(ComponentTypeEnum.WEAPON);
 		this.damage = damage;
@@ -25,5 +33,6 @@ export default class WeaponComponent extends Component {
 		this.range = range;
 		this.attackCooldown = attackCooldown;
 		this.attackTimer = 0;
+		this.weaponType = weaponType;
 	}
 }

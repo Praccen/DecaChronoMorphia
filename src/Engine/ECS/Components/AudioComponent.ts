@@ -4,6 +4,8 @@ export enum AudioTypeEnum {
 	DAMAGE,
 	SHOOT,
 	POLYMORPH,
+	DEATH,
+	VICTORY,
 }
 
 export default class AudioComponent extends Component {
@@ -18,7 +20,11 @@ export default class AudioComponent extends Component {
 	};
 
 	constructor(
-		sounds: { key: AudioTypeEnum; audioKey: string; playTime: number }[]
+		sounds: {
+			key: AudioTypeEnum;
+			audioKey: string;
+			playTime: number;
+		}[]
 	) {
 		super(ComponentTypeEnum.AUDIO);
 

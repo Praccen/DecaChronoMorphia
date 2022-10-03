@@ -17,6 +17,7 @@ export enum ComponentTypeEnum {
 	DAMAGE,
 	HEALTH,
 	AUDIO,
+	PROJECTILE,
 }
 
 export class Component {

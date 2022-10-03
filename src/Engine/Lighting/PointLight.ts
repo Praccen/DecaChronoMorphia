@@ -15,10 +15,7 @@ export default class PointLight {
 	private gl: WebGL2RenderingContext;
 	private shaderProgram: ShaderProgram;
 
-	constructor(
-		gl: WebGL2RenderingContext,
-		shaderProgram: ShaderProgram,
-	) {
+	constructor(gl: WebGL2RenderingContext, shaderProgram: ShaderProgram) {
 		this.gl = gl;
 		this.shaderProgram = shaderProgram;
 
