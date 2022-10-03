@@ -8,6 +8,7 @@ import CollisionComponent from "../../Engine/ECS/Components/CollisionComponent.j
 import DoorComponent from "../../Engine/ECS/Components/DoorComponent.js";
 import EnemyComponent from "../../Engine/ECS/Components/EnemyComponent.js";
 import GraphicsComponent from "../../Engine/ECS/Components/GraphicsComponent.js";
+import HealthComponent from "../../Engine/ECS/Components/HealthComponent.js";
 import MeshCollisionComponent from "../../Engine/ECS/Components/MeshCollisionComponent.js";
 import MovementComponent from "../../Engine/ECS/Components/MovementComponent.js";
 import PointLightComponent from "../../Engine/ECS/Components/PointLightComponent.js";
@@ -236,6 +237,7 @@ export module MapGenerator {
 				10
 			)
 		);
+		ecsManager.addComponent(enemyEntity, new HealthComponent(enemyData.health));
 
 		// Collision for enemy
 		let enemyBBComp = new BoundingBoxComponent();
@@ -252,8 +254,13 @@ export module MapGenerator {
 			new AudioComponent([
 				{
 					key: AudioTypeEnum.SHOOT,
-					audioKey: enemyData.attackSound, //"spell_cast_3",
+					audioKey: enemyData.attackSound,
 					playTime: 1.5,
+				},
+				{
+					key: AudioTypeEnum.DEATH,
+					audioKey: enemyData.deathSound,
+					playTime: 2,
 				},
 			])
 		);
