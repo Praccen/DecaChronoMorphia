@@ -41,6 +41,17 @@ export default class WeaponSystem extends System {
 
 			weaponComp.attackTimer -= dt;
 
+			if (weaponComp.weaponType == WeaponTypeEnum.SWORD) {
+				weaponComp.damageEnts.forEach((element) => {
+					const positionComp = element.getComponent(
+						ComponentTypeEnum.POSITION
+					) as PositionComponent;
+					positionComp.position.x = weaponComp.position.x;
+					positionComp.position.y = weaponComp.position.y;
+					positionComp.position.z = weaponComp.position.z;
+				});
+			}
+
 			if (weaponComp.attackRequested && weaponComp.attackTimer <= 0) {
 				const audioComp = e.getComponent(
 					ComponentTypeEnum.AUDIO
@@ -50,6 +61,7 @@ export default class WeaponSystem extends System {
 				}
 
 				const dmgEntity = this.ecsManager.createEntity();
+				weaponComp.damageEnts.push(dmgEntity);
 				this.ecsManager.addComponent(
 					dmgEntity,
 					new DamageComponent(weaponComp.damage, weaponComp.lifetime)

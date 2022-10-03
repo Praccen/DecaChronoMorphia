@@ -1,4 +1,5 @@
 import Vec3 from "../../Maths/Vec3.js";
+import Entity from "../Entity.js";
 import { Component, ComponentTypeEnum } from "./Component.js";
 
 export enum WeaponTypeEnum {
@@ -11,7 +12,6 @@ export default class WeaponComponent extends Component {
 	damage: number;
 	shoots: boolean; //if this weapon shoots a projectile
 	range: number; //how long the attack reaches
-
 	direction: Vec3;
 	position: Vec3;
 	attackRequested: boolean;
@@ -19,6 +19,7 @@ export default class WeaponComponent extends Component {
 	attackCooldown: number;
 	attackTimer: number;
 	lifetime: number;
+	damageEnts: Array<Entity>;
 	weaponType: WeaponTypeEnum;
 
 	constructor(
@@ -37,5 +38,7 @@ export default class WeaponComponent extends Component {
 		this.attackTimer = 0;
 		this.weaponType = weaponType;
 		this.lifetime = attackTimeAlive;
+		this.damageEnts = new Array<Entity>();
+		this.direction = new Vec3({ x: 0, y: 0, z: 0 });
 	}
 }
