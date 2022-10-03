@@ -1,5 +1,6 @@
 import { Component, ComponentTypeEnum } from "./Component.js";
 import Vec2 from "../../Maths/Vec2.js";
+import Player from "../../../Game/Player.js";
 
 export enum PlayerShapeEnum {
 	NORMIE,
@@ -9,6 +10,7 @@ export enum PlayerShapeEnum {
 }
 
 export default class PlayerComponent extends Component {
+	player: Player;
 	inRoom: Vec2;
 	dodgeing: boolean;
 	startDodge: boolean;
@@ -17,12 +19,15 @@ export default class PlayerComponent extends Component {
 	dodgeStartingTile: Vec2;
 	dodgeModAdvancement: Vec2;
 	dodgeUpdateInterval: number;
+	dodgeAbiltiy: boolean;
 	resetAnim: boolean;
 
-	constructor() {
+	constructor(player: Player) {
 		super(ComponentTypeEnum.PLAYER);
+		this.player = player;
 		this.startDodge = false;
 		this.dodgeing = false;
+		this.dodgeAbiltiy = true;
 		this.dodgeCooldown = 2;
 		this.dodgeLength = 1.6;
 		this.inRoom = new Vec2({ x: 1, y: 1 });

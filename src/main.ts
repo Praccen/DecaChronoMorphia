@@ -5,6 +5,7 @@ import ECSManager from "./Engine/ECS/ECSManager.js";
 import AudioPlayer from "./Engine/Audio/AudioPlayer.js";
 import { SAT } from "./Engine/Maths/SAT.js";
 import Menu from "./Game/Menu.js";
+import TextObject2D from "./Engine/GUI/Text/TextObject2D.js";
 
 SAT.runUnitTests();
 
@@ -12,13 +13,11 @@ SAT.runUnitTests();
 export let canvas = <HTMLCanvasElement>document.getElementById("gameCanvas");
 let guicontainer = <HTMLElement>document.getElementById("guicontainer");
 export let input = new Input();
-export let texturesRequestedVsLoaded = {
-	req: 0,
-	loaded: 0,
-};
-export let meshesRequestedVsLoaded = {
-	req: 0,
-	loaded: 0,
+export let options = {
+	useCrt: false,
+	useBloom: true,
+	showFps: true,
+	volume: 0.05,
 };
 let heightByWidth = 1080 / 1920;
 let widthByHeight = 1920 / 1080;
@@ -91,14 +90,36 @@ window.onload = async () => {
 
 	let gl = initWebGL();
 
-	let rendering = new Rendering(gl);
-
-	let fpsDisplay = rendering.getNew2DText();
-
+	let rendering: Rendering;
+	let fpsDisplay: TextObject2D;
 	let audio = new AudioPlayer();
-	let ecsManager = new ECSManager(rendering);
-	let menu = new Menu(rendering, fpsDisplay);
+	let ecsManager: ECSManager;
+	let menu: Menu;
 	let game: Game;
+	let firstLoop: boolean;
+
+	function init() {
+		rendering = new Rendering(gl);
+		if (fpsDisplay) {
+			fpsDisplay.getElement().remove();
+		}
+		fpsDisplay = rendering.getNew2DText();
+		audio.stopAll();
+		ecsManager = new ECSManager(rendering);
+		menu = new Menu(rendering, fpsDisplay, audio);
+		game = null;
+		firstLoop = true;
+
+		fpsDisplay.position.x = 0.01;
+		fpsDisplay.position.y = 0.01;
+		fpsDisplay.size = 18;
+		fpsDisplay.scaleWithWindow = false;
+		fpsDisplay.getElement().style.color = "lime";
+
+		resize(gl, rendering);
+	}
+
+	init();
 
 	let lastTick = null;
 
@@ -110,12 +131,6 @@ window.onload = async () => {
 	let fpsUpdateTimer = 0.0;
 	let frameCounter = 0;
 	let dt = 0.0;
-
-	fpsDisplay.position.x = 0.01;
-	fpsDisplay.position.y = 0.01;
-	fpsDisplay.size = 18;
-	fpsDisplay.scaleWithWindow = false;
-	fpsDisplay.getElement().style.color = "lime";
 
 	function updateFrameTimers() {
 		let now = Date.now();
@@ -138,9 +153,10 @@ window.onload = async () => {
 	}
 
 	/* Gameloop */
-	function gameLoop() {
+	function gameLoop(): boolean {
 		updateFrameTimers();
 
+		let quitGame = false;
 		//Only update if update timer goes over update rate
 		while (updateTimer >= minUpdateRate) {
 			if (updatesSinceRender >= 20) {
@@ -149,7 +165,7 @@ window.onload = async () => {
 				break;
 			}
 
-			game.update(minUpdateRate);
+			quitGame = game.update(minUpdateRate);
 			ecsManager.update(minUpdateRate);
 			updateTimer -= minUpdateRate;
 			updatesSinceRender++;
@@ -157,56 +173,37 @@ window.onload = async () => {
 
 		if (updatesSinceRender == 0) {
 			// dt is faster than min update rate, allow faster updates
-			game.update(updateTimer);
+			quitGame = game.update(updateTimer);
 			ecsManager.update(updateTimer);
 			updateTimer = 0.0;
 		}
 
 		ecsManager.updateRenderingSystems(dt);
-		rendering.draw();
 
-		requestAnimationFrame(gameLoop);
+		if (!firstLoop) {
+			rendering.draw();
+		}
+
+		firstLoop = false;
+
+		return quitGame;
 	}
 
 	window.addEventListener("resize", function () {
 		resize(gl, rendering);
 	});
 
-	function waitForTextureLoading() {
-		//Waits until all textures are loaded before starting the game
-		if (texturesRequestedVsLoaded.loaded < texturesRequestedVsLoaded.req) {
-			requestAnimationFrame(waitForTextureLoading);
-		} else {
-			console.log(
-				"All " +
-					texturesRequestedVsLoaded.loaded +
-					"/" +
-					texturesRequestedVsLoaded.req +
-					" textures loaded!"
-			);
-		}
-	}
-
-	function waitForMeshLoading() {
-		//Waits until all meshes are loaded before starting the game
-		if (meshesRequestedVsLoaded.loaded < meshesRequestedVsLoaded.req) {
-			requestAnimationFrame(waitForMeshLoading);
-		} else {
-			console.log(
-				"All " +
-					meshesRequestedVsLoaded.loaded +
-					"/" +
-					meshesRequestedVsLoaded.req +
-					" meshes loaded!"
-			);
-		}
-	}
-
 	console.log("Everything is ready.");
 
-	resize(gl, rendering);
-	//requestAnimationFrame(waitForTextureLoading);
-	//requestAnimationFrame(waitForMeshLoading);
+	async function runGame() {
+		if (!gameLoop()) {
+			requestAnimationFrame(runGame);
+		} else {
+			// Restart game
+			init();
+			requestAnimationFrame(menuLoop);
+		}
+	}
 
 	async function menuLoop() {
 		updateFrameTimers();
@@ -222,7 +219,7 @@ window.onload = async () => {
 			audio.pauseAudio("main_theme_4");
 			game = new Game(rendering, ecsManager, audio);
 			await game.init();
-			requestAnimationFrame(gameLoop);
+			requestAnimationFrame(runGame);
 		}
 	}
 	requestAnimationFrame(menuLoop);

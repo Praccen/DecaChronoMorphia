@@ -3,7 +3,11 @@ import GraphicsComponent from "../Components/GraphicsComponent.js";
 import AnimationComponent from "../Components/AnimationComponent.js";
 import System from "./System.js";
 import PhongQuad from "../../Objects/PhongQuad.js";
-import ProjectileComponent from "../Components/ProjectileComponent.js";
+import ProjectileComponent, {
+	ProjectileGraphicsDirectionEnum,
+} from "../Components/ProjectileComponent.js";
+import EnemyComponent from "../Components/EnemyComponent.js";
+import { EnemyTypesEnum } from "../../../Constants/EnemyData.js";
 
 export default class AnimationSystem extends System {
 	constructor() {
@@ -23,8 +27,8 @@ export default class AnimationSystem extends System {
 			let animComp = <AnimationComponent>(
 				e.getComponent(ComponentTypeEnum.ANIMATION)
 			);
-			let projectileComp = <ProjectileComponent>(
-				e.getComponent(ComponentTypeEnum.PROJECTILE)
+			const enemyComponent = <EnemyComponent>(
+				e.getComponent(ComponentTypeEnum.ENEMY)
 			);
 
 			if (graphComp && animComp) {
@@ -35,6 +39,7 @@ export default class AnimationSystem extends System {
 				) {
 					return;
 				}
+
 				animComp.updateTimer += dt;
 
 				animComp.advancements += Math.floor(
@@ -43,17 +48,31 @@ export default class AnimationSystem extends System {
 				animComp.updateTimer =
 					animComp.updateTimer % Math.max(animComp.updateInterval, 0.000001);
 
-				const xAdvance =
+				let xAdvance =
 					(animComp.advanceBy.x * animComp.advancements) %
 					Math.max(animComp.modAdvancement.x, 1.0);
-				const yAdvance =
+				let yAdvance =
 					(animComp.advanceBy.y * animComp.advancements) %
 					Math.max(animComp.modAdvancement.y, 1.0);
 
-				animComp.spriteMap.setCurrentSprite(
-					animComp.startingTile.x + xAdvance,
-					animComp.startingTile.y + yAdvance
-				);
+				if (!animComp.invert) {
+					if (enemyComponent?.enemyType === EnemyTypesEnum.WITCH) {
+						animComp.spriteMap.setCurrentSprite(
+							animComp.startingTile.x + xAdvance,
+							0.0
+						);
+					} else {
+						animComp.spriteMap.setCurrentSprite(
+							animComp.startingTile.x + xAdvance,
+							animComp.startingTile.y + yAdvance
+						);
+					}
+				} else {
+					animComp.spriteMap.setCurrentSprite(
+						animComp.spriteMap.nrOfSprites.x - xAdvance - 1,
+						animComp.startingTile.y + yAdvance
+					);
+				}
 
 				let quad = <PhongQuad>graphComp.object;
 				animComp.spriteMap.updateTextureMatrix(quad.textureMatrix);

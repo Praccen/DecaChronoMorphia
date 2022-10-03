@@ -8,11 +8,11 @@ export default class MovementComponent extends Component {
 	velocity: Vec3;
 	drag: number;
 
-	constructor() {
+	constructor(acceleration = 10.0) {
 		super(ComponentTypeEnum.MOVEMENT);
 		this.constantAcceleration = new Vec3({ x: 0.0, y: -9.8, z: 0.0 });
 		this.accelerationDirection = new Vec3();
-		this.acceleration = 10.0;
+		this.acceleration = acceleration;
 		this.drag = 2.5;
 		this.velocity = new Vec3();
 	}

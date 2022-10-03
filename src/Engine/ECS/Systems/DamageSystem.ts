@@ -27,6 +27,11 @@ export default class DamageSystem extends System {
 
 			damageComp.timeAlive += dt;
 			if (damageComp.timeAlive > damageComp.lifetime) {
+				let pointLightComp = e.getComponent(
+					ComponentTypeEnum.POINTLIGHT
+				) as PointLightComponent;
+				pointLightComp.pointLight.removed = true;
+
 				this.ecsManager.removeComponent(e, ComponentTypeEnum.GRAPHICS);
 				this.ecsManager.removeEntity(e.id);
 				return;
@@ -39,6 +44,10 @@ export default class DamageSystem extends System {
 			const damagedEntity = collisionComp.currentCollisionEntities
 				.values()
 				.next();
+
+			if (damagedEntity.value.id == damageComp.ownerId) {
+				return;
+			}
 			const damEnHealth = damagedEntity.value.getComponent(
 				ComponentTypeEnum.HEALTH
 			) as HealthComponent;
