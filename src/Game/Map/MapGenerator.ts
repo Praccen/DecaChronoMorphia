@@ -17,6 +17,7 @@ import ECSManager from "../../Engine/ECS/ECSManager.js";
 import Entity from "../../Engine/ECS/Entity.js";
 import Vec2 from "../../Engine/Maths/Vec2.js";
 import Vec3 from "../../Engine/Maths/Vec3.js";
+import Mesh from "../../Engine/Objects/Mesh.js";
 import Rendering from "../../Engine/Rendering.js";
 import { LabyrinthGenerator } from "./LabyrinthGenerator.js";
 
@@ -310,26 +311,29 @@ export module MapGenerator {
 			}
 
 			let entity = ecsManager.createEntity();
-			const texturePath = "Assets/textures/voxelPalette.png";
+			const texturePath = "Assets/textures/wall.png";
 			let wallMesh = await rendering.getNewMesh(
 				objPath,
 				texturePath,
 				texturePath
-			);
+			) as Mesh;
+
+			wallMesh.textureMatrix.scale(4.0, 1.0, 1.0);
+
 			ecsManager.addComponent(entity, new GraphicsComponent(wallMesh));
 			let posComp = new PositionComponent(
 				new Vec3(position).subtract(new Vec3({ x: 0.0, y: 0.5, z: 0.0 }))
 			);
 
 			if (i == 0) {
-				posComp.position.add(new Vec3({ x: 0.0, y: 0.0, z: -4.0 }));
+				posComp.position.add(new Vec3({ x: 0.0, y: 0.0, z: -4.1 }));
 			} else if (i == 1) {
-				posComp.position.add(new Vec3({ x: 0.0, y: 0.0, z: 4.0 }));
+				posComp.position.add(new Vec3({ x: 0.0, y: 0.0, z: 4.1 }));
 			} else if (i == 2) {
-				posComp.position.add(new Vec3({ x: -4.0, y: 0.0, z: 0.0 }));
+				posComp.position.add(new Vec3({ x: -4.1, y: 0.0, z: 0.0 }));
 				posComp.rotation.setValues(0.0, 90.0);
 			} else if (i == 3) {
-				posComp.position.add(new Vec3({ x: 4.0, y: 0.0, z: 0.0 }));
+				posComp.position.add(new Vec3({ x: 4.1, y: 0.0, z: 0.0 }));
 				posComp.rotation.setValues(0.0, -90.0);
 			}
 
