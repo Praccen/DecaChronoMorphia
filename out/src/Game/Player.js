@@ -39,6 +39,7 @@ export default class Player {
     playerIsPolymorphing = false;
     boundingBoxModelMatrix;
     lookDir = new Vec3({ x: 0.0, y: 0.0, z: 0.0 });
+    playerHPText;
     isDead;
     constructor(rendering, ecsManager) {
         this.rendering = rendering;
@@ -102,6 +103,7 @@ export default class Player {
         };
         this.currentPlayerShape = PlayerShapeEnum.NORMIE;
         this.boundingBoxModelMatrix = new Matrix4(null);
+        this.playerHPText = this.rendering.getNew3DText();
         this.isDead = false;
     }
     updatePlayerQuad() {
@@ -220,6 +222,12 @@ export default class Player {
         let pointLightComp = new PointLightComponent(playerPointLight);
         pointLightComp.posOffset.setValues(0.0, 0.5, 0.2);
         this.ecsManager.addComponent(this.playerEntity, pointLightComp);
+        this.playerHPText.textString = healthComp.health + "";
+        this.playerHPText.center = true;
+        this.playerHPText.scaleFontWithDistance = true;
+        this.playerHPText.size = 50;
+        this.playerHPText.position = playerPosComp.position;
+        this.playerHPText.getElement().style.color = "lime";
     }
     updateInput() {
         let accVec = new Vec3({ x: 0.0, y: 0.0, z: 0.0 });
@@ -453,6 +461,13 @@ export default class Player {
             this.boundingBoxModelMatrix.setTranslate(playerPosComp.position.x, playerPosComp.position.y, playerPosComp.position.z);
             let bbComp = this.playerEntity.getComponent(ComponentTypeEnum.BOUNDINGBOX);
             bbComp.boundingBox.setUpdateNeeded();
+        }
+        let healthComp = this.playerEntity.getComponent(ComponentTypeEnum.HEALTH);
+        if (healthComp) {
+            this.playerHPText.textString = healthComp.health + "";
+            if (healthComp.health < 30) {
+                this.playerHPText.getElement().style.color = "red";
+            }
         }
     }
 }

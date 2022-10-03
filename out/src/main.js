@@ -14,7 +14,7 @@ export let options = {
     useCrt: false,
     useBloom: true,
     showFps: true,
-    volume: 0.05,
+    volume: 0.05
 };
 let heightByWidth = 1080 / 1920;
 let widthByHeight = 1920 / 1080;
