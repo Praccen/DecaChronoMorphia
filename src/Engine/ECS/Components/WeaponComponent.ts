@@ -12,6 +12,8 @@ export default class WeaponComponent extends Component {
 	damage: number;
 	shoots: boolean; //if this weapon shoots a projectile
 	range: number; //how long the attack reaches
+	projectileSpeed: number;
+
 	direction: Vec3;
 	position: Vec3;
 	attackRequested: boolean;
@@ -26,6 +28,7 @@ export default class WeaponComponent extends Component {
 		damage: number,
 		shoots: boolean,
 		range: number,
+		projectileSpeed: number,
 		attackCooldown: number,
 		weaponType: WeaponTypeEnum,
 		attackTimeAlive: number
@@ -34,6 +37,7 @@ export default class WeaponComponent extends Component {
 		this.damage = damage;
 		this.shoots = shoots;
 		this.range = range;
+		this.projectileSpeed = projectileSpeed;
 		this.attackCooldown = attackCooldown;
 		this.attackTimer = 0;
 		this.weaponType = weaponType;

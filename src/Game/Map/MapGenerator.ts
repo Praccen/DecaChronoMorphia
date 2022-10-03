@@ -1,3 +1,4 @@
+import { EnemyData, EnemyTypesEnum } from "../../Constants/EnemyData.js";
 import AnimationComponent from "../../Engine/ECS/Components/AnimationComponent.js";
 import AudioComponent, {
 	AudioTypeEnum,
@@ -153,7 +154,6 @@ export module MapGenerator {
 					const enemyId = createEnemyEntity(
 						spawnLocation,
 						false,
-						"Assets/textures/slime.png",
 						ecsManager,
 						rendering
 					);
@@ -185,11 +185,16 @@ export module MapGenerator {
 	function createEnemyEntity(
 		position: Vec3,
 		isActive: boolean,
-		texturePath: string,
 		ecsManager: ECSManager,
 		rendering: Rendering
 	): number {
-		let enemyTexture = texturePath;
+		const enemyEnumKeys = Object.values(EnemyTypesEnum);
+		const enemyEnumKeyIndex = Math.floor(Math.random() * enemyEnumKeys.length);
+		const enemyKey = enemyEnumKeys[enemyEnumKeyIndex];
+		const enemyData = EnemyData[enemyKey];
+		// const enemyData = EnemyData[EnemyTypesEnum.DRYAD];
+
+		let enemyTexture = enemyData.texturePath;
 		const enemyEntity = ecsManager.createEntity();
 		enemyEntity.isActive = isActive;
 
@@ -197,7 +202,7 @@ export module MapGenerator {
 		phongQuad.modelMatrix.setTranslate(0.0, -10.0, 0.0);
 		ecsManager.addComponent(enemyEntity, new GraphicsComponent(phongQuad));
 
-		let enemyMoveComp = new MovementComponent();
+		let enemyMoveComp = new MovementComponent(enemyData.acceleration);
 		ecsManager.addComponent(enemyEntity, enemyMoveComp);
 
 		let enemyPosComp = new PositionComponent(position);
@@ -208,7 +213,10 @@ export module MapGenerator {
 		enemyPosComp.calculateMatrix(phongQuad.modelMatrix);
 
 		let enemyAnimComp = new AnimationComponent();
-		enemyAnimComp.spriteMap.setNrOfSprites(3, 2);
+		enemyAnimComp.spriteMap.setNrOfSprites(
+			3,
+			enemyKey === EnemyTypesEnum.DRYAD ? 1 : 2
+		);
 		enemyAnimComp.startingTile = { x: 0, y: 0 };
 		enemyAnimComp.advanceBy = { x: 1.0, y: 0.0 };
 		enemyAnimComp.modAdvancement = { x: 2.0, y: 1.0 };
@@ -218,7 +226,15 @@ export module MapGenerator {
 		ecsManager.addComponent(enemyEntity, new EnemyComponent());
 		ecsManager.addComponent(
 			enemyEntity,
-			new WeaponComponent(10, true, 4, 2, WeaponTypeEnum.ARROW, 10)
+			new WeaponComponent(
+				enemyData.damage,
+				enemyData.shoots,
+				enemyData.range,
+				enemyData.projectileSpeed,
+				enemyData.attackCooldown,
+				enemyData.weaponType,
+				10
+			)
 		);
 
 		// Collision for enemy
@@ -236,7 +252,7 @@ export module MapGenerator {
 			new AudioComponent([
 				{
 					key: AudioTypeEnum.SHOOT,
-					audioKey: "spell_cast_3",
+					audioKey: enemyData.attackSound, //"spell_cast_3",
 					playTime: 1.5,
 				},
 			])

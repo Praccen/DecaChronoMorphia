@@ -79,7 +79,9 @@ export default class WeaponSystem extends System {
 				const dmgMoveComp = new MovementComponent();
 				dmgMoveComp.accelerationDirection = weaponComp.direction;
 				//if melee make damageEntity move super fast, otherwise more slow
-				const projectileSpeed = weaponComp.shoots ? 1 : 0;
+				const projectileSpeed = weaponComp.shoots
+					? weaponComp.projectileSpeed
+					: 3;
 				dmgMoveComp.velocity = new Vec3(weaponComp.direction).multiply(
 					projectileSpeed
 				);
