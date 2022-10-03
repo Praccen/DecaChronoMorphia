@@ -243,7 +243,7 @@ export module MapGenerator {
 			}
 			const objPath = "Assets/objs/cube.obj";
 			const doorTexture =
-				"https://as2.ftcdn.net/v2/jpg/01/99/14/99/1000_F_199149981_RG8gciij11WKAQ5nKi35Xx0ovesLCRaU.jpg";
+				"Assets/textures/door.png";
 
 			let doorEntity = ecsManager.createEntity();
 			let doorMesh = await rendering.getNewMesh(
@@ -253,7 +253,7 @@ export module MapGenerator {
 			);
 			ecsManager.addComponent(doorEntity, new GraphicsComponent(doorMesh));
 			let posComp = new PositionComponent(
-				new Vec3(position).subtract(new Vec3({ x: 0.0, y: 0.5, z: 0.0 }))
+				new Vec3(position).add(new Vec3({ x: 0.0, y: 0.5, z: 0.0 }))
 			);
 
 			if (i == 0) {
@@ -325,7 +325,7 @@ export module MapGenerator {
 				posComp.rotation.setValues(0.0, -90.0);
 			}
 
-			posComp.scale.setValues(1.25, 0.5, 0.5);
+			posComp.scale.setValues(1.25, 1.0, 0.5);
 			ecsManager.addComponent(entity, posComp);
 
 			// Update the wall model matrix to avoid it being stuck on 0,0 if inactive
