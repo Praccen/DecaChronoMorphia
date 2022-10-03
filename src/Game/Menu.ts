@@ -4,11 +4,14 @@ import Checkbox from "../Engine/GUI/Checkbox.js";
 import TextObject2D from "../Engine/GUI/Text/TextObject2D.js";
 import Slider from "../Engine/GUI/Slider.js";
 import AudioPlayer from "../Engine/Audio/AudioPlayer.js";
+import Quad from "../Engine/Objects/Quad.js";
 
 export default class Menu {
 	private rendering: Rendering;
 	private audioPlayer: AudioPlayer;
 
+	private witch: Quad;
+	private titleText: TextObject2D;
 	private startGame: boolean;
 	private startButton: Button;
 	private crtCB: Checkbox;
@@ -43,18 +46,22 @@ export default class Menu {
 		let fireTexture = "Assets/textures/fire.png";
 		rendering.loadTextureToStore(fireTexture);
 
+		this.titleText = this.rendering.getNew2DText();
+		this.titleText.position.x = 0.5;
+		this.titleText.position.y = 0.1;
+		this.titleText.center = true;
+		this.titleText.size = 80;
+		this.titleText.textString = "Decachronomorphia";
+		this.titleText.getElement().style.color = "white";
+
 		this.startButton = this.rendering.getNewButton();
 		this.startButton.position.x = 0.5;
-		this.startButton.position.y = 0.4;
+		this.startButton.position.y = 0.46;
 		this.startButton.center = true;
-		this.startButton.textSize = 120;
+		this.startButton.textSize = 60;
 		this.startButton.getInputElement().style.backgroundColor = "transparent";
-		this.startButton.getInputElement().style.backgroundImage =
-			"url(Assets/textures/buttons.png)";
-		this.startButton.getInputElement().style.backgroundPosition = "0% 0%";
-		this.startButton.getInputElement().style.backgroundSize = "220% 300%";
-		this.startButton.getInputElement().style.padding = "10px 10px";
-		this.startButton.textString = "            ";
+		this.startButton.getInputElement().style.color = "white";
+		this.startButton.textString = "Start";
 
 		let self = this;
 		this.startButton.onClick(function () {
@@ -99,6 +106,9 @@ export default class Menu {
 		this.volumeSlider.getInputElement().style.accentColor = "red";
 		this.volumeSlider.getInputElement().min = "0";
 		this.volumeSlider.getInputElement().max = "100";
+
+		this.witch = this.rendering.getNewQuad("Assets/textures/witch_dialog_1.png");
+		this.witch.modelMatrix.translate(0.0, 0.35, -1.5);
 	}
 
 	update(dt: number): boolean {
@@ -109,6 +119,8 @@ export default class Menu {
 		this.audioPlayer.setSoundEffectVolume(this.volumeSlider.getValue() * 0.001);
 
 		if (this.startGame) {
+			this.rendering.deleteQuad(this.witch);
+			this.titleText.remove();
 			this.startButton.remove();
 			this.crtCB.remove();
 			this.bloomCB.remove();

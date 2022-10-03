@@ -48,4 +48,5 @@ canvas {
   display: inline-block;
   font-size: inherit;
   image-rendering: pixelated;
+  font-family:'Courier New', Courier, monospace;
 }
