@@ -4,6 +4,14 @@ import { ComponentTypeEnum } from "../Components/Component.js";
 import PositionComponent from "../Components/PositionComponent.js";
 import MeshCollisionComponent from "../Components/MeshCollisionComponent.js";
 import PointLightComponent from "../Components/PointLightComponent.js";
+import ProjectileComponent, {
+	ProjectileGraphicsDirectionEnum,
+} from "../Components/ProjectileComponent.js";
+import PhongQuad from "../../Objects/PhongQuad.js";
+import WeaponComponent, {
+	WeaponTypeEnum,
+} from "../Components/WeaponComponent.js";
+import AnimationComponent from "../Components/AnimationComponent.js";
 
 export default class GraphicsSystem extends System {
 	constructor() {
@@ -25,7 +33,21 @@ export default class GraphicsSystem extends System {
 			let graphComp = <GraphicsComponent>(
 				e.getComponent(ComponentTypeEnum.GRAPHICS)
 			);
+
+			let projectileComp = <ProjectileComponent>(
+				e.getComponent(ComponentTypeEnum.PROJECTILE)
+			);
+
 			if (graphComp && posComp) {
+				if (projectileComp) {
+					if (
+						projectileComp.projectileGraphicsDirection ===
+						ProjectileGraphicsDirectionEnum.RIGHT
+					) {
+						let quad = <PhongQuad>graphComp.object;
+						quad.textureMatrix.scale(-1, 1, 1);
+					}
+				}
 				posComp.calculateMatrix(graphComp.object.modelMatrix);
 			}
 
