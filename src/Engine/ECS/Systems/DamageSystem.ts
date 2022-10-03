@@ -4,6 +4,7 @@ import { ComponentTypeEnum } from "../Components/Component.js";
 import DamageComponent from "../Components/DamageComponent.js";
 import HealthComponent from "../Components/HealthComponent.js";
 import PlayerComponent from "../Components/PlayerComponent.js";
+import PointLightComponent from "../Components/PointLightComponent.js";
 import ECSManager from "../ECSManager.js";
 import System from "./System.js";
 
@@ -54,8 +55,13 @@ export default class DamageSystem extends System {
 				damEnHealth.health -= damageComp.damage;
 			}
 
+			
+			let pointLightComp = e.getComponent(ComponentTypeEnum.POINTLIGHT) as PointLightComponent;
+			pointLightComp.pointLight.removed = true;
+
 			this.ecsManager.removeComponent(e, ComponentTypeEnum.GRAPHICS);
 			this.ecsManager.removeEntity(e.id);
+
 		});
 	}
 }

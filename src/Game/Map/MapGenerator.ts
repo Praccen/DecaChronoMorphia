@@ -90,8 +90,11 @@ export module MapGenerator {
 			map[roomTileX - 1][roomTileY] > 0 ? true : false,
 			map[roomTileX + 1][roomTileY] > 0 ? true : false,
 		];
-		const floorTexturePath =
-			"https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/371b6fdf-69a3-4fa2-9ff0-bd04d50f4b98/de8synv-6aad06ab-ed16-47fd-8898-d21028c571c4.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzM3MWI2ZmRmLTY5YTMtNGZhMi05ZmYwLWJkMDRkNTBmNGI5OFwvZGU4c3ludi02YWFkMDZhYi1lZDE2LTQ3ZmQtODg5OC1kMjEwMjhjNTcxYzQucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.wa-oSVpeXEpWqfc_bexczFs33hDFvEGGAQD969J7Ugw";
+
+		const floorTexturePaths = [
+			"Assets/textures/stone.png",
+			"Assets/textures/stone_moss.png"
+		];
 
 		let roomCenter = new Vec3({
 			x: (roomTileX - 1) * 0.5,
@@ -101,7 +104,7 @@ export module MapGenerator {
 
 		const floorId = createFloorEntity(
 			new Vec3(roomCenter),
-			floorTexturePath,
+			floorTexturePaths[Math.floor(Math.random() * 2.0)],
 			ecsManager,
 			rendering
 		);
@@ -244,7 +247,7 @@ export module MapGenerator {
 			}
 			const objPath = "Assets/objs/cube.obj";
 			const doorTexture =
-				"https://as2.ftcdn.net/v2/jpg/01/99/14/99/1000_F_199149981_RG8gciij11WKAQ5nKi35Xx0ovesLCRaU.jpg";
+				"Assets/textures/door.png";
 
 			let doorEntity = ecsManager.createEntity();
 			let doorMesh = await rendering.getNewMesh(
@@ -254,7 +257,7 @@ export module MapGenerator {
 			);
 			ecsManager.addComponent(doorEntity, new GraphicsComponent(doorMesh));
 			let posComp = new PositionComponent(
-				new Vec3(position).subtract(new Vec3({ x: 0.0, y: 0.5, z: 0.0 }))
+				new Vec3(position).add(new Vec3({ x: 0.0, y: 0.5, z: 0.0 }))
 			);
 
 			if (i == 0) {
@@ -326,7 +329,7 @@ export module MapGenerator {
 				posComp.rotation.setValues(0.0, -90.0);
 			}
 
-			posComp.scale.setValues(1.25, 0.5, 0.5);
+			posComp.scale.setValues(1.25, 1.0, 0.5);
 			ecsManager.addComponent(entity, posComp);
 
 			// Update the wall model matrix to avoid it being stuck on 0,0 if inactive

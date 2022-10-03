@@ -344,7 +344,7 @@ export default class Rendering {
 
 	getNewPointLight(): PointLight {
 		const length = this.pointLights.push(
-			new PointLight(this.gl, this.lightingPass, this.pointLights.length)
+			new PointLight(this.gl, this.lightingPass)
 		);
 		return this.pointLights[length - 1];
 	}
@@ -493,8 +493,14 @@ export default class Rendering {
 			this.lightingPass.getUniformLocation("nrOfPointLights")[0],
 			this.pointLights.length
 		);
-		for (let pointLight of this.pointLights.values()) {
-			pointLight.bind();
+		for (let i = 0; i < this.pointLights.length; i++) {
+			if (!this.pointLights[i].removed) {
+				this.pointLights[i].bind(i);
+			}
+			else {
+				this.pointLights.splice(i, 1);
+				i--;
+			}
 		}
 
 		this.lightingQuad.draw();
