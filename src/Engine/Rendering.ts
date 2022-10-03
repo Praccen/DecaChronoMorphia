@@ -30,6 +30,7 @@ import GraphicsObject from "./Objects/GraphicsObject.js";
 export default class Rendering {
 	// public
 	camera: Camera;
+	clearColour: { r: number; g: number; b: number; a: number };
 
 	// ---- Post processing toggles ----
 	useCrt: boolean;
@@ -39,7 +40,6 @@ export default class Rendering {
 	// private
 	private gl: WebGL2RenderingContext;
 	private textureStore: TextureStore;
-	private clearColour: { r: number; g: number; b: number; a: number };
 	private resolutionWidth: number;
 	private resolutionHeight: number;
 

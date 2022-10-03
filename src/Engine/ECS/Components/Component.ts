@@ -12,6 +12,7 @@ export enum ComponentTypeEnum {
 	CONNECTION,
 	ENEMY,
 	POLYMORPH,
+	POINTLIGHT,
 	WEAPON,
 	DAMAGE,
 	HEALTH,

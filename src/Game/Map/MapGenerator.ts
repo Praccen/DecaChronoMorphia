@@ -8,9 +8,11 @@ import EnemyComponent from "../../Engine/ECS/Components/EnemyComponent.js";
 import GraphicsComponent from "../../Engine/ECS/Components/GraphicsComponent.js";
 import MeshCollisionComponent from "../../Engine/ECS/Components/MeshCollisionComponent.js";
 import MovementComponent from "../../Engine/ECS/Components/MovementComponent.js";
+import PointLightComponent from "../../Engine/ECS/Components/PointLightComponent.js";
 import PositionComponent from "../../Engine/ECS/Components/PositionComponent.js";
 import WeaponComponent from "../../Engine/ECS/Components/WeaponComponent.js";
 import ECSManager from "../../Engine/ECS/ECSManager.js";
+import Entity from "../../Engine/ECS/Entity.js";
 import Vec2 from "../../Engine/Maths/Vec2.js";
 import Vec3 from "../../Engine/Maths/Vec3.js";
 import Rendering from "../../Engine/Rendering.js";
@@ -24,6 +26,7 @@ export interface RoomInformation {
 }
 export interface MapInformation {
 	rooms: RoomInformation[];
+	pointLightEntities: Entity[];
 }
 
 export module MapGenerator {
@@ -34,7 +37,10 @@ export module MapGenerator {
 		rendering: Rendering
 	) {
 		let labyrinth = LabyrinthGenerator.getLabyrinth(xSize, ySize);
-		const mapInformation: MapInformation = { rooms: [] };
+		const mapInformation: MapInformation = {
+			rooms: [],
+			pointLightEntities: [],
+		};
 
 		for (let y = 1; y < labyrinth.length - 1; y += 2) {
 			for (let x = 1; x < labyrinth[y].length - 1; x += 2) {
@@ -50,6 +56,20 @@ export module MapGenerator {
 				}
 			}
 		}
+
+		for (let i = -3; i < 4; i++) {
+			for (let j = -2; j < 3; j++) {
+				mapInformation.pointLightEntities.push(
+					createPointLightEntity(
+						new Vec3({ x: 0.15, y: 0.06, z: 0.08 }),
+						new Vec3({ x: i, y: 1.5, z: j + 0.5 }),
+						ecsManager,
+						rendering
+					)
+				);
+			}
+		}
+
 		return mapInformation;
 	}
 
@@ -99,18 +119,21 @@ export module MapGenerator {
 
 		createDoorEntity(new Vec3(roomCenter), ecsManager, rendering, wallsTowards);
 
-		await createWallEntities(
-			new Vec3(roomCenter),
-			ecsManager,
-			rendering,
-			wallsTowards
-		);
 		const roomInformation: RoomInformation = {
 			roomPosition: roomPosition,
 			active: false,
 			entityIds: [enemyId],
 			floorId: floorId,
 		};
+
+		await createWallEntities(
+			new Vec3(roomCenter),
+			ecsManager,
+			rendering,
+			wallsTowards,
+			isStartingRoom,
+			roomInformation
+		);
 		return roomInformation;
 	}
 
@@ -135,6 +158,9 @@ export module MapGenerator {
 		let enemyPosComp = new PositionComponent(position);
 		enemyPosComp.rotation.setValues(-30.0, 0.0, 0.0);
 		ecsManager.addComponent(enemyEntity, enemyPosComp);
+
+		// Update the wall model matrix to avoid it being stuck on 0,0 if inactive
+		enemyPosComp.calculateMatrix(phongQuad.modelMatrix);
 
 		let enemyAnimComp = new AnimationComponent();
 		enemyAnimComp.spriteMap.setNrOfSprites(3, 2);
@@ -174,7 +200,10 @@ export module MapGenerator {
 		rendering: Rendering
 	) {
 		let floorEntity = ecsManager.createEntity();
-		let phongQuad = rendering.getNewPhongQuad(texturePath, texturePath);
+		let phongQuad = rendering.getNewPhongQuad(
+			texturePath,
+			"Assets/textures/black.png"
+		);
 		phongQuad.textureMatrix.setScale(8.0, 8.0, 1.0);
 		ecsManager.addComponent(floorEntity, new GraphicsComponent(phongQuad));
 		let posComp = new PositionComponent(
@@ -259,7 +288,9 @@ export module MapGenerator {
 		position: Vec3,
 		ecsManager: ECSManager,
 		rendering: Rendering,
-		wallsTowards: boolean[]
+		wallsTowards: boolean[],
+		isActive: boolean,
+		roomInformation: RoomInformation
 	) {
 		for (let i = 0; i < wallsTowards.length; i++) {
 			let objPath = "Assets/objs/WallWithOpening.obj";
@@ -294,6 +325,9 @@ export module MapGenerator {
 			posComp.scale.setValues(1.25, 0.5, 0.5);
 			ecsManager.addComponent(entity, posComp);
 
+			// Update the wall model matrix to avoid it being stuck on 0,0 if inactive
+			posComp.calculateMatrix(wallMesh.modelMatrix);
+
 			// Collision stuff
 			let boxBoundingBoxComp = new BoundingBoxComponent();
 			boxBoundingBoxComp.setup(wallMesh);
@@ -307,6 +341,29 @@ export module MapGenerator {
 			meshCollComp.setup(wallMesh);
 			meshCollComp.updateTransformMatrix(wallMesh.modelMatrix);
 			ecsManager.addComponent(entity, meshCollComp);
+
+			entity.isActive = isActive;
+			roomInformation.entityIds.push(entity.id);
 		}
+	}
+
+	function createPointLightEntity(
+		colour: Vec3,
+		pos: Vec3,
+		ecsManager: ECSManager,
+		rendering: Rendering
+	): Entity {
+		let pointLightEntity = ecsManager.createEntity();
+		let pointLight = rendering.getNewPointLight();
+		pointLight.colour.deepAssign(colour);
+		pointLight.linear = 0.25;
+		pointLight.quadratic = 0.6;
+
+		let pointLightComp = new PointLightComponent(pointLight);
+		pointLightComp.posOffset = pos;
+
+		ecsManager.addComponent(pointLightEntity, pointLightComp);
+		ecsManager.addComponent(pointLightEntity, new PositionComponent());
+		return pointLightEntity;
 	}
 }
