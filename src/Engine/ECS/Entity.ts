@@ -4,6 +4,7 @@ import { Component, ComponentTypeEnum } from "./Components/Component.js";
 export default class Entity {
 	public readonly id: number;
 	public isActive: boolean;
+	public initiated: boolean;
 	private name: string;
 	private components: Array<Component>;
 

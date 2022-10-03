@@ -1,7 +1,5 @@
 import Rendering from "../Engine/Rendering.js";
 import ECSManager from "../Engine/ECS/ECSManager.js";
-import Vec3 from "../Engine/Maths/Vec3.js";
-import PointLight from "../Engine/Lighting/PointLight.js";
 import Player from "./Player.js";
 
 export default class Game {
@@ -20,26 +18,14 @@ export default class Game {
 	}
 
 	async init() {
+		this.rendering.clearColour = { r: 0.0, g: 0.0, b: 0.0, a: 1.0 };
+
 		// ---- Lights ----
-		this.createPointLight(
-			new Vec3({ x: 0.0, y: 0.2, z: 0.0 }),
-			new Vec3({ x: 0.7, y: 0.0, z: 0.0 })
-		);
-		this.createPointLight(
-			new Vec3({ x: 4.0, y: 0.2, z: 2.0 }),
-			new Vec3({ x: 0.7, y: 0.0, z: 1.0 })
-		);
+		this.rendering.getDirectionalLight().ambientMultiplier = 0.0;
+		this.rendering.getDirectionalLight().colour.setValues(0.05, 0.05, 0.05);
 		// ----------------
 
 		this.playerObject.init();
-	}
-
-	createPointLight(position: Vec3, colour: Vec3): PointLight {
-		let pl = this.rendering.getNewPointLight();
-		pl.position = position;
-		pl.colour = colour;
-
-		return pl;
 	}
 
 	update(dt: number) {

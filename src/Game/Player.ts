@@ -23,6 +23,7 @@ import Vec2 from "../Engine/Maths/Vec2.js";
 import AudioComponent, {
 	AudioTypeEnum,
 } from "../Engine/ECS/Components/AudioComponent.js";
+import PointLightComponent from "../Engine/ECS/Components/PointLightComponent.js";
 
 export default class Player {
 	public playerEntity: Entity;
@@ -225,7 +226,7 @@ export default class Player {
 		playerComp.dodgeUpdateInterval = 0.3;
 		this.ecsManager.addComponent(this.playerEntity, playerComp);
 
-		let healthComp = new HealthComponent(20);
+		let healthComp = new HealthComponent(200);
 		this.ecsManager.addComponent(this.playerEntity, healthComp);
 
 		this.ecsManager.addComponent(
@@ -252,6 +253,14 @@ export default class Player {
 				},
 			])
 		);
+		// TODO: Change light depending on character?
+		let playerPointLight = this.rendering.getNewPointLight();
+		playerPointLight.colour.setValues(0.2, 0.2, 0.2);
+		playerPointLight.linear = 0.5;
+		playerPointLight.quadratic = 0.5;
+		let pointLightComp = new PointLightComponent(playerPointLight);
+		pointLightComp.posOffset.setValues(0.0, 0.5, 0.2);
+		this.ecsManager.addComponent(this.playerEntity, pointLightComp);
 	}
 
 	updateInput(): [Vec3, boolean, boolean, Vec3] {
@@ -446,13 +455,37 @@ export default class Player {
 		}
 
 		// Update camera
-		if (playerPosComp) {
-			let camOffset = new Vec3({ x: 0.0, y: 3.0, z: 2.0 });
-			let camPos = new Vec3(playerPosComp.position).add(camOffset);
-			this.rendering.camera.setPosition(camPos.x, camPos.y, camPos.z);
-			this.rendering.camera.setDir(-camOffset.x, -camOffset.y, -camOffset.z);
+		// TODO: Fade over / sweeping transition?
+		let roomTileX = 1;
+		let roomTileY = 1;
 
-			// Also update bounding box
+		if (playerPosComp) {
+			roomTileX = Math.floor((playerPosComp.position.x + 4.0) / 8.0) * 2 + 1;
+			roomTileY = Math.floor((playerPosComp.position.z + 4.0) / 8.0) * 2 + 1;
+		}
+
+		if (playerComp) {
+			playerComp.inRoom.x = roomTileX;
+			playerComp.inRoom.y = roomTileY;
+
+			let camDirection = new Vec3({ x: 0.0, y: -3.0, z: -1.5 });
+			let camOffset = new Vec3(camDirection).multiply(-1.4);
+			camOffset.z += 1.0;
+			let camPos = new Vec3({
+				x: (playerComp.inRoom.x - 1) * 4.0,
+				y: 0.0,
+				z: (playerComp.inRoom.y - 1) * 4.0,
+			}).add(camOffset);
+			this.rendering.camera.setPosition(camPos.x, camPos.y, camPos.z);
+			this.rendering.camera.setDir(
+				camDirection.x,
+				camDirection.y,
+				camDirection.z
+			);
+		}
+
+		// Update bounding box
+		if (playerPosComp) {
 			this.boundingBoxModelMatrix.setTranslate(
 				playerPosComp.position.x,
 				playerPosComp.position.y,
