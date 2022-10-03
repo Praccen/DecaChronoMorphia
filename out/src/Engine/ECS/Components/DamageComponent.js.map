@@ -1,0 +1,1 @@
+{"version":3,"file":"DamageComponent.js","sourceRoot":"","sources":["../../../../../src/Engine/ECS/Components/DamageComponent.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,iBAAiB,EAAE,MAAM,gBAAgB,CAAC;AAE9D,MAAM,CAAC,OAAO,OAAO,eAAgB,SAAQ,SAAS;IACrD,MAAM,CAAS;IAEf,YAAY,MAAc;QACzB,KAAK,CAAC,iBAAiB,CAAC,MAAM,CAAC,CAAC;QAChC,IAAI,CAAC,MAAM,GAAG,MAAM,CAAC;IACtB,CAAC;CACD"}

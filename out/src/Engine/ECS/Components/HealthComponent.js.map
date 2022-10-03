@@ -1,0 +1,1 @@
+{"version":3,"file":"HealthComponent.js","sourceRoot":"","sources":["../../../../../src/Engine/ECS/Components/HealthComponent.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,iBAAiB,EAAE,MAAM,gBAAgB,CAAC;AAE9D,MAAM,CAAC,OAAO,OAAO,iBAAkB,SAAQ,SAAS;IACvD,MAAM,CAAS;IACf,YAAY,MAAc;QACzB,KAAK,CAAC,iBAAiB,CAAC,MAAM,CAAC,CAAC;QAChC,IAAI,CAAC,MAAM,GAAG,MAAM,CAAC;IACtB,CAAC;CACD"}

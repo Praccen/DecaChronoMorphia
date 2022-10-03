@@ -1,0 +1,1 @@
+{"version":3,"file":"Shape.js","sourceRoot":"","sources":["../../../../../src/Engine/Physics/Shapes/Shape.ts"],"names":[],"mappings":"AAEA,MAAM,CAAC,OAAO,OAAO,KAAK;IACzB,gBAAe,CAAC;IAEhB,sBAAsB;QACrB,OAAO,IAAI,CAAC;IACb,CAAC;IAED,qBAAqB;QACpB,OAAO,IAAI,CAAC;IACb,CAAC;IAED,mBAAmB;QAClB,OAAO,IAAI,CAAC;IACb,CAAC;IAED,yBAAyB;QACxB,OAAO,IAAI,CAAC;IACb,CAAC;CACD"}
