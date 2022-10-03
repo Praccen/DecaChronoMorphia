@@ -13,7 +13,6 @@ export default class AudioComponent extends Component {
 		[key in AudioTypeEnum]?: {
 			audioKey: string;
 			playTime: number;
-			volumeMulitplier: number;
 			timePlaying: number;
 			requestPlay: boolean;
 			playing: boolean;
@@ -25,20 +24,15 @@ export default class AudioComponent extends Component {
 			key: AudioTypeEnum;
 			audioKey: string;
 			playTime: number;
-			volumeMulitplier?: number;
 		}[]
 	) {
 		super(ComponentTypeEnum.AUDIO);
 
 		sounds.forEach((sound) => {
 			if (this.sounds) {
-				if (!sound.volumeMulitplier) {
-					sound.volumeMulitplier = 1;
-				}
 				this.sounds[sound.key] = {
 					audioKey: sound.audioKey,
 					playTime: sound.playTime,
-					volumeMulitplier: sound.volumeMulitplier,
 					timePlaying: 0,
 					requestPlay: false,
 					playing: false,
@@ -48,7 +42,6 @@ export default class AudioComponent extends Component {
 					[sound.key]: {
 						audioKey: sound.audioKey,
 						playTime: sound.playTime,
-						volumeMulitplier: sound.volumeMulitplier,
 						timePlaying: 0,
 						requestPlay: false,
 						playing: false,

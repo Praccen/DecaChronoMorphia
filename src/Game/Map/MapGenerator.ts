@@ -190,7 +190,6 @@ export module MapGenerator {
 					key: AudioTypeEnum.SHOOT,
 					audioKey: "spell_cast_3",
 					playTime: 1.5,
-					volumeMulitplier: 1,
 				},
 			])
 		);

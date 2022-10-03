@@ -101,7 +101,8 @@ export default class WeaponSystem extends System {
 				let phongQuad = this.rendering.getNewPhongQuad(dmgTexture, dmgTexture);
 				if (weaponComp.direction.x > 0) {
 					console.log("Flip to right");
-					phongQuad.textureMatrix.scale(1, -1, 1);
+					// phongQuad.textureMatrix.scale(1, -1, 1);
+					phongQuad.modelMatrix.scale(1, -1, 1);
 				}
 				this.ecsManager.addComponent(
 					dmgEntity,
