@@ -4,6 +4,7 @@ import EnemyComponent from "../Components/EnemyComponent.js";
 import MovementComponent from "../Components/MovementComponent.js";
 import PlayerComponent from "../Components/PlayerComponent.js";
 import PositionComponent from "../Components/PositionComponent.js";
+import ProjectileComponent from "../Components/ProjectileComponent.js";
 import WeaponComponent from "../Components/WeaponComponent.js";
 import System from "./System.js";
 
@@ -36,6 +37,10 @@ export default class SpriteDirectionSystem extends System {
 			const playerComp = e.getComponent(
 				ComponentTypeEnum.PLAYER
 			) as PlayerComponent;
+
+			const projectileComp = e.getComponent(
+				ComponentTypeEnum.PROJECTILE
+			) as ProjectileComponent;
 
 			let playerDodge = false;
 			if (playerComp) {

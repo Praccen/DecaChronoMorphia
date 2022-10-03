@@ -238,7 +238,17 @@ export default class Player {
 			this.playerEntity,
 			new AudioComponent([
 				{ key: AudioTypeEnum.SHOOT, audioKey: "spell_cast_3", playTime: 1.5 },
-				{ key: AudioTypeEnum.DAMAGE, audioKey: "damage_1", playTime: 2 },
+				{
+					key: AudioTypeEnum.DAMAGE,
+					audioKey: "damage_1",
+					playTime: 2,
+				},
+				{ key: AudioTypeEnum.VICTORY, audioKey: "victory_1", playTime: 2 },
+				{
+					key: AudioTypeEnum.DEATH,
+					audioKey: "defeat_1",
+					playTime: 2,
+				},
 				{
 					key: AudioTypeEnum.POLYMORPH,
 					audioKey: "spell_cast_5",

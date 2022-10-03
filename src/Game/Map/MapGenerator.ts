@@ -93,7 +93,7 @@ export module MapGenerator {
 
 		const floorTexturePaths = [
 			"Assets/textures/stone.png",
-			"Assets/textures/stone_moss.png"
+			"Assets/textures/stone_moss.png",
 		];
 
 		let roomCenter = new Vec3({
@@ -189,7 +189,11 @@ export module MapGenerator {
 		ecsManager.addComponent(
 			enemyEntity,
 			new AudioComponent([
-				{ key: AudioTypeEnum.SHOOT, audioKey: "spell_cast_3", playTime: 1.5 },
+				{
+					key: AudioTypeEnum.SHOOT,
+					audioKey: "spell_cast_3",
+					playTime: 1.5,
+				},
 			])
 		);
 
@@ -242,8 +246,7 @@ export module MapGenerator {
 				continue;
 			}
 			const objPath = "Assets/objs/cube.obj";
-			const doorTexture =
-				"Assets/textures/door.png";
+			const doorTexture = "Assets/textures/door.png";
 
 			let doorEntity = ecsManager.createEntity();
 			let doorMesh = await rendering.getNewMesh(

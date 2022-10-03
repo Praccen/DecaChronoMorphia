@@ -496,8 +496,7 @@ export default class Rendering {
 		for (let i = 0; i < this.pointLights.length; i++) {
 			if (!this.pointLights[i].removed) {
 				this.pointLights[i].bind(i);
-			}
-			else {
+			} else {
 				this.pointLights.splice(i, 1);
 				i--;
 			}
