@@ -36,6 +36,17 @@ export default class Player {
 	private playerTextureMap: { [key in PlayerShapeEnum]: [Texture, Texture] };
 	private playerAccVecMultiplierMap: { [key in PlayerShapeEnum]: number };
 	private playerBoundingBoxMap: { [key in PlayerShapeEnum]: [Vec3, Vec3] };
+	private playerAttackData: {
+		[key in PlayerShapeEnum]?: {
+			damage: number;
+			shoots: boolean;
+			range: number;
+			projectileSpeed: number;
+			attackCooldown: number;
+			weaponType: WeaponTypeEnum;
+			lifetime: number;
+		};
+	};
 	private currentPlayerShape: PlayerShapeEnum;
 	private mouseTex: Texture;
 	private wizTex: Texture;
@@ -85,6 +96,26 @@ export default class Player {
 			[PlayerShapeEnum.TANKY]: 0.4,
 			[PlayerShapeEnum.WIZ]: 0.6,
 			[PlayerShapeEnum.MOUSE]: 2,
+		};
+		this.playerAttackData = {
+			[PlayerShapeEnum.NORMIE]: {
+				damage: 10,
+				shoots: false,
+				range: 2,
+				projectileSpeed: 2,
+				attackCooldown: 1,
+				weaponType: WeaponTypeEnum.SWORD,
+				lifetime: 1.0,
+			},
+			[PlayerShapeEnum.WIZ]: {
+				damage: 10,
+				shoots: true,
+				range: 4,
+				projectileSpeed: 4,
+				attackCooldown: 1,
+				weaponType: WeaponTypeEnum.MAGIC,
+				lifetime: 10,
+			},
 		};
 
 		this.currentPlayerShape = PlayerShapeEnum.NORMIE;
@@ -240,9 +271,18 @@ export default class Player {
 		let healthComp = new HealthComponent(200);
 		this.ecsManager.addComponent(this.playerEntity, healthComp);
 
+		const attackData = this.playerAttackData[PlayerShapeEnum.NORMIE];
 		this.ecsManager.addComponent(
 			this.playerEntity,
-			new WeaponComponent(10, false, 0, 2, 2, WeaponTypeEnum.SWORD, 1.0)
+			new WeaponComponent(
+				attackData.damage,
+				attackData.shoots,
+				attackData.range,
+				attackData.projectileSpeed,
+				attackData.attackCooldown,
+				attackData.weaponType,
+				attackData.lifetime
+			)
 		);
 
 		this.ecsManager.addComponent(
@@ -390,14 +430,30 @@ export default class Player {
 		}
 	}
 
+	reAssignWeaponData(currWeapon: WeaponComponent, attackData: any) {
+		currWeapon.damage = attackData.damage;
+		currWeapon.shoots = attackData.shoots;
+		currWeapon.range = attackData.range;
+		currWeapon.projectileSpeed = attackData.projectileSpeed;
+		currWeapon.attackCooldown = attackData.attackCooldown;
+		currWeapon.weaponType = attackData.weaponType;
+		currWeapon.lifetime = attackData.lifetime;
+	}
+
 	doAbility(lookDir: Vec3) {
+		const weaponComp = this.playerEntity.getComponent(
+			ComponentTypeEnum.WEAPON
+		) as WeaponComponent;
 		if (this.currentPlayerShape == PlayerShapeEnum.NORMIE) {
-			const weaponComp = this.playerEntity.getComponent(
-				ComponentTypeEnum.WEAPON
-			) as WeaponComponent;
+			const attackData = this.playerAttackData[PlayerShapeEnum.NORMIE];
+			this.reAssignWeaponData(weaponComp, attackData);
 			weaponComp.direction = new Vec3(this.lookDir).normalize();
 			weaponComp.attackRequested = true;
 		} else if (this.currentPlayerShape == PlayerShapeEnum.WIZ) {
+			const attackData = this.playerAttackData[PlayerShapeEnum.WIZ];
+			this.reAssignWeaponData(weaponComp, attackData);
+			weaponComp.direction = new Vec3(this.lookDir).normalize();
+			weaponComp.attackRequested = true;
 		} else if (this.currentPlayerShape == PlayerShapeEnum.TANKY) {
 		} else if (this.currentPlayerShape == PlayerShapeEnum.MOUSE) {
 		}
