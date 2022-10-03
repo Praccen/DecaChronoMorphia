@@ -44,8 +44,30 @@ export default class GraphicsSystem extends System {
 						projectileComp.projectileGraphicsDirection ===
 						ProjectileGraphicsDirectionEnum.RIGHT
 					) {
+					} else if (
+						projectileComp.projectileGraphicsDirection ===
+						ProjectileGraphicsDirectionEnum.LEFT
+					) {
 						let quad = <PhongQuad>graphComp.object;
 						quad.textureMatrix.scale(-1, 1, 1);
+						let animComp = <AnimationComponent>(
+							e.getComponent(ComponentTypeEnum.ANIMATION)
+						);
+						animComp.invert = true;
+					} else if (
+						projectileComp.projectileGraphicsDirection ===
+						ProjectileGraphicsDirectionEnum.DOWN
+					) {
+					} else if (
+						projectileComp.projectileGraphicsDirection ===
+						ProjectileGraphicsDirectionEnum.UP
+					) {
+						let quad = <PhongQuad>graphComp.object;
+						quad.textureMatrix.scale(1, -1, 1);
+						let animComp = <AnimationComponent>(
+							e.getComponent(ComponentTypeEnum.ANIMATION)
+						);
+						animComp.startingTile.y = 5;
 					}
 				}
 				posComp.calculateMatrix(graphComp.object.modelMatrix);

@@ -4,6 +4,8 @@ import { WeaponTypeEnum } from "./WeaponComponent.js";
 export enum ProjectileGraphicsDirectionEnum {
 	RIGHT,
 	LEFT,
+	UP,
+	DOWN,
 }
 
 export default class ProjectileComponent extends Component {

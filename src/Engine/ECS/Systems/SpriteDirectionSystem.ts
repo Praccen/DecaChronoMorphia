@@ -45,6 +45,7 @@ export default class SpriteDirectionSystem extends System {
 			const enemyComp = e.getComponent(
 				ComponentTypeEnum.ENEMY
 			) as EnemyComponent;
+
 			if (!enemyComp && !playerComp) {
 				return;
 			}

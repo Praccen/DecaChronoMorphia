@@ -131,10 +131,19 @@ export default class WeaponSystem extends System {
 
 				let phongQuad = this.rendering.getNewPhongQuad(dmgTexture, dmgTexture);
 
-				let projectileDirection = ProjectileGraphicsDirectionEnum.LEFT;
+				let projectileDirection = ProjectileGraphicsDirectionEnum.DOWN;
 				if (weaponComp.direction.x > 0) {
 					projectileDirection = ProjectileGraphicsDirectionEnum.RIGHT;
+				} else if (weaponComp.direction.x < 0) {
+					projectileDirection = ProjectileGraphicsDirectionEnum.LEFT;
+				} else {
+					if (weaponComp.direction.z > 0) {
+						projectileDirection = ProjectileGraphicsDirectionEnum.UP;
+					} else if (weaponComp.direction.z < 0) {
+						projectileDirection = ProjectileGraphicsDirectionEnum.DOWN;
+					}
 				}
+
 				let projectileComp = new ProjectileComponent(
 					projectileDirection,
 					weaponComp.weaponType

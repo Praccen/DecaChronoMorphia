@@ -94,12 +94,12 @@ export default class ECSManager {
 
 		// this.updateEntityActivation();
 
+		this.systems.get("ANIMATION").update(dt);
 		this.systems.get("POLYMORPHISM").update(dt);
 		this.systems.get("SPRITE_DIRECTION").update(dt);
 		this.systems.get("MOVEMENT").update(dt);
 		this.systems.get("COLLISION").update(dt);
 		this.systems.get("DOOR").update(dt);
-		this.systems.get("ANIMATION").update(dt);
 		this.systems.get("GRAPHICS").update(dt);
 		this.systems.get("ENEMY").update(dt);
 		this.systems.get("ROOM").update(dt);

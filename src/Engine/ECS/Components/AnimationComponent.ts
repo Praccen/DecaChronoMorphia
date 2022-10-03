@@ -9,6 +9,7 @@ export default class AnimationComponent extends Component {
 	updateTimer: number;
 	advancements: number;
 	stopAtLast: boolean;
+	invert: boolean;
 
 	spriteMap: SpriteMap;
 
@@ -21,7 +22,7 @@ export default class AnimationComponent extends Component {
 		this.updateTimer = 0.0;
 		this.advancements = 0;
 		this.stopAtLast = false;
-
+		this.invert = false;
 		this.spriteMap = new SpriteMap();
 	}
 }

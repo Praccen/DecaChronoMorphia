@@ -34,6 +34,7 @@ export default class AnimationSystem extends System {
 				) {
 					return;
 				}
+
 				animComp.updateTimer += dt;
 
 				animComp.advancements += Math.floor(
@@ -42,17 +43,24 @@ export default class AnimationSystem extends System {
 				animComp.updateTimer =
 					animComp.updateTimer % Math.max(animComp.updateInterval, 0.000001);
 
-				const xAdvance =
+				let xAdvance =
 					(animComp.advanceBy.x * animComp.advancements) %
 					Math.max(animComp.modAdvancement.x, 1.0);
-				const yAdvance =
+				let yAdvance =
 					(animComp.advanceBy.y * animComp.advancements) %
 					Math.max(animComp.modAdvancement.y, 1.0);
 
-				animComp.spriteMap.setCurrentSprite(
-					animComp.startingTile.x + xAdvance,
-					animComp.startingTile.y + yAdvance
-				);
+				if (!animComp.invert) {
+					animComp.spriteMap.setCurrentSprite(
+						animComp.startingTile.x + xAdvance,
+						animComp.startingTile.y + yAdvance
+					);
+				} else {
+					animComp.spriteMap.setCurrentSprite(
+						animComp.spriteMap.nrOfSprites.x - xAdvance - 1,
+						animComp.startingTile.y + yAdvance
+					);
+				}
 
 				let quad = <PhongQuad>graphComp.object;
 				animComp.spriteMap.updateTextureMatrix(quad.textureMatrix);
