@@ -17,7 +17,11 @@ export default class Menu {
 	private fpsDisplay: TextObject2D;
 	private volumeSlider: Slider;
 
-	constructor(rendering: Rendering, fpsDisplay: TextObject2D, audioPlayer: AudioPlayer) {
+	constructor(
+		rendering: Rendering,
+		fpsDisplay: TextObject2D,
+		audioPlayer: AudioPlayer
+	) {
 		this.rendering = rendering;
 		this.audioPlayer = audioPlayer;
 		this.startGame = false;
@@ -95,7 +99,6 @@ export default class Menu {
 		this.volumeSlider.getInputElement().style.accentColor = "red";
 		this.volumeSlider.getInputElement().min = "0";
 		this.volumeSlider.getInputElement().max = "100";
-
 	}
 
 	update(dt: number): boolean {
@@ -104,7 +107,6 @@ export default class Menu {
 		this.fpsDisplay.setHidden(!this.fpsDisplayCB.getChecked());
 		this.audioPlayer.setMusicVolume(this.volumeSlider.getValue() * 0.001);
 		this.audioPlayer.setSoundEffectVolume(this.volumeSlider.getValue() * 0.001);
-		
 
 		if (this.startGame) {
 			this.startButton.remove();

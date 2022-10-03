@@ -34,6 +34,7 @@ export default class Player {
 	private playerQuad: PhongQuad;
 	private playerParticleSpawner: ParticleSpawner;
 	private playerTextureMap: { [key in PlayerShapeEnum]: [Texture, Texture] };
+	private playerAccVecMultiplierMap: { [key in PlayerShapeEnum]: number };
 	private playerBoundingBoxMap: { [key in PlayerShapeEnum]: [Vec3, Vec3] };
 	private currentPlayerShape: PlayerShapeEnum;
 	private mouseTex: Texture;
@@ -77,6 +78,13 @@ export default class Player {
 			[PlayerShapeEnum.TANKY]: [this.tankyTex, this.tankyTexSpec],
 			[PlayerShapeEnum.WIZ]: [this.wizTex, this.wizTex],
 			[PlayerShapeEnum.MOUSE]: [this.mouseTex, this.mouseTex],
+		};
+
+		this.playerAccVecMultiplierMap = {
+			[PlayerShapeEnum.NORMIE]: 1,
+			[PlayerShapeEnum.TANKY]: 0.1,
+			[PlayerShapeEnum.WIZ]: 0.5,
+			[PlayerShapeEnum.MOUSE]: 2,
 		};
 
 		this.currentPlayerShape = PlayerShapeEnum.NORMIE;
@@ -271,12 +279,23 @@ export default class Player {
 
 	updateInput(): [Vec3, boolean, boolean, Vec3] {
 		let accVec: Vec3 = new Vec3({ x: 0.0, y: 0.0, z: 0.0 });
+
+		let polymorphComp = <PolymorphComponent>(
+			this.playerEntity.getComponent(ComponentTypeEnum.POLYMORPH)
+		);
+		let accVecMultiplier = 1;
+		if (polymorphComp) {
+			accVecMultiplier =
+				this.playerAccVecMultiplierMap[polymorphComp.currentPolymorphShape];
+		}
+
 		let move = false;
 		let ability = false;
 
 		let playerComp = <PlayerComponent>(
 			this.playerEntity.getComponent(ComponentTypeEnum.PLAYER)
 		);
+
 		if (input.keys["ArrowRight"]) {
 			this.lookDir.x = 1;
 			ability = true;
@@ -293,26 +312,26 @@ export default class Player {
 			this.lookDir.z = -1;
 			ability = true;
 		}
-		if (input.keys["w"]) {
-			accVec.add(new Vec3({ x: 0.0, y: 0.0, z: -1.0 }));
+		if (input.keys["w"] || input.keys["W"]) {
+			accVec.add(new Vec3({ x: 0.0, y: 0.0, z: -1.0 * accVecMultiplier }));
 			move = true;
 		}
-		if (input.keys["s"]) {
-			accVec.add(new Vec3({ x: 0.0, y: 0.0, z: 1.0 }));
+		if (input.keys["s"] || input.keys["S"]) {
+			accVec.add(new Vec3({ x: 0.0, y: 0.0, z: 1.0 * accVecMultiplier }));
 			move = true;
 		}
-		if (input.keys["a"]) {
-			accVec.add(new Vec3({ x: -1.0, y: 0.0, z: 0.0 }));
+		if (input.keys["a"] || input.keys["A"]) {
+			accVec.add(new Vec3({ x: -1.0 * accVecMultiplier, y: 0.0, z: 0.0 }));
 			move = true;
 		}
-		if (input.keys["d"]) {
-			accVec.add(new Vec3({ x: 1.0, y: 0.0, z: 0.0 }));
+		if (input.keys["d"] || input.keys["D"]) {
+			accVec.add(new Vec3({ x: 1.0 * accVecMultiplier, y: 0.0, z: 0.0 }));
 			move = true;
 		}
 		if (input.keys[" "] && playerComp) {
 			playerComp.startDodge = true;
 		}
-		if (input.keys["e"]) {
+		if (input.keys["e"] || input.keys["E"]) {
 		}
 
 		return [accVec, move, ability, this.lookDir];
