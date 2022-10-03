@@ -10,7 +10,9 @@ import MeshCollisionComponent from "../../Engine/ECS/Components/MeshCollisionCom
 import MovementComponent from "../../Engine/ECS/Components/MovementComponent.js";
 import PointLightComponent from "../../Engine/ECS/Components/PointLightComponent.js";
 import PositionComponent from "../../Engine/ECS/Components/PositionComponent.js";
-import WeaponComponent from "../../Engine/ECS/Components/WeaponComponent.js";
+import WeaponComponent, {
+	WeaponTypeEnum,
+} from "../../Engine/ECS/Components/WeaponComponent.js";
 import ECSManager from "../../Engine/ECS/ECSManager.js";
 import Entity from "../../Engine/ECS/Entity.js";
 import Vec2 from "../../Engine/Maths/Vec2.js";
@@ -174,7 +176,10 @@ export module MapGenerator {
 		ecsManager.addComponent(enemyEntity, enemyAnimComp);
 
 		ecsManager.addComponent(enemyEntity, new EnemyComponent());
-		ecsManager.addComponent(enemyEntity, new WeaponComponent(10, true, 4, 2));
+		ecsManager.addComponent(
+			enemyEntity,
+			new WeaponComponent(10, true, 4, 2, WeaponTypeEnum.ARROW)
+		);
 
 		// Collision for enemy
 		let enemyBBComp = new BoundingBoxComponent();
