@@ -26,10 +26,6 @@ export default class AudioPlayer {
 			"jump_1.wav",
 			"jump_2.wav",
 			"rat_sound_1.wav",
-			"sword_attack_1.mp3",
-			"sword_attack_2.mp3",
-			"sword_attack_3.mp3",
-			"sword_attack_4.mp3",
 			"pickup_1.wav",
 			"pickup_2.wav",
 			"power_up_1.wav",
@@ -41,10 +37,14 @@ export default class AudioPlayer {
 			"old_wizard_speach_1.mp3",
 			"victory_1.mp3",
 			"enemy_death_1.wav",
+			"sword_attack_1.mp3",
+			"sword_attack_2.mp3",
+			"sword_attack_3.mp3",
+			"sword_attack_4.mp3",
 			"defeat_1.mp3",
 		];
 		const sound_effect_volume_multilpliers_list = [
-			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5,
+			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 7, 5,
 		];
 		let count = 0;
 		for (const file of sound_effect_files) {
