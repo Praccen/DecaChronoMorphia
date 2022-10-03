@@ -8,6 +8,7 @@ import ProjectileComponent, {
 } from "../Components/ProjectileComponent.js";
 import PhongQuad from "../../Objects/PhongQuad.js";
 import AnimationComponent from "../Components/AnimationComponent.js";
+import { WeaponTypeEnum } from "../Components/WeaponComponent.js";
 
 export default class GraphicsSystem extends System {
 	constructor() {
