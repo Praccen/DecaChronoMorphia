@@ -107,7 +107,9 @@ export default class Menu {
 		this.volumeSlider.getInputElement().min = "0";
 		this.volumeSlider.getInputElement().max = "100";
 
-		this.witch = this.rendering.getNewQuad("Assets/textures/witch_dialog_1.png");
+		this.witch = this.rendering.getNewQuad(
+			"Assets/textures/witch_dialog_1.png"
+		);
 		this.witch.modelMatrix.translate(0.0, 0.35, -1.5);
 	}
 

@@ -44,16 +44,32 @@ export default class GraphicsSystem extends System {
 						projectileComp.projectileGraphicsDirection ===
 						ProjectileGraphicsDirectionEnum.RIGHT
 					) {
+						if (
+							projectileComp.weaponType === WeaponTypeEnum.ARROW ||
+							projectileComp.weaponType === WeaponTypeEnum.MAGIC
+						) {
+							let quad = <PhongQuad>graphComp.object;
+							quad.textureMatrix.scale(-1, 1, 1);
+							let animComp = <AnimationComponent>(
+								e.getComponent(ComponentTypeEnum.ANIMATION)
+							);
+							animComp.invert = true;
+						}
 					} else if (
 						projectileComp.projectileGraphicsDirection ===
 						ProjectileGraphicsDirectionEnum.LEFT
 					) {
-						let quad = <PhongQuad>graphComp.object;
-						quad.textureMatrix.scale(-1, 1, 1);
-						let animComp = <AnimationComponent>(
-							e.getComponent(ComponentTypeEnum.ANIMATION)
-						);
-						animComp.invert = true;
+						if (
+							projectileComp.weaponType != WeaponTypeEnum.ARROW &&
+							projectileComp.weaponType != WeaponTypeEnum.MAGIC
+						) {
+							let quad = <PhongQuad>graphComp.object;
+							quad.textureMatrix.scale(-1, 1, 1);
+							let animComp = <AnimationComponent>(
+								e.getComponent(ComponentTypeEnum.ANIMATION)
+							);
+							animComp.invert = true;
+						}
 					} else if (
 						projectileComp.projectileGraphicsDirection ===
 						ProjectileGraphicsDirectionEnum.DOWN
