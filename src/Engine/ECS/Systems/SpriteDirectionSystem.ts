@@ -42,6 +42,13 @@ export default class SpriteDirectionSystem extends System {
 				ComponentTypeEnum.PROJECTILE
 			) as ProjectileComponent;
 
+			const enemyComp = e.getComponent(
+				ComponentTypeEnum.ENEMY
+			) as EnemyComponent;
+			if (!enemyComp && !playerComp) {
+				return;
+			}
+
 			let playerDodge = false;
 			if (playerComp) {
 				playerDodge = playerComp.dodgeing;

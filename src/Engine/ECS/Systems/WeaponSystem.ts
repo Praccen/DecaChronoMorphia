@@ -14,7 +14,9 @@ import ProjectileComponent, {
 	ProjectileGraphicsDirectionEnum,
 	ProjectileTypeEnum,
 } from "../Components/ProjectileComponent.js";
-import WeaponComponent from "../Components/WeaponComponent.js";
+import WeaponComponent, {
+	WeaponTypeEnum,
+} from "../Components/WeaponComponent.js";
 import ECSManager from "../ECSManager.js";
 import System from "./System.js";
 
@@ -88,7 +90,32 @@ export default class WeaponSystem extends System {
 				enemyBBComp.updateBoundingBoxBasedOnPositionComp = true;
 				this.ecsManager.addComponent(dmgEntity, enemyBBComp);
 
-				let dmgTexture = "Assets/textures/projectiles.png";
+				let dmgTexture: string;
+				let projectileAnimComp = new AnimationComponent();
+
+				if (weaponComp.weaponType == WeaponTypeEnum.ARROW) {
+					dmgTexture = "Assets/textures/projectiles.png";
+					projectileAnimComp.spriteMap.setNrOfSprites(3, 2);
+					projectileAnimComp.startingTile = { x: 0, y: 0 };
+					projectileAnimComp.advanceBy = { x: 0.0, y: 0.0 };
+					projectileAnimComp.modAdvancement = { x: 0.0, y: 0.0 };
+					projectileAnimComp.updateInterval = 0.0;
+				} else if (weaponComp.weaponType == WeaponTypeEnum.MAGIC) {
+					dmgTexture = "Assets/textures/projectiles.png";
+					projectileAnimComp.spriteMap.setNrOfSprites(3, 2);
+					projectileAnimComp.startingTile = { x: 0, y: 1 };
+					projectileAnimComp.advanceBy = { x: 1.0, y: 0.0 };
+					projectileAnimComp.modAdvancement = { x: 2.0, y: 0.0 };
+					projectileAnimComp.updateInterval = 0.3;
+				} else if (weaponComp.weaponType == WeaponTypeEnum.SWORD) {
+					dmgTexture = "Assets/textures/normy.png";
+					projectileAnimComp.spriteMap.setNrOfSprites(6, 6);
+					projectileAnimComp.startingTile = { x: 0, y: 4 };
+					projectileAnimComp.advanceBy = { x: 1.0, y: 0.0 };
+					projectileAnimComp.modAdvancement = { x: 3.0, y: 0.0 };
+					projectileAnimComp.updateInterval = 0.3;
+				}
+
 				let phongQuad = this.rendering.getNewPhongQuad(dmgTexture, dmgTexture);
 
 				let projectileDirection = ProjectileGraphicsDirectionEnum.LEFT;
@@ -107,12 +134,6 @@ export default class WeaponSystem extends System {
 					new GraphicsComponent(phongQuad)
 				);
 
-				let projectileAnimComp = new AnimationComponent();
-				projectileAnimComp.spriteMap.setNrOfSprites(3, 2);
-				projectileAnimComp.startingTile = { x: 0, y: 0 };
-				projectileAnimComp.advanceBy = { x: 1.0, y: 0.0 };
-				projectileAnimComp.modAdvancement = { x: 3.0, y: 0.0 };
-				projectileAnimComp.updateInterval = 0.2;
 				this.ecsManager.addComponent(dmgEntity, projectileAnimComp);
 
 				let light = this.rendering.getNewPointLight();
