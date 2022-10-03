@@ -2,6 +2,7 @@ export enum ComponentTypeEnum {
 	ANIMATION,
 	BOUNDINGBOX,
 	COLLISION,
+	DOOR,
 	GRAPHICS,
 	MESHCOLLISION,
 	MOVEMENT,
