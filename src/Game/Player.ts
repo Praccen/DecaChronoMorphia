@@ -485,19 +485,6 @@ export default class Player {
 		}
 
 		if (this.currentPlayerShape == PlayerShapeEnum.NORMIE) {
-			const weaponComp = this.playerEntity.getComponent(
-				ComponentTypeEnum.WEAPON
-			) as WeaponComponent;
-			let playerPosComp = <PositionComponent>(
-				this.playerEntity.getComponent(ComponentTypeEnum.POSITION)
-			);
-			if (weaponComp) {
-				weaponComp.position = new Vec3({
-					x: weaponComp.direction.x * 0.5 + playerPosComp.position.x,
-					y: 0.2,
-					z: weaponComp.direction.z * 0.5 + playerPosComp.position.z,
-				});
-			}
 		} else if (this.currentPlayerShape == PlayerShapeEnum.WIZ) {
 		} else if (this.currentPlayerShape == PlayerShapeEnum.TANKY) {
 		} else if (this.currentPlayerShape == PlayerShapeEnum.MOUSE) {
@@ -532,6 +519,20 @@ export default class Player {
 			this.doDodge();
 		} else {
 			this.noDodge();
+		}
+		const weaponComp = this.playerEntity.getComponent(
+			ComponentTypeEnum.WEAPON
+		) as WeaponComponent;
+
+		playerPosComp = <PositionComponent>(
+			this.playerEntity.getComponent(ComponentTypeEnum.POSITION)
+		);
+		if (weaponComp) {
+			weaponComp.position = new Vec3({
+				x: weaponComp.direction.x * 0.5 + playerPosComp.position.x,
+				y: 0.2,
+				z: weaponComp.direction.z * 0.5 + playerPosComp.position.z,
+			});
 		}
 
 		// Set player acceleration
