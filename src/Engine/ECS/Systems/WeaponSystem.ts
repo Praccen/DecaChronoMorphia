@@ -111,6 +111,7 @@ export default class WeaponSystem extends System {
 					projectileAnimComp.modAdvancement = { x: 2.0, y: 0.0 };
 					projectileAnimComp.updateInterval = 0.3;
 					audioComp.sounds[AudioTypeEnum.SHOOT].audioKey = "spell_cast_3";
+					audioComp.sounds[AudioTypeEnum.SHOOT].playTime = 1;
 				} else if (weaponComp.weaponType == WeaponTypeEnum.MAGIC) {
 					dmgTexture = "Assets/textures/projectiles.png";
 					projectileAnimComp.spriteMap.setNrOfSprites(3, 2);
@@ -119,14 +120,16 @@ export default class WeaponSystem extends System {
 					projectileAnimComp.modAdvancement = { x: 2.0, y: 0.0 };
 					projectileAnimComp.updateInterval = 0.3;
 					audioComp.sounds[AudioTypeEnum.SHOOT].audioKey = "spell_cast_5";
+					audioComp.sounds[AudioTypeEnum.SHOOT].playTime = 1;
 				} else if (weaponComp.weaponType == WeaponTypeEnum.SWORD) {
 					dmgTexture = "Assets/textures/normy.png";
 					projectileAnimComp.spriteMap.setNrOfSprites(6, 6);
 					projectileAnimComp.startingTile = { x: 0, y: 4 };
 					projectileAnimComp.advanceBy = { x: 1.0, y: 0.0 };
 					projectileAnimComp.modAdvancement = { x: 3.0, y: 0.0 };
-					projectileAnimComp.updateInterval = 0.3;
+					projectileAnimComp.updateInterval = 0.08;
 					audioComp.sounds[AudioTypeEnum.SHOOT].audioKey = "sword_attack_4";
+					audioComp.sounds[AudioTypeEnum.SHOOT].playTime = 0.5;
 				}
 
 				if (audioComp) {

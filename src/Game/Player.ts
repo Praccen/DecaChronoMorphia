@@ -105,9 +105,9 @@ export default class Player {
 				shoots: false,
 				range: 2,
 				projectileSpeed: 2,
-				attackCooldown: 1,
+				attackCooldown: 0.6,
 				weaponType: WeaponTypeEnum.SWORD,
-				lifetime: 1,
+				lifetime: 0.24,
 			},
 			// [PlayerShapeEnum.TANKY]: {
 			// 	damage: 5,
