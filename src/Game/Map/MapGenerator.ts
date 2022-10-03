@@ -247,7 +247,7 @@ export module MapGenerator {
 		rendering: Rendering,
 		wallsTowards: boolean[]
 	) {
-		for (let i = 0; i < wallsTowards.length; i++) {
+		for (let i = 1; i < wallsTowards.length; i+=2) {
 			if (wallsTowards[i]) {
 				continue;
 			}
@@ -285,14 +285,10 @@ export module MapGenerator {
 			boxBoundingBoxComp.setup(doorMesh);
 			boxBoundingBoxComp.updateTransformMatrix(doorMesh.modelMatrix);
 			ecsManager.addComponent(doorEntity, boxBoundingBoxComp);
-			// let collComp = new CollisionComponent();
-			// collComp.isStatic = true;
-			// ecsManager.addComponent(doorEntity, collComp);
-
-			let meshCollComp = new MeshCollisionComponent();
-			meshCollComp.setup(doorMesh);
-			meshCollComp.updateTransformMatrix(doorMesh.modelMatrix);
-			ecsManager.addComponent(doorEntity, meshCollComp);
+			let collComp = new CollisionComponent();
+			collComp.isStatic = true;
+			collComp.hasForce = false;
+			ecsManager.addComponent(doorEntity, collComp);
 		}
 	}
 
@@ -318,7 +314,7 @@ export module MapGenerator {
 				texturePath
 			) as Mesh;
 
-			wallMesh.textureMatrix.scale(4.0, 1.0, 1.0);
+			wallMesh.textureMatrix.scale(8.0, 1.0, 1.0);
 
 			ecsManager.addComponent(entity, new GraphicsComponent(wallMesh));
 			let posComp = new PositionComponent(
