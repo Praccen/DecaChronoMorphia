@@ -17,7 +17,7 @@ export let options = {
 	useCrt: false,
 	useBloom: true,
 	showFps: true,
-	volume: 0.05
+	volume: 0.05,
 };
 let heightByWidth = 1080 / 1920;
 let widthByHeight = 1920 / 1080;
@@ -109,13 +109,13 @@ window.onload = async () => {
 		menu = new Menu(rendering, fpsDisplay, audio);
 		game = null;
 		firstLoop = true;
-		
+
 		fpsDisplay.position.x = 0.01;
 		fpsDisplay.position.y = 0.01;
 		fpsDisplay.size = 18;
 		fpsDisplay.scaleWithWindow = false;
 		fpsDisplay.getElement().style.color = "lime";
-		
+
 		resize(gl, rendering);
 	}
 

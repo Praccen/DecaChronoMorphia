@@ -31,7 +31,7 @@ export default class DamageSystem extends System {
 					ComponentTypeEnum.POINTLIGHT
 				) as PointLightComponent;
 				pointLightComp.pointLight.removed = true;
-				
+
 				this.ecsManager.removeComponent(e, ComponentTypeEnum.GRAPHICS);
 				this.ecsManager.removeEntity(e.id);
 				return;

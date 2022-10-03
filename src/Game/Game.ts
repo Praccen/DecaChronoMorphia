@@ -59,14 +59,15 @@ export default class Game {
 		this.gameOverButton.textSize = 400;
 		this.gameOverButton.textString = "    ";
 		this.gameOverButton.getInputElement().style.backgroundColor = "transparent";
-		this.gameOverButton.getInputElement().style.backgroundImage = "url(Assets/textures/rip.png";
+		this.gameOverButton.getInputElement().style.backgroundImage =
+			"url(Assets/textures/rip.png";
 		this.gameOverButton.getInputElement().style.backgroundSize = "100% 120%";
 		this.gameOverButton.setHidden(true);
 		let self = this;
 		this.gameOverButton.onClick(function () {
 			self.gameOver = true;
 			self.gameOverButton.getElement().remove();
-		})
+		});
 	}
 
 	update(dt: number): boolean {
