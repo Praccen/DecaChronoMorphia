@@ -9,6 +9,10 @@ import DamageComponent from "../Components/DamageComponent.js";
 import GraphicsComponent from "../Components/GraphicsComponent.js";
 import MovementComponent from "../Components/MovementComponent.js";
 import PositionComponent from "../Components/PositionComponent.js";
+import ProjectileComponent, {
+	ProjectileGraphicsDirectionEnum,
+	ProjectileTypeEnum,
+} from "../Components/ProjectileComponent.js";
 import WeaponComponent from "../Components/WeaponComponent.js";
 import ECSManager from "../ECSManager.js";
 import System from "./System.js";
@@ -70,6 +74,16 @@ export default class WeaponSystem extends System {
 				dmgMoveComp.acceleration = 0.0;
 				dmgMoveComp.constantAcceleration.y = 0.0;
 				this.ecsManager.addComponent(dmgEntity, dmgMoveComp);
+				let projectileDirection = ProjectileGraphicsDirectionEnum.RIGHT;
+				if (weaponComp.direction.x < 0) {
+					projectileDirection = ProjectileGraphicsDirectionEnum.LEFT;
+				}
+
+				let projectileComp = new ProjectileComponent(
+					ProjectileTypeEnum.FIRE,
+					projectileDirection
+				);
+				this.ecsManager.addComponent(dmgEntity, projectileComp);
 
 				let collComp = new CollisionComponent();
 				collComp.hasForce = false;

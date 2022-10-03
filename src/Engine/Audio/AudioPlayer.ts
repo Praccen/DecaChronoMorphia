@@ -35,6 +35,9 @@ export default class AudioPlayer {
 			"spell_cast_5.wav",
 			"sword_attack_2.mp3",
 			"sword_attack_4.mp3",
+			"enemy_death_1.wav",
+			"victory_1.mp3",
+			"defeat_1.mp3",
 		];
 		for (const file of sound_effect_files) {
 			this.sound_effects[file.split(".")[0]] = new Audio(
@@ -54,13 +57,11 @@ export default class AudioPlayer {
 			"shop_theme_2.mp3",
 			"boss_theme_1.mp3",
 			"boss_theme_3.mp3",
-			"defeat_1.mp3",
 			"intro_1.wav",
 			"main_theme_1.mp3",
 			"main_theme_3.mp3",
 			"main_theme_5.mp3",
 			"shop_theme_1.mp3",
-			"victory_1.mp3",
 		];
 		for (const file of song_files) {
 			this.songs[file.split(".")[0]] = new Audio(this.songs_dir + "/" + file);
@@ -77,13 +78,30 @@ export default class AudioPlayer {
 		this.setSoundEffectVolume(0.1);
 	}
 
-	playAudio(key, loop) {
+	playAudio(key, loop, volumeMultiplier?) {
+		if (!volumeMultiplier) {
+			volumeMultiplier = 1;
+		}
 		if (this.sound_effects[key]) {
 			this.sound_effects[key].loop = loop;
+			const volumeTemp = this.sound_effects[key].volume;
+
+			if (this.sound_effects[key].volume * volumeMultiplier > 1) {
+				console.log("Voume max!");
+				this.sound_effects[key].volume = 1;
+			} else {
+				this.sound_effects[key].volume =
+					this.sound_effects[key].volume * volumeMultiplier;
+				console.log("Voume set to: " + this.sound_effects[key].volume);
+			}
+
 			this.active && this.sound_effects[key].play();
+			this.sound_effects[key].volume = volumeTemp;
 		} else if (this.songs[key]) {
 			this.songs[key].loop = loop;
+			this.songs[key].volume = this.songs[key].volume * volumeMultiplier;
 			this.active && this.songs[key].play();
+			this.songs[key].volume = this.songs[key].volume / volumeMultiplier;
 		}
 	}
 

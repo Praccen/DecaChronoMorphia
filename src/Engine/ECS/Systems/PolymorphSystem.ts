@@ -17,6 +17,7 @@ export default class PolymorphSystem extends System {
 
 	getNextPolymorph() {
 		// if on block
+		// select correct shape
 		// else
 		const min: number = Math.ceil(0);
 		var size = 0;
@@ -53,15 +54,19 @@ export default class PolymorphSystem extends System {
 			) {
 				polymorphComp.isPolymorphing = true;
 				polymorphComp.currentPolymorphShape = polymorphComp.nextPolymorphShape;
-				polymorphComp.nextPolymorphShape =
-					this.getNextPolymorph() as PlayerShapeEnum;
+				while (
+					polymorphComp.currentPolymorphShape ===
+					polymorphComp.nextPolymorphShape
+				) {
+					polymorphComp.nextPolymorphShape =
+						this.getNextPolymorph() as PlayerShapeEnum;
+				}
 			}
 		});
 		if (
 			this.polymorphClockSecondCount >=
 			this.polymorphSystemUpdateSecondCountLimit
 		) {
-			console.log(this.polymorphClockSecondCount);
 			this.polymorphClockSecondCount -=
 				this.polymorphSystemUpdateSecondCountLimit;
 		}
